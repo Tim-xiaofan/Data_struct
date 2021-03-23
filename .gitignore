@@ -321,3 +321,5 @@ ch-18 Visiting with the New C++ Standard/18.02 Move Semantics and the Rvalue Ref
 ch-18 Visiting with the New C++ Standard/18.05 Wrappers/template inefficiencies/callable
 ch-18 Visiting with the New C++ Standard/18.05 Wrappers/fixing inefficiencies/wrapped
 ch-18 Visiting with the New C++ Standard/18.07 Language Change/using boost/lexcast
+ch-02 Lists/List ADT/list
+ch-01 introduction/bubble_sort
