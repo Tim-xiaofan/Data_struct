@@ -1,8 +1,8 @@
-# binary name
-APP = list
+# lib name
+LIB = liblist.so 
 
 # all source are stored in SRCS-y
-SRCS-y := list.c main.c
+SRCS-y := list.c
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -17,11 +17,12 @@ endif
 endif
 endif
 
-# Add flag 
-CFLAGS += -g -Wall
+# Add flag
+CFLAGS += -Wall -O3 -shared -fPIC 
+CC = gcc
 
-$(APP): $(SRCS-y) Makefile 
-	$(CC) $(CFLAGS) $(SRCS-y) -o $@
+$(LIB): $(SRCS-y) Makefile 
+	$(CC) $(CFLAGS) -o $@ $(SRCS-y)
 
 
 ifeq ($(shell uname),Linux)
@@ -30,7 +31,7 @@ clean:
 	echo "Linux rm"
 	rm -f *.o
 	rm -f *.exe
-	rm -f $(APP)
+	rm -f $(LIB)
 else 
 ifeq ($(OS),Windows_NT)
 SHELL=powershell.exe
@@ -39,6 +40,6 @@ clean:
 	echo "Windows rm"
 	rm -Force *.o
 	rm -Force *.exe
-	rm -Force $(APP)
+	rm -Force $(LIB)
 endif
 endif

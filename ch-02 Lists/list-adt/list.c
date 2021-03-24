@@ -6,23 +6,29 @@
 
 
 void 
-item_assign(item *e1, const item *e2)
+item_assign(item *e1, item e2)
 {
-	*e1 = *e2;
+	*e1 = e2;
 }
 
 short 
-item_compare(const item *e1, const item *e2)
+item_compare(item e1, item e2)
 {
-	if(*e1 > *e2) return 1;
-	if(*e1 == *e2) return 0;
+	if(e1 > e2) return 1;
+	if(e1 == e2) return 0;
 	return -1;
 }
 
-void
-item_show(const item * e)
+bool
+item_equal(item e1, item e2)
 {
-	printf("%d", *e);
+	return (e1 == e2);
+}
+
+void
+item_show(item e)
+{
+	printf("%d", e);
 }
 
 list* 
@@ -43,7 +49,7 @@ list_new(int size)
 }
 
 bool
-list_get_n(list *l, int i, item * e)
+list_get_n(const list *l, int i, item * e)
 {
 	int j;
 	node *p;
@@ -59,7 +65,7 @@ list_get_n(list *l, int i, item * e)
 	p = l->head->next;
 	for(j = 0; j < i; j++)
 	  p = p->next;
-	item_assign(e, &p->data);
+	item_assign(e, p->data);
 	return true;
 }
 
@@ -80,7 +86,7 @@ list_append(list *l, item e)
 		return false;
 	}
 
-	item_assign(&tmp->data, &e);
+	item_assign(&tmp->data, e);
 	tmp->next = NULL;
 	/** 0 --> 1*/
 	if(l->length == 0)
@@ -118,9 +124,32 @@ void list_show(const list *l, pitem_show pf)
 	p = l->head->next;
 	while(p != NULL)
 	{
-		(*pf)(&p->data);
+		(*pf)(p->data);
 		printf(" ");
 		p = p->next;
 	}
 	printf("\n");
+}
+
+/** @return -1 indicates e is not in list , or return index*/
+int 
+list_search(const list *l, const item e, pitem_equal pf)
+{
+	int i;
+	bool found;
+	item e1;
+
+	found = false;
+	for(i = 0; i < l->length; i++)
+	{
+		list_get_n(l, i, &e1);
+		if((*pf)(e, e1))
+		{
+			found = true;
+			break;
+		}
+	}
+
+	if(found) return i;
+	else return -1;
 }

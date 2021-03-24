@@ -6,14 +6,17 @@
 
 typedef int item;
 
-void item_assign(item *e1, const item *e2);
+void item_assign(item *e1, item e2);
 
-short item_compare(const item *e1, const item *e2);
+short item_compare(item e1, item e2);
 
-void item_show(const item *e);
+bool item_equal(item e1, item e2);
+
+void item_show(item e);
 
 /** function pointer*/
-typedef void (*pitem_show)(const item *);
+typedef void (*pitem_show)(item );
+typedef bool (*pitem_equal)(item e1, item e2);
 
 struct NODE
 {
@@ -35,11 +38,13 @@ typedef struct LIST list;
 
 list *list_new(int size);
 
-bool list_get_n(list *l, int i, item * e);
+bool list_get_n(const list *l, int i, item * e);
 
 bool list_append(list *l, item e);
 
 int list_length(const list *l);
 
 void list_show(const list *l, pitem_show pf);
+
+int list_search(const list *l, item e, pitem_equal pf);
 #endif
