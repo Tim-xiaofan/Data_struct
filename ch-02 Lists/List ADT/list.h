@@ -2,12 +2,18 @@
 //list.h
 #ifndef LIST_H
 #define LIST_H
+#include <stdbool.h>
 
 typedef int item;
 
-void item_assign(item *i1, const item *i2);
+void item_assign(item *e1, const item *e2);
 
-short item_compare(const item *i1, const item *i2);
+short item_compare(const item *e1, const item *e2);
+
+void item_show(const item *e);
+
+/** function pointer*/
+typedef void (*pitem_show)(const item *);
 
 struct NODE
 {
@@ -19,19 +25,21 @@ typedef struct NODE node;
 
 struct LIST
 {
-	unsigned int length;
+	int length;
+	int size;
 	node *head;
 	node *tail;
 };
 
 typedef struct LIST list;
 
-void list_init(list * l);
+list *list_new(int size);
 
-void list_get(list *l, unsigned int i, item * e);
+bool list_get_n(list *l, int i, item * e);
 
-void list_put(list *l, unsigned int i, item e);
+bool list_append(list *l, item e);
 
-unsigned int list_length(const list *l);
+int list_length(const list *l);
 
+void list_show(const list *l, pitem_show pf);
 #endif
