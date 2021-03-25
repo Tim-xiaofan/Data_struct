@@ -6,9 +6,15 @@
 
 typedef int item;
 
+item * item_new(void);
+
+void item_delete(item * e);
+
 void item_assign(item *e1, item e2);
 
 short item_compare(item e1, item e2);
+
+bool item_le(item e1, item e2);
 
 bool item_equal(item e1, item e2);
 
@@ -42,9 +48,13 @@ bool list_get_n(const list *l, int i, item * e);
 
 bool list_append(list *l, item e);
 
+bool list_append_bulk(list *l, const item *es, int n);
+
 int list_length(const list *l);
 
 void list_show(const list *l, pitem_show pf);
 
 int list_search(const list *l, item e, pitem_equal pf);
+
+void list_delete(list *l);
 #endif

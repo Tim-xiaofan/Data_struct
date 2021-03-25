@@ -12,33 +12,60 @@ static pitem_equal pf1 = item_equal;
 
 static int A[4] = {3,5,8,11};
 static int B[7]={2,6,8,9,11,15,20};
+static int C[N]={1,3,5,7,9,11,13,15,17,19,21,23};
+static int D[N]={2,4,6,8,10,12,14,16,18,20,22,24};
 
 static list * 
 list_union(const list *la, const list *lb);
 
 int main()
 {
-	int i;
-	list *la, *lb, *lc;
+	//int i;
+	list *la, *lb, *lc, *ld, *ltmp;
 	
 	/** init lists*/
 	la = list_new(N);
 	lb = list_new(N);
+	lc = list_new(N);
+	ld = list_new(N);
 
 	/** enter items*/
-	for(i = 0; i < 4; i++)
-	  list_append(la, A[i]);
-	for(i = 0; i < 7; i++)
-	  list_append(lb, B[i]);
+	//for(i = 0; i < 4; i++)
+	//  list_append(la, A[i]);
+	list_append_bulk(la, A, 4);
+	//for(i = 0; i < 7; i++)
+	//  list_append(lb, B[i]);
+	list_append_bulk(lb, B, 7);
+	list_append_bulk(lc, C, N);
+	list_append_bulk(ld, D, N);
 
 	printf("la(%d) : ", la->length);
 	list_show(la, pf);
 	printf("lb(%d) : ", lb->length);
 	list_show(lb, pf);
-
-	lc = list_union(la, lb);
-	printf("la U lb(%d) : ", lc->length);
+	printf("lc(%d) : ", lc->length);
+	list_show(lb, pf);
+	printf("lc(%d) : ", ld->length);
 	list_show(lc, pf);
+
+	ltmp = list_union(la, lb);
+	printf("la U lb(%d) : ", ltmp->length);
+	list_show(ltmp, pf);
+	list_delete(ltmp);
+	ltmp = NULL;
+	
+	ltmp = list_union(lc, ld);
+	printf("lc U ld(%d) : ", ltmp->length);
+	list_show(ltmp, pf);
+	list_delete(ltmp);
+	ltmp = NULL;
+
+
+	ltmp = list_union(la, la);
+	printf("la U la(%d) : ", ltmp->length);
+	list_show(ltmp, pf);
+	list_delete(ltmp);
+	ltmp = NULL;
 }	
 
 static list * 

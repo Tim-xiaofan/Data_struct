@@ -5,6 +5,21 @@
 #include "list.h"
 
 
+item * 
+item_new(void)
+{
+	item *e;
+	e = (item *) malloc(sizeof(item));
+	return e;
+}
+
+/** do not attempt to access an item after deleting it.*/
+void 
+item_delete(item * e)
+{
+	free(e);
+}
+
 void 
 item_assign(item *e1, item e2)
 {
@@ -17,6 +32,13 @@ item_compare(item e1, item e2)
 	if(e1 > e2) return 1;
 	if(e1 == e2) return 0;
 	return -1;
+}
+
+/** less than or equal*/
+bool 
+item_le(item e1, item e2)
+{
+	return (e1 <= e2);
 }
 
 bool
@@ -104,6 +126,22 @@ list_append(list *l, item e)
 	return true;
 }
 
+bool 
+list_append_bulk(list *l, const item *es, int n)
+{
+	int i;
+
+	if(n > (l->size - l->length))
+	{
+		printf("not enough space.\n");
+		return false;
+	}
+
+	for(i = 0; i < n; i++)
+		list_append(l, es[i]);
+	return true;
+}
+
 int 
 list_length(const list *l)
 {
@@ -152,4 +190,19 @@ list_search(const list *l, const item e, pitem_equal pf)
 
 	if(found) return i;
 	else return -1;
+}
+
+/** do not attempt to access a list after deleting it.*/
+void list_delete(list *l)
+{
+	node *p = l->head, *tmp;
+	/** free nodes*/
+	while(p)
+	{
+		tmp = p;
+		p = p->next;
+		free(tmp);
+	}
+	/** free list*/
+	free(l);
 }
