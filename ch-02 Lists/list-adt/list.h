@@ -46,15 +46,23 @@ list *list_new(int size);
 
 bool list_get_n(const list *l, int i, item * e);
 
+bool list_remove_n(list *l, int i, item * e);
+
+bool list_insert_n(list *l, int i, item e);
+
 bool list_append(list *l, item e);
 
 bool list_append_bulk(list *l, const item *es, int n);
 
-int list_length(const list *l);
+static inline int 
+list_length(const list *l){return l->length;}
 
 void list_show(const list *l, pitem_show pf);
 
 int list_search(const list *l, item e, pitem_equal pf);
 
 void list_delete(list *l);
+
+static inline bool
+list_isfull(const list *l){ return (l->length == l->size);}
 #endif

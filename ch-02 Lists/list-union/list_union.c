@@ -20,8 +20,9 @@ list_union(const list *la, const list *lb);
 
 int main()
 {
-	//int i;
+	int i;
 	list *la, *lb, *lc, *ld, *ltmp;
+	item e;
 	
 	/** init lists*/
 	la = list_new(N);
@@ -45,8 +46,8 @@ int main()
 	list_show(lb, pf);
 	printf("lc(%d) : ", lc->length);
 	list_show(lb, pf);
-	printf("lc(%d) : ", ld->length);
-	list_show(lc, pf);
+	printf("ld(%d) : ", ld->length);
+	list_show(ld, pf);
 
 	ltmp = list_union(la, lb);
 	printf("la U lb(%d) : ", ltmp->length);
@@ -66,6 +67,21 @@ int main()
 	list_show(ltmp, pf);
 	list_delete(ltmp);
 	ltmp = NULL;
+
+	printf("selet an item to rm in lb : ");
+	scanf("%d", &i);
+	list_remove_n(lb, i, &e);
+	printf("after removing %d, lb(%d) : ",
+				i, list_length(lb));
+	list_show(lb, pf);
+
+
+	printf("selet an location to insert into lb : ");
+	scanf("%d", &i);
+	list_insert_n(lb, i, 255);
+	printf("after inserting %d, lb(%d) : ",
+				i, list_length(lb));
+	list_show(lb, pf);
 }	
 
 static list * 
@@ -76,7 +92,7 @@ list_union(const list *la, const list *lb)
 	int i;
 
 	lc = list_new(N + N);
-	/** lc = la*/
+	/** lc = la */
 	for(i = 0; i < la->length; i++)
 	{
 		list_get_n(la, i, &e);

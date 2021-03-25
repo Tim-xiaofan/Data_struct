@@ -91,6 +91,109 @@ list_get_n(const list *l, int i, item * e)
 	return true;
 }
 
+static node *
+list_locate_n(const list *l, int n)
+{
+	node *p;
+	int j;
+
+	p = l->head;
+	for(j = 0; j < n; j ++)
+	  p = p->next;
+
+	return p;
+}
+
+/** O(n)*/
+bool 
+list_remove_n(list *l, int i, item * e)
+{
+	node *p, *tmp;
+	int len = list_length(l), j;
+
+	if(i < 0 || i >= len)
+	{
+		fprintf(stderr, "out of boundary\n");
+		return false;
+	}
+
+	/** 1--> 0 */
+	if(len == 1)
+	{
+		item_assign(e, l->tail->data);
+		free(l->tail);
+		l->tail = NULL;
+		l->head->next = l->tail;
+	}
+	else
+	{/** n --> n - 1*/
+		/** locate to i-1*/
+		p = l->head;
+		for(j = 0; j < i; j ++)
+		  p = p->next;
+
+		/** = operator*/
+		tmp = p->next;
+		item_assign(e, tmp->data);
+		//fprintf(stdout, "rm item : ");
+		//item_show(*e);
+		//fprintf(stdout, "\n");
+
+		/** adjust and free node*/
+		p->next = tmp->next;
+		free(tmp);
+	}
+
+	l->length--;
+	return true;
+}
+
+bool 
+list_insert_n(list *l, int i, item e)
+{
+	int len;
+	node *tmp, *p;
+
+	len = list_length(l);
+
+	if(list_isfull(l))
+	{
+		fprintf(stderr, "list is full\n");
+		return false;
+	}
+
+	if(i < 0 || i > l->size)
+	{
+		fprintf(stderr, "out of boundary\n");
+		return false;
+	}
+
+	tmp = (node *) malloc(sizeof(node));
+	if(!tmp)
+	{
+		fprintf(stderr, "failed to alloc buffer for node\n");
+		return false;
+	}
+	item_assign(&tmp->data, e);
+	tmp->next = NULL;
+
+	/** 0 --> 1*/
+	if(len == 0)
+	{
+		l->tail = tmp;
+		l->head->next = l->tail;
+	}
+	else
+	{/** n --> n + 1*/
+		/** locate i - 1*/
+		p = list_locate_n(l, i - 1);
+		tmp->next = p->next;
+		p->next = tmp;
+	}
+	l->length++;
+	return true;
+}
+
 bool 
 list_append(list *l, item e)
 {
@@ -140,12 +243,6 @@ list_append_bulk(list *l, const item *es, int n)
 	for(i = 0; i < n; i++)
 		list_append(l, es[i]);
 	return true;
-}
-
-int 
-list_length(const list *l)
-{
-	return l->length;
 }
 
 

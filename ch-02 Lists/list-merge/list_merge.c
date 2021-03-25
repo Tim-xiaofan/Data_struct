@@ -37,6 +37,10 @@ int main()
 	lc = list_merge(la, lb);
 	printf("merge(%d) : ", list_length(lc));
 	list_show(lc, pf);
+
+	list_delete(la);
+	list_delete(lb);
+	list_delete(lc);
 }
 
 static list *
