@@ -22,7 +22,7 @@ int main()
 {
 	int i;
 	list *la, *lb, *lc, *ld, *ltmp;
-	item e;
+	//item e;
 	
 	/** init lists*/
 	la = list_new(N);
@@ -68,20 +68,25 @@ int main()
 	list_delete(ltmp);
 	ltmp = NULL;
 
-	printf("selet an item to rm in lb : ");
-	scanf("%d", &i);
-	list_remove_n(lb, i, &e);
-	printf("after removing %d, lb(%d) : ",
-				i, list_length(lb));
-	list_show(lb, pf);
+	//printf("selet an item to rm in lb : ");
+	//scanf("%d", &i);
+	//list_remove_n(lb, i, &e);
+	//printf("after removing %d, lb(%d) : ",
+	//			i, list_length(lb));
+	//list_show(lb, pf);
 
 
-	printf("selet an location to insert into lb : ");
+	//printf("select location to insert into lb : ");
+	//scanf("%d", &i);
+	//list_insert_n(lb, i, 255);
+	//printf("after inserting %d, lb(%d) : ",
+	//			i, list_length(lb));
+	//list_show(lb, pf);
+
+	printf("select location to set in lb: ");
 	scanf("%d", &i);
-	list_insert_n(lb, i, 255);
-	printf("after inserting %d, lb(%d) : ",
-				i, list_length(lb));
-	list_show(lb, pf);
+	if(!list_set_cursor(lb, i))
+	  fprintf(stderr, "list_set_cursor failed.\n");
 }	
 
 static list * 

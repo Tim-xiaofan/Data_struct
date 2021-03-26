@@ -87,6 +87,38 @@ sqlist_get_n(const sqlist *l, int i, item * e)
 	return true;
 }
 
+/** O(n) 
+ *	rm an item from list. Don't do out of boundary check*/
+bool 
+sqlist_remove_n(sqlist *l, int i, item * e)
+{
+	int j, len = sqlist_length(l);
+
+	/** move i+1--> len-1 one step forward*/
+	for(j = i + 1; j < len; j++)
+	  l->items[j - 1] = l->items[j];
+	l->length--;
+
+	return true;
+}
+
+/** O(n)
+ *	insert an item into list*/
+bool 
+sqlist_insert_n(sqlist *l, int i, item e)
+{
+	int j, len = sqlist_length(l);
+
+	/** move len -1 --> i one step back*/
+	for(j = len -1; j >= i; j--)
+	  l->items[j + 1] = l->items[j];
+
+	/** set i*/
+	item_assign(&(l->items[i]), e);
+	l->length++;
+	return true;
+}
+
 /** O(1)*/
 bool 
 sqlist_append(sqlist *l, item e)
@@ -116,12 +148,6 @@ sqlist_append_bulk(sqlist *l, const item *es, int n)
 	for(i = 0; i < n; i++)
 		sqlist_append(l, es[i]);
 	return true;
-}
-
-int 
-sqlist_length(const sqlist *l)
-{
-	return l->length;
 }
 
 

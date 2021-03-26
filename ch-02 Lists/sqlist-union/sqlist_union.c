@@ -20,7 +20,8 @@ sqlist_union(const sqlist *la, const sqlist *lb);
 
 int main()
 {
-	//int i;
+	int i;
+	item e;
 	sqlist *la, *lb, *lc, *ld, *ltmp;
 	
 	/** init sqlists*/
@@ -66,6 +67,22 @@ int main()
 	sqlist_show(ltmp, pf);
 	sqlist_delete(ltmp);
 	ltmp = NULL;
+
+	printf("selet an item to rm in lb : ");
+	scanf("%d", &i);
+	sqlist_remove_n(lb, i, &e);
+	printf("after removing %d, lb(%d) : ",
+				i, sqlist_length(lb));
+	sqlist_show(lb, pf);
+
+
+	printf("select location to insert into lb : ");
+	scanf("%d", &i);
+	sqlist_insert_n(lb, i, 255);
+	printf("after inserting %d, lb(%d) : ",
+				i, sqlist_length(lb));
+	sqlist_show(lb, pf);
+
 }	
 
 static sqlist * 

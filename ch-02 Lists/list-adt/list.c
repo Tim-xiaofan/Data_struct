@@ -53,6 +53,19 @@ item_show(item e)
 	printf("%d", e);
 }
 
+static node *
+list_locate_n(const list *l, int n)
+{
+	node *p;
+	int j;
+
+	p = l->head;
+	for(j = 0; j <= n; j ++)
+	  p = p->next;
+
+	return p;
+}
+
 list* 
 list_new(int size)
 {
@@ -67,7 +80,37 @@ list_new(int size)
 	l->size = size;
 	l->head = (node *)malloc(sizeof(node));
 	l->head->next = l->tail = NULL;
+	l->current = -1;
+	l->cursor = l->head;
 	return l;
+}
+
+/** set cursor
+ *	O(n)*/
+bool 
+list_set_cursor(list* l, int i)
+{
+	int len ;
+	node *p;
+
+	len = list_length(l);
+	if(i >= len)
+	  return false;
+
+	p = list_locate_n(l, i);
+	l->cursor = p;
+	l->current = i;
+
+	fprintf(stdout, "set cursor to : ");
+	item_show(l->cursor->data);
+	printf("\n");
+
+	return true;
+}
+
+int list_get_next(list *l)
+{
+	return -1;
 }
 
 bool
@@ -91,18 +134,7 @@ list_get_n(const list *l, int i, item * e)
 	return true;
 }
 
-static node *
-list_locate_n(const list *l, int n)
-{
-	node *p;
-	int j;
 
-	p = l->head;
-	for(j = 0; j < n; j ++)
-	  p = p->next;
-
-	return p;
-}
 
 /** O(n)*/
 bool 
@@ -148,6 +180,7 @@ list_remove_n(list *l, int i, item * e)
 	return true;
 }
 
+/** O(n)*/
 bool 
 list_insert_n(list *l, int i, item e)
 {
@@ -162,7 +195,7 @@ list_insert_n(list *l, int i, item e)
 		return false;
 	}
 
-	if(i < 0 || i > l->size)
+	if(i < 0 || i > len)
 	{
 		fprintf(stderr, "out of boundary\n");
 		return false;

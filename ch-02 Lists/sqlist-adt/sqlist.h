@@ -37,11 +37,16 @@ sqlist *sqlist_new(int size);
 
 bool sqlist_get_n(const sqlist *sql, int i, item * e);
 
+bool sqlist_remove_n(sqlist *sql, int i, item * e);
+
+bool sqlist_insert_n(sqlist *sql, int i, item e);
+
 bool sqlist_append(sqlist *sql, item e);
 
 bool sqlist_append_bulk(sqlist *sql, const item *es, int n);
 
-int sqlist_length(const sqlist *sql);
+static inline int 
+sqlist_length(const sqlist *sql) {return sql->length;}
 
 void sqlist_show(const sqlist *sql, pitem_show pf);
 

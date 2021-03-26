@@ -36,13 +36,19 @@ struct LIST
 {
 	int length;
 	int size;
+	int current;/**for get_next */
 	node *head;
 	node *tail;
+	node *cursor; /**for get_next */
 };
 
 typedef struct LIST list;
 
 list *list_new(int size);
+
+bool list_set_cursor(list* l, int i);
+
+int list_get_next(list *l);
 
 bool list_get_n(const list *l, int i, item * e);
 
