@@ -22,7 +22,7 @@ int main()
 {
 	int i;
 	list *la, *lb, *lc, *ld, *ltmp;
-	//item e;
+	item e;
 	
 	/** init lists*/
 	la = list_new(N);
@@ -87,6 +87,13 @@ int main()
 	scanf("%d", &i);
 	if(!list_set_cursor(lb, i))
 	  fprintf(stderr, "list_set_cursor failed.\n");
+
+	while(list_get_next(lb, &e) != -1)
+	{
+		item_show(e);
+		printf(" ");
+	}
+	printf("\n");
 }	
 
 static list * 

@@ -101,16 +101,38 @@ list_set_cursor(list* l, int i)
 	l->cursor = p;
 	l->current = i;
 
-	fprintf(stdout, "set cursor to : ");
+	fprintf(stdout, 
+				"set cursor to location %d, data is", 
+				l->current);
 	item_show(l->cursor->data);
 	printf("\n");
 
 	return true;
 }
 
-int list_get_next(list *l)
+bool 
+list_reset_cursor(list *l)
 {
-	return -1;
+	return list_set_cursor(l, -1);
+}
+
+/** O(1)
+ *	@return -1 for failed, or current location 
+ *	after calling this function
+ **/
+int 
+list_get_next(list *l, item *e)
+{
+	if(l->current < list_length(l) -1)
+	{
+		l->current++;
+		l->cursor = l->cursor->next;
+		item_assign(e, l->cursor->data);
+		return l->current;
+	}
+	if(l->current == list_length(l) -1)
+		item_assign(e, l->cursor->data);
+	return -1; 
 }
 
 bool
