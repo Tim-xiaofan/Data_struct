@@ -5,7 +5,7 @@
 APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := test.cpp
+SRCS-y := test.cpp List.h
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"

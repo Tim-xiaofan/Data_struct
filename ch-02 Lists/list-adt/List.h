@@ -1,4 +1,4 @@
-/** 20210323 22:25, zyj, GuangDong*/
+/* 20210323 22:25, zyj, GuangDong*/
 //List.h
 #ifndef LIST_H
 #define LIST_H
@@ -8,6 +8,7 @@
 template<typename Item>
 class List
 {
+	/** nested class*/
     private:
         class node
         {
@@ -19,15 +20,36 @@ class List
 				node(const node &nd):_i(nd._i), _next(nd._next){}
 				~node(){};
         };
+		class iterator
+		{
+			private:
+				node * _pn;
+			public:
+				iterator(node * pn = nullptr) : _pn(pn) {}
+				virtual const Item & operator*() const  { return _pn->_i;}
+				iterator & operator++();
+				iterator operator++(int);
+				iterator & operator=(node *pn){_pn = pn; return *this;}
+				iterator & operator=(const iterator & it){_pn = it._pn; return *this;}
+				bool operator==(const iterator & it) const {return (_pn == it._pn);}
+				bool operator!=(const iterator & it) const {return (_pn != it._pn);}
+		};
+	
+	/** data*/
     private:
 		enum {DEFAULT_SIZE = 16};
         int _size, _length, _current;
         node *_head, *_tail, *_cursor;
-		node * locate_n(int pos);
-		bool out_bound(int pos)const{ return (pos < 0 || pos >= _length);}
+	
+	/** methods*/
 	public:
+		/** types*/
+		typedef Item item_type;
+		typedef iterator const_iterator;
+		/** */
 		List(int size = DEFAULT_SIZE);
 		~List();
+
 		int length(void) const {return _length;}
 		int size(void) const {return _size;}
 		int current(void) const {return _current;}
@@ -43,8 +65,34 @@ class List
 		int search(const Item & i) const;
 		bool is_full(void) const {return (_length == _size);}
 		bool is_empty(void) const {return (_length == 0);}
+
+		/** iterator methods*/
+		iterator begin(void) const {return _head->_next;}
+		iterator end(void) const {return _tail->_next;}
+	private:
+		node * locate_n(int pos);
+		bool out_bound(int pos)const{ return (pos < 0 || pos >= _length);}
 };
 
+//typename List<Item>::node * List<Item>::
+template <typename Item>
+typename List<Item>::iterator & 
+List<Item>::iterator::
+operator++()/** ++i, post increment operator*/
+{
+	_pn =  _pn->next;
+	return *this;
+}
+
+template <typename Item>
+typename List<Item>::iterator
+List<Item>::iterator::
+operator++(int)/** i++, pre increment operator*/
+{
+	typename List<Item>::iterator tmp;
+	_pn =  _pn->_next;
+	return tmp;
+}
 
 template <typename Item>
 List<Item>::
@@ -54,7 +102,7 @@ List(int size)
 	_size = size;
 	_current = -1;
 	_head = new node();
-	_tail = nullptr;
+	_tail = _head;
 	_cursor = _head;
 }
 
@@ -232,7 +280,7 @@ del_n(int pos, Item &i)
 	{
 		i = _tail->_i;
 		delete _tail;
-		_tail = NULL;
+		_tail = nullptr;
 		_head->_next = _tail;
 	}
 	else

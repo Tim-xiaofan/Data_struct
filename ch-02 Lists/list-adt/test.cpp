@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdio>
 #include <string>
-#include <List>
+#include <List.h>
 #define SIZE 16
 
 static int A[4] = {3,5,8,11};
@@ -15,6 +15,7 @@ static std::string B[7]= {
 	"Thursday", 
 	"Friday", 
 	"Saturday"};
+void show(const List<int> &);
 
 int main()
 {
@@ -66,4 +67,23 @@ int main()
 	cin >>  s;
 	cout << "result of searching " << s 
 		<< " :  " << ls.search(s)<< endl;
+
+	cout << "------- iterator -------" << endl;
+	List<string>::const_iterator it;
+	for(it = ls.begin(); it != ls.end(); it++)
+	  cout << *it << " ";
+	cout << "\n";
+
+	show(li);
+	cout << "------- iterator -------" << endl << endl;
+	li.show();
 }
+
+void show(const List<int> &li)
+{
+	List<int>::const_iterator it;
+	for(it = li.begin(); it != li.end(); it++)
+	  std::cout << *it << " ";
+	std::cout << "\n";
+}
+

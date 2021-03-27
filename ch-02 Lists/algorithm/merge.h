@@ -6,20 +6,19 @@ template <typename List>
 void
 Merge(const List & la, const List & lb, List & lc)
 {
-	item ea, eb;
+	typename List::item_type ea, eb;
 	list *lc;
 	int ia = 0, ib = 0, lena, lenb;
 	short ret = 0;
 
-	lena = list_length(la);
-	lenb = list_length(lb);
-	lc = list_new(lena + lenb);
+	lena = la.length();
+	lenb = lb.length();
 
 	/** both la and lb are not empty*/
 	while((ia < lena) && (ib < lenb))
 	{
-		if(ret <= 0)list_get_n(la, ia, &ea);
-		if(ret >= 0)list_get_n(lb, ib, &eb);
+		if(ret <= 0)la.get_next(&ea);
+		if(ret >= 0)lb.get_next(&eb);
 
 		//printf("choose among : ");
 		//item_show(ea);
@@ -35,6 +34,7 @@ Merge(const List & la, const List & lb, List & lc)
 			//printf("\n");
 			list_append(lc, ea);
 			ia++;
+			ret = -1;
 		}
 		else if(ret == 0)
 		{
