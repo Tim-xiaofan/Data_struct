@@ -1,8 +1,11 @@
-# lib name
-LIB = liblist.so 
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright(c) 2010-2014 Intel Corporation
+
+# binary name
+APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := list.c
+SRCS-y := test.cpp
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -17,12 +20,11 @@ endif
 endif
 endif
 
-# Add flag
-CFLAGS += -Wall -O3 -shared -fPIC 
-CC = gcc
+# Add flag 
+CPPFLAGS += -g -Wall -I./
 
-$(LIB): $(SRCS-y) Makefile 
-	$(CC) $(CFLAGS) -o $@ $(SRCS-y)
+$(APP): $(SRCS-y) Makefile 
+	$(CXX) $(CPPFLAGS) $(SRCS-y) -o $@
 
 
 ifeq ($(shell uname),Linux)
@@ -31,7 +33,7 @@ clean:
 	echo "Linux rm"
 	rm -f *.o
 	rm -f *.exe
-	rm -f $(LIB)
+	rm -f $(APP)
 else 
 ifeq ($(OS),Windows_NT)
 SHELL=powershell.exe
@@ -40,6 +42,6 @@ clean:
 	echo "Windows rm"
 	rm -Force *.o
 	rm -Force *.exe
-	rm -Force $(LIB)
+	rm -Force $(APP)
 endif
 endif

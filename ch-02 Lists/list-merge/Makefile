@@ -18,7 +18,6 @@ endif
 endif
 
 # Add flag
-LISTFLIBS += -L../list-adt -llist 
 LISTFLAGS += -I../list-adt
 CFLAGS += -g -Wall -Wl,-rpath=../list-adt
 

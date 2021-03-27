@@ -1,46 +1,17 @@
-/** 20210325 11:37, zyj, GuangDong*/
-//list_merge.c
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <time.h>
-#include <list.h>
-#define N 12
-
-static int A[4] = {3,5,8,11};
-static int B[7]={2,6,8,9,11,15,20};
-
-static bool
-merge(const List & la, const List &lb, List &lc);
-
-int main()
-{
-	//int i;
-	List la(N), lb(N), lc(N + N);
-	
-	/** enter items*/
-	la.append_bulk(A, 4);
-	lb.append_bulk(B, 7);
-
-	printf("la(%d) : ", la.length());
-	la.list_show();
-	printf("lb(%d) : ", lb.length);
-	lb.list_show();
-
-	merge(la, lb, lc);
-	printf("merge(%d) : ", lc.length());
-	lc.show();
-}
-
-static bool
-list_merge(const List & la, const List &lb, List &lc)
+/** 20210327 19:31, zyj, GuangDong*/
+//algoritm.h
+#ifndef MERGE
+#define MERGE
+template <typename List>
+void
+Merge(const List & la, const List & lb, List & lc)
 {
 	item ea, eb;
 	list *lc;
 	int ia = 0, ib = 0, lena, lenb;
 	short ret = 0;
 
-	lena = list_length(la); 
+	lena = list_length(la);
 	lenb = list_length(lb);
 	lc = list_new(lena + lenb);
 
@@ -72,7 +43,7 @@ list_merge(const List & la, const List &lb, List &lc)
 			list_append(lc, eb);
 			ib++;
 		}
-		else 
+		else
 		{
 			//printf("choose : ");
 			//item_show(eb);
@@ -97,3 +68,4 @@ list_merge(const List & la, const List &lb, List &lc)
 
 	return lc;
 }
+#endif
