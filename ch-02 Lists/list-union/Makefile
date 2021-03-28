@@ -2,7 +2,7 @@
 APP = list_union
 
 # all source are stored in SRCS-y
-SRCS-y := list_union.c
+SRCS-y := list_union.cpp
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -18,12 +18,12 @@ endif
 endif
 
 # Add flag
-LISTFLIBS += -L../list-adt -llist 
-LISTFLAGS += -I../list-adt
+INCLUDEFLAGS += -I../list-adt -I../algorithm
 CFLAGS += -g -Wall -Wl,-rpath=../list-adt
+CC = g++
 
 $(APP): $(SRCS-y) Makefile 
-	$(CC) $(CFLAGS) $(LISTFLAGS) $(SRCS-y) -o $@ $(LISTFLIBS)
+	$(CC) $(CFLAGS) $(INCLUDEFLAGS) $(SRCS-y) -o $@
 
 
 ifeq ($(shell uname),Linux)

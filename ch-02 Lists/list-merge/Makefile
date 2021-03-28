@@ -2,7 +2,7 @@
 APP = list_merge
 
 # all source are stored in SRCS-y
-SRCS-y := list_merge.c
+SRCS-y := list_merge.cpp
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -18,8 +18,9 @@ endif
 endif
 
 # Add flag
-LISTFLAGS += -I../list-adt
+LISTFLAGS += -I../list-adt -I../algorithm
 CFLAGS += -g -Wall -Wl,-rpath=../list-adt
+CC = g++
 
 $(APP): $(SRCS-y) Makefile 
 	$(CC) $(CFLAGS) $(LISTFLAGS) $(SRCS-y) -o $@ $(LISTFLIBS)

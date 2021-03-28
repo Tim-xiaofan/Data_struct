@@ -27,12 +27,12 @@ int main()
 	int i;
 	string s;
 	List<int> li(SIZE);
-	List<string> ls(SIZE);
+	List<string> ls(B, 7);
 
 	li.append_bulk(A, 4);
 	fprintf(stdout, "li(%d) : ", li.length());
 	li.show();
-	ls.append_bulk(B, 7);	
+	//ls.append_bulk(B, 7);	
 	fprintf(stdout, "ls(%d) : ", ls.length());
 	ls.show();
 
@@ -91,6 +91,12 @@ int main()
 					[](string s){return (s == "Saturday");});
 	cout << endl;
 	cout << "------- STL algorithms -------" << endl;
+
+	List<string> ls1 = ls, ls2;
+	show(ls1, "ls1 : ");
+	ls1.clear();
+	cout << "after clearing, ls1(" << ls1.length() << ") : ";
+	ls1.show();
 }
 
 template<typename T>

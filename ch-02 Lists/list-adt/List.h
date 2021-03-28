@@ -1,10 +1,9 @@
 /* 20210323 22:25, zyj, GuangDong*/
 //List.h
-#ifndef LIST_H
-#define LIST_H
-#include <cstdio>
 #include <iostream>
 #include <iterator>
+#ifndef LIST_H
+#define LIST_H
 
 template<typename Node>
 class iterator : public std::iterator<std::input_iterator_tag, Node>
@@ -30,9 +29,11 @@ class Node
 		typedef Item item_type;
 		Item _i;
 		Node *_next;
+	public:
 		Node():_next(nullptr){}
-		Node(const Item &i):_i(i), _next(nullptr){}
+		explicit Node(const Item &i):_i(i), _next(nullptr){}
 		Node(const Node &nd):_i(nd._i), _next(nd._next){}
+		Node & operator=(const Node & node) = default;
 		~Node(){};
 };
 
@@ -51,10 +52,16 @@ class List
 	public:
 		/** types*/
 		typedef iterator<node> input_iterator;
-		/** */
-		List(int size = DEFAULT_SIZE);
-		~List();
+		typedef Item item_type;
 
+		/** constructor and assignment operator*/
+		explicit List(int size = DEFAULT_SIZE);
+		List(const List & l);
+		List(const Item *is, int n);
+		List & operator=(const List &) = delete;
+		~List();
+		
+		/** interface*/
 		int length(void) const {return _length;}
 		int size(void) const {return _size;}
 		int current(void) const {return _current;}
@@ -70,6 +77,7 @@ class List
 		int search(const Item & i) const;
 		bool is_full(void) const {return (_length == _size);}
 		bool is_empty(void) const {return (_length == 0);}
+		void clear(void);
 
 		/** iterator methods*/
 		input_iterator begin(void) const {return _head->_next;}
@@ -96,9 +104,9 @@ operator++(int)/** i++, pre increment operator*/
 	return tmp;
 }
 
-template <typename Item>
+template <typename Item> 
 List<Item>::
-List(int size)
+List(int size) 
 {
 	_length = 0;
 	_size = size;
@@ -106,6 +114,22 @@ List(int size)
 	_head = new node();
 	_tail = _head;
 	_cursor = _head;
+}
+
+template <typename Item>
+List<Item>::
+List(const Item *is, int n):List(2 * n)
+{
+	append_bulk(is, n);
+}
+
+template <typename Item>
+List<Item>::
+List(const List & l):List(l._size)
+{
+	input_iterator it;
+	for(it = l.begin(); it != l.end(); ++it)
+	  append(*it);
 }
 
 template <typename Item>
@@ -122,6 +146,25 @@ List<Item>::
 	}
 }
 
+/** clear all items in list*/
+template <typename Item>
+void List<Item>::
+clear(void)
+{
+	node *p = _head->_next, *tmp;
+	/** free nodes*/
+	while(p)
+	{
+		tmp = p;
+		p = p->_next;
+		delete tmp;
+	}
+	_head->_next = nullptr;
+	_tail = _head;
+	_length = 0;
+	_current = -1;
+	_cursor = _head;
+}
 
 template <typename Item>
 typename List<Item>::node * List<Item>::
@@ -388,7 +431,7 @@ show(void)const
 
 	if(is_empty())
 	{
-		printf("empty list");
+		printf("EMPTY LIST!\n");
 		return;
 	}
 
