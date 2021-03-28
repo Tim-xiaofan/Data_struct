@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <string>
 #include <List.h>
+#include <algorithm>
+#include <iterator>
 #define SIZE 16
 
 static int A[4] = {3,5,8,11};
@@ -15,7 +17,9 @@ static std::string B[7]= {
 	"Thursday", 
 	"Friday", 
 	"Saturday"};
-void show(const List<int> &);
+
+template<typename T>
+void show(const List<T> &l, const std::string & info);
 
 int main()
 {
@@ -69,21 +73,32 @@ int main()
 		<< " :  " << ls.search(s)<< endl;
 
 	cout << "------- iterator -------" << endl;
-	List<string>::const_iterator it;
+	List<string>::input_iterator it;
 	for(it = ls.begin(); it != ls.end(); it++)
 	  cout << *it << " ";
 	cout << "\n";
 
-	show(li);
 	cout << "------- iterator -------" << endl << endl;
-	li.show();
+	//li.show();
+
+	/** STL algorithms*/
+	cout << "------- STL algorithms -------" << endl;
+	cout << "copy : \n";
+	show(ls, "ls : ");
+	show(li, "li : ");
+	cout << "count_if : " << 
+		count_if(ls.begin(), ls.end(),
+					[](string s){return (s == "Saturday");});
+	cout << endl;
+	cout << "------- STL algorithms -------" << endl;
 }
 
-void show(const List<int> &li)
+template<typename T>
+void show(const List<T> &l, const std::string & info)
 {
-	List<int>::const_iterator it;
-	for(it = li.begin(); it != li.end(); it++)
-	  std::cout << *it << " ";
+	std::cout << info;
+	std::ostream_iterator<T, char> out(std::cout, " ");
+	std::copy(l.begin(), l.end(), out);
 	std::cout << "\n";
 }
 
