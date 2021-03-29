@@ -1,8 +1,8 @@
 # binary name
-APP = sqlist_union
+APP = sqlist_merge
 
 # all source are stored in SRCS-y
-SRCS-y := sqlist_union.cpp
+SRCS-y := sqlist_merge.cpp
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -18,12 +18,12 @@ endif
 endif
 
 # Add flag
-INCLUDEFLAGS += -I../sqlist-adt -I../algorithm
-CFLAGS += -g -Wall -Wl,-rpath=../sqist-adt
+LISTFLAGS += -I../sqlist-adt -I../algorithm
+CFLAGS += -g -Wall -Wl,-rpath=../sqlist-adt
 CC = g++
 
 $(APP): $(SRCS-y) Makefile 
-	$(CC) $(CFLAGS) $(INCLUDEFLAGS) $(SRCS-y) -o $@
+	$(CC) $(CFLAGS) $(LISTFLAGS) $(SRCS-y) -o $@ $(LISTFLIBS)
 
 
 ifeq ($(shell uname),Linux)

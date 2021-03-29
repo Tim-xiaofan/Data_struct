@@ -27,6 +27,7 @@ int main()
 	int i;
 	string s;
 	SqList<int> li(SIZE);
+	fprintf(stdout, "li(%d, %d)\n", li.size(), li.length());
 	SqList<string> ls(B, 7);
 
 	li.append_bulk(A, 4);
@@ -35,20 +36,6 @@ int main()
 	//ls.append_bulk(B, 7);	
 	fprintf(stdout, "ls(%d) : ", ls.length());
 	ls.show();
-
-	li.set_cursor(0);
-	fprintf(stdout, "current pos : %d\n", li.current());
-	ls.set_cursor(5);
-	fprintf(stdout, "current pos : %d\n", ls.current());
-	ls.reset_cursor();
-	fprintf(stdout, "current pos : %d\n", ls.current());
-
-	while(li.get_next(i))
-	  fprintf(stdout, "%d ", i);
-	fprintf(stdout, "\n");
-	while(ls.get_next(s))
-	  fprintf(stdout, "%s ", s.c_str());
-	fprintf(stdout, "\n");
 
 	for(i = -1; i <= ls.length(); i++)
 	  if(ls.get_n(i, s)) 

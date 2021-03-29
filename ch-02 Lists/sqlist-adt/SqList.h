@@ -2,25 +2,25 @@
 //SqList.h
 #include <iostream>
 #include <iterator>
+#include <cstring> /** memset*/
 #ifndef LIST_H
 #define LIST_H
 
-//template<typename Item>
-//class iterator : public std::iterator<std::input_iterator_tag, Item>
-//{
-//	private:
-//		Item * _pi;
-//	public:
-//		iterator(Item * pi = nullptr) : _pi(pi) {}
-//		virtual const typename Item::item_type & 
-//			operator*() const{ return *_pi;}
-//		iterator & operator++(){++_pi; return *this};
-//		iterator operator++(int){iterator tmp = *this; _pi++; return tmp;}
-//		iterator & operator=(Item *pi){_pi = pi; return *this;}
-//		iterator & operator=(const iterator & it){_pi = it._pi; return *this;}
-//		bool operator==(const iterator & it) const {return (_pi == it._pi);}
-//		bool operator!=(const iterator & it) const {return (_pi != it._pi);}
-//};
+template<typename Item>
+class iterator : public std::iterator<std::input_iterator_tag, Item>
+{
+	private:
+		Item * _pi;
+	public:
+		iterator(Item * pi = nullptr) : _pi(pi) {}
+		virtual const Item & operator*() const{ return *_pi;}
+		iterator & operator++(){++_pi; return *this;};
+		iterator operator++(int){iterator tmp = *this; _pi++; return tmp;}
+		iterator & operator=(Item *pi){_pi = pi; return *this;}
+		iterator & operator=(const iterator & it){_pi = it._pi; return *this;}
+		bool operator==(const iterator & it) const {return (_pi == it._pi);}
+		bool operator!=(const iterator & it) const {return (_pi != it._pi);}
+};
 //
 //template <typename Item>
 //class Node
@@ -45,29 +45,26 @@ class SqList
     private:
 		enum {DEFAULT_SIZE = 16};
         int _size, _length;
-		Item *items;
+		Item *_items;
 	
 	/** methods*/
 	public:
 		/** types*/
-		typedef const Item *  input_iterator;
+		typedef iterator<Item> input_iterator;
 		typedef Item item_type;
 
 		/** constructor and assignment operator*/
-		explicit SqList(int size = DEFAULT_SIZE);
+		explicit SqList(int size = DEFAULT_SIZE):_size(size), _length(0)
+					{_items = new Item[size + 1];}
 		SqList(const SqList & l);
 		SqList(const Item *is, int n);
 		SqList & operator=(const SqList &) = delete;
-		~SqList();
+		~SqList(){delete [] _items;}
 		
 		/** interface*/
 		int length(void) const {return _length;}
 		int size(void) const {return _size;}
-		int current(void) const {return _current;}
-		bool set_cursor(int pos);
-		bool reset_cursor(void);
 		bool get_n(int pos, Item &i) const ;
-		bool get_next(Item &i);
 		bool del_n(int pos, Item &i);
 		bool insert_n(int pos, const Item & i);
 		bool append(const Item & i);
@@ -76,28 +73,20 @@ class SqList
 		int search(const Item & i) const;
 		bool is_full(void) const {return (_length == _size);}
 		bool is_empty(void) const {return (_length == 0);}
-		void clear(void);
+		void clear(void){ _length = 0;}
+
+		/** operators*/
+		const Item & operator[](int pos) const { return _items[pos];}
+		Item & operator[](int pos) { return _items[pos];}
 
 		/** iterator methods*/
-		input_iterator begin(void) const {return &items[0];}
-		input_iterator end(void) const {return &items[_length + 1];}
+		input_iterator begin(void) const {return &_items[0];}
+		input_iterator end(void) const {return &_items[_length];}
 	private:
-		node * locate_n(int pos);
 		bool out_bound(int pos)const{ return (pos < 0 || pos >= _length);}
 };
 
-template <typename Item> 
-SqList<Item>::
-SqList(int size) 
-{
-	_length = 0;
-	_size = size;
-	_current = -1;
-	_head = new node();
-	_tail = _head;
-	_cursor = _head;
-}
-
+/** */
 template <typename Item>
 SqList<Item>::
 SqList(const Item *is, int n):SqList(2 * n)
@@ -114,84 +103,6 @@ SqList(const SqList & l):SqList(l._size)
 	  append(*it);
 }
 
-template <typename Item>
-SqList<Item>::
-~SqList()
-{
-	node *p = _head, *tmp;
-	/** free nodes*/
-	while(p)
-	{
-		tmp = p;
-		p = p->_next;
-		delete tmp;
-	}
-}
-
-/** clear all items in list*/
-template <typename Item>
-void SqList<Item>::
-clear(void)
-{
-	node *p = _head->_next, *tmp;
-	/** free nodes*/
-	while(p)
-	{
-		tmp = p;
-		p = p->_next;
-		delete tmp;
-	}
-	_head->_next = nullptr;
-	_tail = _head;
-	_length = 0;
-	_current = -1;
-	_cursor = _head;
-}
-
-template <typename Item>
-typename SqList<Item>::node * SqList<Item>::
-locate_n(int pos)
-{
-	node *p;
-	int j;
-
-	p = _head;
-	for(j = 0; j <= pos; j ++)
-	  p = p->_next;
-
-	return p;
-}
-
-/** 
- * O(n)
- * set cursor to specified position
- **/
-template <typename Item>
-bool SqList<Item>::
-set_cursor(int pos)
-{
-	node *p;
-
-	if(pos >= _length)
-	  return false;
-
-	p = locate_n(pos);
-	_cursor = p;
-	_current = pos;
-	return true;
-}
-
-/**
- * time:O(1)
- * set cursor to head
- **/
-template <typename Item>
-bool SqList<Item>::
-reset_cursor(void)
-{
-	return set_cursor(-1);
-}
-
 /** 
  * time: O(1)
  * add an item at list tail
@@ -205,21 +116,7 @@ append(const Item & i)
 		fprintf(stderr, "list is full\n");
 		return false;
 	}
-
-	node *tmp = new node(i);
-	/** 0 --> 1*/
-	if(is_empty())
-	{
-		_head->_next = tmp;
-		_tail = tmp;
-		_length++;
-	}
-	else
-	{/** n --> n + 1*/
-		_tail->_next = tmp;;
-		_tail = tmp;
-		_length++;
-	}
+	_items[_length++] = i; 
 	return true;
 }
 
@@ -227,7 +124,7 @@ template <typename Item>
 bool SqList<Item>::
 append_bulk(const Item *is,  int n)
 {
-	int i;
+	int pos;
 
 	if(n > (_size - _length))
 	{
@@ -235,40 +132,19 @@ append_bulk(const Item *is,  int n)
 		return false;
 	}
 
-	for(i = 0; i < n; i++)
-		append(is[i]);
+	for(pos = 0; pos < n; pos++)
+		append(is[pos]);
 	return true;
 }
 
 /** 
- * time : O(1)
- * get next item of current position
- **/
-
-template <typename Item>
-bool SqList<Item>::
-get_next(Item & i)
-{
-	if(_current == _length -1 )
-	  return false;
-	_cursor = _cursor->_next;
-	_current++;
-	i = _cursor->_i;
-	return true;
-}
-
-
-/** 
- * time : O(n)
- * get nth item of list
+ * time : O(1) -- random access
+ * get nth item of list, with boundary check
  **/
 template <typename Item>
 bool SqList<Item>::
 get_n(int pos, Item & i) const
 {
-	int j;
-	node *p;
-
 	if(is_empty())
 		return false;
 	if(out_bound(pos))
@@ -277,11 +153,7 @@ get_n(int pos, Item & i) const
 		return false;
 	}
 
-	p = _head->_next;
-	for(j = 0; j < pos; j++)
-	  p = p->_next;
-	i = p->_i;
-
+	i = _items[pos];
 	return true;
 }
 
@@ -293,7 +165,6 @@ template <typename Item>
 bool SqList<Item>::
 del_n(int pos, Item &i)
 {
-	node *p, *tmp;
 	int j;
 
 	if(out_bound(pos))
@@ -301,34 +172,9 @@ del_n(int pos, Item &i)
 		fprintf(stderr, "ERROR : out of boundary\n");
 		return false;
 	}
-
-	/** 1--> 0 */
-	if(_length == 1)
-	{
-		i = _tail->_i;
-		delete _tail;
-		_tail = nullptr;
-		_head->_next = _tail;
-	}
-	else
-	{/** n --> n - 1*/
-		/** locate to i-1*/
-		p = _head;
-		for(j = 0; j < pos; j++)
-		  p = p->_next;
-
-		/** = operator*/
-		tmp = p->_next;
-		i = tmp->_i;
-		//fprintf(stdout, "rm item : ");
-		//item_show(*e);
-		//fprintf(stdout, "\n");
-
-		/** adjust and free node*/
-		p->_next = tmp->_next;
-		delete tmp;
-	}
-
+	i = _items[pos];
+	for(j = pos + 1; j < _length; j++)
+	  _items[j - 1] = _items[j];
 	_length--;
 	return true;
 }
@@ -341,7 +187,7 @@ template <typename Item>
 bool SqList<Item>::
 insert_n(int pos, const Item &i)
 {
-	node *tmp, *p;
+	int j;
 
 	if(is_full())
 	{
@@ -358,21 +204,11 @@ insert_n(int pos, const Item &i)
 	/** just add to tail*/
 	if(pos > _length) pos = _length;
 
-	tmp = new node(i);
+	/** move*/
+	for(j = _length - 1; j >= pos; --j)
+	  _items[j + 1] = _items[j];
 
-	/** 0 --> 1*/
-	if(is_empty())
-	{
-		_tail = tmp;
-		_head->_next = _tail;
-	}
-	else
-	{/** n --> n + 1*/
-		/** locate pos - 1*/
-		p = locate_n(pos - 1);
-		tmp->_next = p->_next;
-		p->_next = tmp;
-	}
+	_items[pos] = i;
 	_length++;
 	return true;
 }
@@ -386,20 +222,14 @@ search(const Item &i) const
 {
 	int pos;
 	bool found;
-	node * p;
 
 	found = false;
-	pos = 0;
-	p = _head;
-	while((p = p->_next))
-	{
-	  if(i == p->_i)
+	for(pos = 0; pos < _length; ++pos)
+	  if(_items[pos] == i)
 	  {
 		  found = true;
 		  break;
 	  }
-	  pos++;
-	}
 
 	if(found) return pos;
 	else return -1;
@@ -409,7 +239,7 @@ template <typename Item>
 void SqList<Item>::
 show(void)const
 {
-	node *p;
+	int pos;
 
 	if(is_empty())
 	{
@@ -417,12 +247,8 @@ show(void)const
 		return;
 	}
 
-	p = _head->_next;
-	while(p != NULL)
-	{
-		std::cout << p->_i << " ";
-		p = p->_next;
-	}
-	printf("\n");
+	for(pos = 0; pos < _length; pos++)
+	  std::cout << _items[pos] << " ";
+	std::cout << "\n";
 }
 #endif
