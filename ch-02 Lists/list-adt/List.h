@@ -89,7 +89,7 @@ class List
 
 template <typename Node>
 iterator<Node> & iterator<Node>::
-operator++()/** ++i, post increment operator*/
+operator++()/** ++i, pre increment operator*/
 {
 	_pn =  _pn->_next;
 	return *this;
@@ -97,7 +97,7 @@ operator++()/** ++i, post increment operator*/
 
 template <typename Node>
 iterator<Node> iterator<Node>::
-operator++(int)/** i++, pre increment operator*/
+operator++(int)/** i++, post increment operator*/
 {
 	iterator tmp;
 	_pn =  _pn->_next;

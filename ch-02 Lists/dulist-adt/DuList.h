@@ -1,5 +1,5 @@
-/* 20210323 22:25, zyj, GuangDong*/
-//List.h
+/* 20210329 20:13, zyj, GuangDong*/
+//DuList.h
 #include <iostream>
 #include <iterator>
 #ifndef LIST_H
@@ -8,7 +8,7 @@
 template<typename Node>
 class iterator : public std::iterator<std::input_iterator_tag, Node>
 {
-	private:
+	protected:
 		Node * _pn;
 	public:
 		iterator(Node * pn = nullptr) : _pn(pn) {}
@@ -17,9 +17,29 @@ class iterator : public std::iterator<std::input_iterator_tag, Node>
 		iterator & operator++();
 		iterator operator++(int);
 		iterator & operator=(Node *pn){_pn = pn; return *this;}
-		iterator & operator=(const iterator & it){_pn = it._pn; return *this;}
+		iterator & operator=(const iterator &) = default;
 		bool operator==(const iterator & it) const {return (_pn == it._pn);}
 		bool operator!=(const iterator & it) const {return (_pn != it._pn);}
+};
+
+template<typename Node>
+class bidirectional_itrator : public iterator<Node> 
+{
+	private:
+		typedef  iterator<Node> base;
+	public:
+		bidirectional_itrator(Node * pn = nullptr) : base(pn){}
+		bidirectional_itrator & operator=(Node *pn){ return base::operator=(pn);}
+		typename Node::item_type & 
+			operator*() { return base::_pn->_i;}
+		bidirectional_itrator & operator++(){return base::operator++();}
+		bidirectional_itrator & operator++(int){return base::operator++(0);}
+		/** pre decrement operator*/
+		bidirectional_itrator & 
+			operator--(){base::_pn = base::_pn->_prior; return *this;};
+		/** post decrement operator*/
+		bidirectional_itrator 
+			operator--(int){bidirectional_itrator tmp; base::_pn = base::_pn->_prior; return tmp;}
 };
 
 template <typename Item>
@@ -28,18 +48,17 @@ class Node
 	public:
 		typedef Item item_type;
 		Item _i;
-		Node *_next;
+		Node *_next, *_prior;
 	public:
-		Node():_next(nullptr){}
-		explicit Node(const Item &i):_i(i), _next(nullptr){}
-		Node(const Node &nd):_i(nd._i), _next(nd._next){}
+		Node(): _i(), _next(nullptr), _prior(nullptr){}
+		explicit Node(const Item &i):_i(i), _next(nullptr), _prior(nullptr){}
+		Node(const Node &nd):_i(nd._i), _next(nd._next), _prior(nd._prior){}
 		Node & operator=(const Node & node) = default;
 		~Node(){};
 };
 
-
 template<typename Item>
-class List
+class DuList
 {
     /** data*/
     private:
@@ -52,14 +71,15 @@ class List
 	public:
 		/** types*/
 		typedef iterator<node> input_iterator;
+		typedef bidirectional_itrator<node> bid_iterator;
 		typedef Item item_type;
 
 		/** constructor and assignment operator*/
-		explicit List(int size = DEFAULT_SIZE);
-		List(const List & l);
-		List(const Item *is, int n);
-		List & operator=(const List &) = delete;
-		~List();
+		explicit DuList(int size = DEFAULT_SIZE);
+		DuList(const DuList & l);
+		DuList(const Item *is, int n);
+		DuList & operator=(const DuList &) = delete;
+		~DuList();
 		
 		/** interface*/
 		int length(void) const {return _length;}
@@ -82,6 +102,8 @@ class List
 		/** iterator methods*/
 		input_iterator begin(void) const {return _head->_next;}
 		input_iterator end(void) const {return _tail->_next;}
+		bid_iterator rbegin(void) {return _tail;}
+		bid_iterator rend(void) {return _head->_prior;}
 	private:
 		node * locate_n(int pos);
 		bool out_bound(int pos)const{ return (pos < 0 || pos >= _length);}
@@ -105,8 +127,8 @@ operator++(int)/** i++, pre increment operator*/
 }
 
 template <typename Item> 
-List<Item>::
-List(int size) 
+DuList<Item>::
+DuList(int size) 
 {
 	_length = 0;
 	_size = size;
@@ -117,15 +139,15 @@ List(int size)
 }
 
 template <typename Item>
-List<Item>::
-List(const Item *is, int n):List(2 * n)
+DuList<Item>::
+DuList(const Item *is, int n):DuList(2 * n)
 {
 	append_bulk(is, n);
 }
 
 template <typename Item>
-List<Item>::
-List(const List & l):List(l._size)
+DuList<Item>::
+DuList(const DuList & l):DuList(l._size)
 {
 	input_iterator it;
 	for(it = l.begin(); it != l.end(); ++it)
@@ -133,8 +155,8 @@ List(const List & l):List(l._size)
 }
 
 template <typename Item>
-List<Item>::
-~List()
+DuList<Item>::
+~DuList()
 {
 	node *p = _head, *tmp;
 	/** free nodes*/
@@ -148,7 +170,7 @@ List<Item>::
 
 /** clear all items in list*/
 template <typename Item>
-void List<Item>::
+void DuList<Item>::
 clear(void)
 {
 	node *p = _head->_next, *tmp;
@@ -167,7 +189,7 @@ clear(void)
 }
 
 template <typename Item>
-typename List<Item>::node * List<Item>::
+typename DuList<Item>::node * DuList<Item>::
 locate_n(int pos)
 {
 	node *p;
@@ -185,7 +207,7 @@ locate_n(int pos)
  * set cursor to specified position
  **/
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 set_cursor(int pos)
 {
 	node *p;
@@ -204,7 +226,7 @@ set_cursor(int pos)
  * set cursor to head
  **/
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 reset_cursor(void)
 {
 	return set_cursor(-1);
@@ -215,7 +237,7 @@ reset_cursor(void)
  * add an item at list tail
  **/
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 append(const Item & i)
 {
 	if(is_full())
@@ -229,12 +251,14 @@ append(const Item & i)
 	if(is_empty())
 	{
 		_head->_next = tmp;
+		tmp->_prior = _head;
 		_tail = tmp;
 		_length++;
 	}
 	else
 	{/** n --> n + 1*/
-		_tail->_next = tmp;;
+		_tail->_next = tmp;
+		tmp->_prior = _tail; 
 		_tail = tmp;
 		_length++;
 	}
@@ -242,7 +266,7 @@ append(const Item & i)
 }
 
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 append_bulk(const Item *is,  int n)
 {
 	int i;
@@ -264,7 +288,7 @@ append_bulk(const Item *is,  int n)
  **/
 
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 get_next(Item & i)
 {
 	if(_current == _length -1 )
@@ -281,7 +305,7 @@ get_next(Item & i)
  * get nth item of list
  **/
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 get_n(int pos, Item & i) const
 {
 	int j;
@@ -308,7 +332,7 @@ get_n(int pos, Item & i) const
  * delete nth item of list
  **/
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 del_n(int pos, Item &i)
 {
 	node *p, *tmp;
@@ -326,7 +350,16 @@ del_n(int pos, Item &i)
 		i = _tail->_i;
 		delete _tail;
 		_tail = nullptr;
-		_head->_next = _tail;
+		_head->_next = nullptr;
+	}
+	else if(_length - 1 == pos)
+	{
+		tmp = _tail;
+		p = tmp->_prior;
+		p->_next = nullptr;
+		_tail = p;
+		i = tmp->_i;
+		delete tmp;
 	}
 	else
 	{/** n --> n - 1*/
@@ -344,9 +377,9 @@ del_n(int pos, Item &i)
 
 		/** adjust and free node*/
 		p->_next = tmp->_next;
+		tmp->_next->_prior = p;
 		delete tmp;
 	}
-
 	_length--;
 	return true;
 }
@@ -356,7 +389,7 @@ del_n(int pos, Item &i)
  * insert an item at nth
  **/
 template <typename Item>
-bool List<Item>::
+bool DuList<Item>::
 insert_n(int pos, const Item &i)
 {
 	node *tmp, *p;
@@ -381,14 +414,23 @@ insert_n(int pos, const Item &i)
 	/** 0 --> 1*/
 	if(is_empty())
 	{
+		_head ->_next = tmp;
+		tmp->_prior = _head;
 		_tail = tmp;
-		_head->_next = _tail;
+	}
+	else if(pos == _length)
+	{
+		_tail->_next = tmp;
+		tmp->_prior = _tail;
+		_tail = tmp;
 	}
 	else
 	{/** n --> n + 1*/
 		/** locate pos - 1*/
 		p = locate_n(pos - 1);
 		tmp->_next = p->_next;
+		tmp->_prior = p;
+		p->_next->_prior = tmp;
 		p->_next = tmp;
 	}
 	_length++;
@@ -399,7 +441,7 @@ insert_n(int pos, const Item &i)
   * time: O(n)
   * @return -1 indicates item is not in list , or return index*/
 template <typename Item>
-int List<Item>::
+int DuList<Item>::
 search(const Item &i) const
 {
 	int pos;
@@ -424,7 +466,7 @@ search(const Item &i) const
 }
 
 template <typename Item>
-void List<Item>::
+void DuList<Item>::
 show(void)const
 {
 	node *p;

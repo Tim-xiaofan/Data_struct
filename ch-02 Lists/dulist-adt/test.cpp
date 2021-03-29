@@ -18,16 +18,16 @@ static std::string B[7]= {
 	"Friday", 
 	"Saturday"};
 
-template<typename T>
-void show(const List<T> &l, const std::string & info);
+template<typename List>
+void show(const List & l, const std::string & info);
 
 int main()
 {
 	using namespace std;
 	int i;
 	string s;
-	List<int> li(SIZE);
-	List<string> ls(B, 7);
+	DuList<int> li(SIZE);
+	DuList<string> ls(B, 7);
 
 	li.append_bulk(A, 4);
 	fprintf(stdout, "li(%d) : ", li.length());
@@ -73,9 +73,14 @@ int main()
 		<< " :  " << ls.search(s)<< endl;
 
 	cout << "------- iterator -------" << endl;
-	List<string>::input_iterator it;
-	for(it = ls.begin(); it != ls.end(); it++)
+	DuList<string>::input_iterator it;
+	for(it = ls.begin(); it != ls.end(); ++it)
 	  cout << *it << " ";
+	cout << "\n";
+
+	DuList<string>::bid_iterator bit;
+	for(bit = ls.rbegin(); bit != ls.rend(); --bit)
+	  cout << *bit << " ";
 	cout << "\n";
 
 	cout << "------- iterator -------" << endl << endl;
@@ -92,19 +97,18 @@ int main()
 	cout << endl;
 	cout << "------- STL algorithms -------" << endl;
 
-	List<string> ls1 = ls, ls2;
+	DuList<string> ls1 = ls, ls2;
 	show(ls1, "ls1 : ");
 	ls1.clear();
 	cout << "after clearing, ls1(" << ls1.length() << ") : ";
 	ls1.show();
 }
 
-template<typename T>
-void show(const List<T> &l, const std::string & info)
+template<typename List>
+void show(const List & l, const std::string & info)
 {
 	std::cout << info;
-	std::ostream_iterator<T, char> out(std::cout, " ");
+	std::ostream_iterator<typename List::item_type, char> out(std::cout, " ");
 	std::copy(l.begin(), l.end(), out);
 	std::cout << "\n";
 }
-
