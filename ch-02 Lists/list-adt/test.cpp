@@ -77,6 +77,12 @@ int main()
 	for(it = ls.begin(); it != ls.end(); it++)
 	  cout << *it << " ";
 	cout << "\n";
+	List<string>::fwd_iterator fit = ls.begin();
+	*fit = B[6];
+	
+	List<int>::fwd_iterator it1;
+	for(it1 = li.begin(); it1 != li.end(); it1++)
+	   (*it1) = 5;
 
 	cout << "------- iterator -------" << endl << endl;
 	//li.show();
@@ -107,4 +113,3 @@ void show(const List<T> &l, const std::string & info)
 	std::copy(l.begin(), l.end(), out);
 	std::cout << "\n";
 }
-

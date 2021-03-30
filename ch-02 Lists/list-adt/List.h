@@ -54,6 +54,7 @@ class List
 	public:
 		/** types*/
 		typedef iterator<node> input_iterator;
+		typedef forward_iterator<node> fwd_iterator;
 		typedef Item item_type;
 
 		/** constructor and assignment operator*/
@@ -82,29 +83,14 @@ class List
 		void clear(void);
 
 		/** iterator methods*/
-		input_iterator begin(void) const {return _head->_next;}
+		input_iterator  begin(void) const {return _head->_next;}
 		input_iterator end(void) const {return _tail->_next;}
+		fwd_iterator begin(void) {return _head->_next;}
+		fwd_iterator end(void)  {return _tail->_next;}
 	private:
 		node * locate_n(int pos);
 		bool out_bound(int pos)const{ return (pos < 0 || pos >= _length);}
 };
-
-template <typename Node>
-iterator<Node> & iterator<Node>::
-operator++()/** ++i, pre increment operator*/
-{
-	_pn =  _pn->_next;
-	return *this;
-}
-
-template <typename Node>
-iterator<Node> iterator<Node>::
-operator++(int)/** i++, post increment operator*/
-{
-	iterator tmp;
-	_pn =  _pn->_next;
-	return tmp;
-}
 
 template <typename Item> 
 List<Item>::
