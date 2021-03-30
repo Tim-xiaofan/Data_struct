@@ -1,41 +1,43 @@
 /* 20210323 22:25, zyj, GuangDong*/
 //List.h
-#include <iostream>
-#include <iterator>
 #ifndef LIST_H
 #define LIST_H
+#include <iostream>
+#include <iterator>
+#include "../node/Node.h"
+#include <../iterator/Iterator.h>
 
-template<typename Node>
-class iterator : public std::iterator<std::input_iterator_tag, Node>
-{
-	private:
-		Node * _pn;
-	public:
-		iterator(Node * pn = nullptr) : _pn(pn) {}
-		virtual const typename Node::item_type & 
-			operator*() const  { return _pn->_i;}
-		iterator & operator++();
-		iterator operator++(int);
-		iterator & operator=(Node *pn){_pn = pn; return *this;}
-		iterator & operator=(const iterator & it){_pn = it._pn; return *this;}
-		bool operator==(const iterator & it) const {return (_pn == it._pn);}
-		bool operator!=(const iterator & it) const {return (_pn != it._pn);}
-};
+//template<typename Node>
+//class iterator : public std::iterator<std::input_iterator_tag, Node>
+//{
+//	private:
+//		Node * _pn;
+//	public:
+//		iterator(Node * pn = nullptr) : _pn(pn) {}
+//		virtual const typename Node::item_type & 
+//			operator*() const  { return _pn->_i;}
+//		iterator & operator++();
+//		iterator operator++(int);
+//		iterator & operator=(Node *pn){_pn = pn; return *this;}
+//		iterator & operator=(const iterator & it){_pn = it._pn; return *this;}
+//		bool operator==(const iterator & it) const {return (_pn == it._pn);}
+//		bool operator!=(const iterator & it) const {return (_pn != it._pn);}
+//};
 
-template <typename Item>
-class Node
-{
-	public:
-		typedef Item item_type;
-		Item _i;
-		Node *_next;
-	public:
-		Node():_next(nullptr){}
-		explicit Node(const Item &i):_i(i), _next(nullptr){}
-		Node(const Node &nd):_i(nd._i), _next(nd._next){}
-		Node & operator=(const Node & node) = default;
-		~Node(){};
-};
+//template <typename Item>
+//class Node
+//{
+//	public:
+//		typedef Item item_type;
+//		Item _i;
+//		Node *_next;
+//	public:
+//		Node():_next(nullptr){}
+//		explicit Node(const Item &i):_i(i), _next(nullptr){}
+//		Node(const Node &nd):_i(nd._i), _next(nd._next){}
+//		Node & operator=(const Node & node) = default;
+//		~Node(){};
+//};
 
 
 template<typename Item>

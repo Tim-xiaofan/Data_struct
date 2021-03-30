@@ -1,68 +1,56 @@
 /* 20210329 20:13, zyj, GuangDong*/
 //DuList.h
+#ifndef DULIST_H
+#define DULIST_H
 #include <iostream>
 #include <iterator>
-#ifndef LIST_H
-#define LIST_H
+#include <../node/Node.h>
+#include <../iterator/Iterator.h>
 
-template<typename Node>
-class iterator : public std::iterator<std::input_iterator_tag, Node>
-{
-	protected:
-		Node * _pn;
-	public:
-		iterator(Node * pn = nullptr) : _pn(pn) {}
-		virtual const typename Node::item_type & 
-			operator*() const  { return _pn->_i;}
-		iterator & operator++();
-		iterator operator++(int);
-		iterator & operator=(Node *pn){_pn = pn; return *this;}
-		iterator & operator=(const iterator &) = default;
-		bool operator==(const iterator & it) const {return (_pn == it._pn);}
-		bool operator!=(const iterator & it) const {return (_pn != it._pn);}
-};
+//template<typename Node>
+//class iterator : public std::iterator<std::input_iterator_tag, Node>
+//{
+//	protected:
+//		Node * _pn;
+//	public:
+//		iterator(Node * pn = nullptr) : _pn(pn) {}
+//		virtual const typename Node::item_type & 
+//			operator*() const  { return _pn->_i;}
+//		iterator & operator++();
+//		iterator operator++(int);
+//		iterator & operator=(Node *pn){_pn = pn; return *this;}
+//		iterator & operator=(const iterator &) = default;
+//		bool operator==(const iterator & it) const {return (_pn == it._pn);}
+//		bool operator!=(const iterator & it) const {return (_pn != it._pn);}
+//};
+//
+//template<typename Node>
+//class bidirectional_itrator : public iterator<Node> 
+//{
+//	private:
+//		typedef  iterator<Node> base;
+//	public:
+//		bidirectional_itrator(Node * pn = nullptr) : base(pn){}
+//		bidirectional_itrator & operator=(Node *pn){ return base::operator=(pn);}
+//		typename Node::item_type & 
+//			operator*() { return base::_pn->_i;}
+//		bidirectional_itrator & operator++(){return base::operator++();}
+//		bidirectional_itrator & operator++(int){return base::operator++(0);}
+//		/** pre decrement operator*/
+//		bidirectional_itrator & 
+//			operator--(){base::_pn = base::_pn->_prior; return *this;};
+//		/** post decrement operator*/
+//		bidirectional_itrator 
+//			operator--(int){bidirectional_itrator tmp; base::_pn = base::_pn->_prior; return tmp;}
+//};
 
-template<typename Node>
-class bidirectional_itrator : public iterator<Node> 
-{
-	private:
-		typedef  iterator<Node> base;
-	public:
-		bidirectional_itrator(Node * pn = nullptr) : base(pn){}
-		bidirectional_itrator & operator=(Node *pn){ return base::operator=(pn);}
-		typename Node::item_type & 
-			operator*() { return base::_pn->_i;}
-		bidirectional_itrator & operator++(){return base::operator++();}
-		bidirectional_itrator & operator++(int){return base::operator++(0);}
-		/** pre decrement operator*/
-		bidirectional_itrator & 
-			operator--(){base::_pn = base::_pn->_prior; return *this;};
-		/** post decrement operator*/
-		bidirectional_itrator 
-			operator--(int){bidirectional_itrator tmp; base::_pn = base::_pn->_prior; return tmp;}
-};
-
-template <typename Item>
-class Node
-{
-	public:
-		typedef Item item_type;
-		Item _i;
-		Node *_next, *_prior;
-	public:
-		Node(): _i(), _next(nullptr), _prior(nullptr){}
-		explicit Node(const Item &i):_i(i), _next(nullptr), _prior(nullptr){}
-		Node(const Node &nd):_i(nd._i), _next(nd._next), _prior(nd._prior){}
-		Node & operator=(const Node & node) = default;
-		~Node(){};
-};
 
 template<typename Item>
 class DuList
 {
     /** data*/
     private:
-		typedef Node<Item> node;
+		typedef DuNode<Item> node;
 		enum {DEFAULT_SIZE = 16};
         int _size, _length, _current;
         node *_head, *_tail, *_cursor;

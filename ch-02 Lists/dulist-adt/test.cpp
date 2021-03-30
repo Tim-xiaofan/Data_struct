@@ -43,12 +43,14 @@ int main()
 	ls.reset_cursor();
 	fprintf(stdout, "current pos : %d\n", ls.current());
 
+	cout << "------- get next -------" << endl;
 	while(li.get_next(i))
 	  fprintf(stdout, "%d ", i);
 	fprintf(stdout, "\n");
 	while(ls.get_next(s))
 	  fprintf(stdout, "%s ", s.c_str());
 	fprintf(stdout, "\n");
+	cout << "------- get next -------" << endl;
 
 	for(i = -1; i <= ls.length(); i++)
 	  if(ls.get_n(i, s)) 
@@ -69,8 +71,8 @@ int main()
 	
 	cout << "enter the content to search in list ls : ";
 	cin >>  s;
-	cout << "result of searching " << s 
-		<< " :  " << ls.search(s)<< endl;
+	cout << "result of searching \"" << s 
+		<< "\" :  " << ls.search(s)<< endl;
 
 	cout << "------- iterator -------" << endl;
 	DuList<string>::input_iterator it;
@@ -91,7 +93,7 @@ int main()
 	cout << "copy : \n";
 	show(ls, "ls : ");
 	show(li, "li : ");
-	cout << "count_if : " << 
+	cout << "count_if(==\"Saturday\") : " << 
 		count_if(ls.begin(), ls.end(),
 					[](string s){return (s == "Saturday");});
 	cout << endl;
