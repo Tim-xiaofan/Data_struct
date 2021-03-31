@@ -14,8 +14,8 @@ typedef Polymial<item> P;
 
 static item is[4] = {
 	{1, 0},
-	{2, 1},
 	{3, 2},
+	{2, 1},
 	{4, 3}};
 
 int main()
@@ -23,4 +23,8 @@ int main()
 	using namespace std;
 	P p(is, 4);
 	p.show();
+	P::input_iterator it;
+	for(it = p.begin(); it != p.end(); ++it)
+	  cout << *it << " ";
+	cout << endl;
 }

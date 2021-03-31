@@ -362,7 +362,12 @@ insert_n(int pos, const Item &i)
 	}
 
 	/** just add to tail*/
-	if(pos > _length) pos = _length;
+	if(pos >= _length) 
+	{
+		pos = _length;
+		append(i);
+		return true;
+	}
 
 	tmp = new node(i);
 

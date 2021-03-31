@@ -63,11 +63,17 @@ put(const Item & i)
 {
 	int pos;
 	typename base::input_iterator it;
+	pos = 0;
 	for(it = base::begin(); it != base::end(); ++it)
 	{
-		if(i.expn > (*it).expn) pos++;
+		if(i.expn > (*it).expn) 
+		{
+			std::cout << i.expn << " > " << (*it).expn << std::endl;
+			pos++;
+		}
 		else if(i.expn == (*it).expn) return false;
 	}
+	std::cout << "pos = " << pos << std:: endl;
 	return base::insert_n(pos, i);
 }
 
