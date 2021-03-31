@@ -13,18 +13,22 @@ typedef Item<float, int> item;
 typedef Polymial<item> P;
 
 static item is[4] = {
-	{1, 0},
-	{3, 2},
-	{2, 1},
-	{4, 3}};
+	{7, 0},
+	{3, 1},
+	{9, 8},
+	{5, 17}};
+
+static item is1[3] = {
+	{8, 1},
+	{22, 7},
+	{-9, 8}};
 
 int main()
 {
 	using namespace std;
-	P p(is, 4);
+	P p(is, 4), p1(is1, 3), p2;
 	p.show();
-	P::input_iterator it;
-	for(it = p.begin(); it != p.end(); ++it)
-	  cout << *it << " ";
-	cout << endl;
+	p1.show();
+	cout << "p + p1 : ";
+	(p + p1).show();
 }

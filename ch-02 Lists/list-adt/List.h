@@ -60,6 +60,14 @@ class List
 		/** constructor and assignment operator*/
 		explicit List(int size = DEFAULT_SIZE);
 		List(const List & l);
+		List(List && l):
+			_size(l._size), _length(l._length), _current(l._current),
+			_head(l._head), _tail(l._tail), _cursor(l._cursor)
+		{
+			std::cout << "move constructor\n";
+			l._size = l._length = l._current = 0;
+			l._head = l._tail = l._cursor = nullptr;
+		}
 		List(const Item *is, int n);
 		List & operator=(const List &) = delete;
 		~List();
@@ -115,6 +123,7 @@ template <typename Item>
 List<Item>::
 List(const List & l):List(l._size)
 {
+	std::cout << "copy constructor\n";
 	input_iterator it;
 	for(it = l.begin(); it != l.end(); ++it)
 	  append(*it);

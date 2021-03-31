@@ -25,20 +25,28 @@ class Polymial: private List<Item>
 {
 	private:
 		typedef List<Item> base;
+		enum {default_size = 16};
+	private:
+		bool append(const Item & i){return base::append(i);}
 	public:
 		typedef typename base::input_iterator input_iterator;
 		typedef typename base::fwd_iterator fwd_iterator;
+		Polymial(int size = default_size):base(size){}
 		Polymial(const Item *is, int ct);
-		Polymial(const Polymial & P);
+		Polymial(Polymial && P) {base((base &&)P);};
+		Polymial(const Polymial & P) = delete;
 		~Polymial(){}
 		Polymial & operator=(const Polymial & P);
-		Polymial operator+(const Polymial & p) const;
-		Polymial operator-(const Polymial & p) const;
-		Polymial operator*(const Polymial & p) const;
+		Polymial operator+(const Polymial & P) const;
+		Polymial operator-(const Polymial & P) const;
+		Polymial operator*(const Polymial & P) const;
+		int length() const {return base::length();}
+		int size() const {return base::size();}
 		bool puts(const Item *is, int ct);
 		bool put(const Item &i);
 		bool get_n(int pos, Item & i) const;
 		void show()const{base::show();}
+		void clear(){base::clear();}
 		/** */
 		input_iterator begin(void) const {return base::begin();}
 		input_iterator end(void) const {return base::end();}
@@ -56,7 +64,69 @@ Polymial(const Item *is, int ct):base::List(2 * ct)
 	  put(is[j]);
 }
 
-/** put item into list according expn*/
+
+/**  time:O(n) **/
+template<typename Item>
+Polymial<Item> & Polymial<Item>::
+operator=(const Polymial & P)
+{
+	input_iterator it;
+	/** self check*/
+	if(this == & P) return *this;
+
+	/** clear all items currently*/
+	base::clear();
+	for(it = P.begin(); it != P.end(); ++it)
+	  base::append(*it);//O(1)
+	return *this;
+}
+
+/**  time:O(n + n) **/
+template<typename Item>
+Polymial<Item> Polymial<Item>::
+operator+(const Polymial & P) const
+{
+	Polymial<Item> sum(length() + P.length());
+	input_iterator it1 = begin(), it2 = P.begin();
+
+	while(it1 != end() && it2 != P.end())
+	{
+		  if((*it1).expn < (*it2).expn) 
+		  {
+			  sum.append(*it1);
+			  ++it1;
+		  }
+		  else if((*it1).expn > (*it2).expn) 
+		  {
+			  sum.append(*it2);
+			  ++it2;
+		  }
+		  else 
+		  {/** same expn*/
+			  if((*it1).coef + (*it2).coef != 0)
+				sum.append(Item((*it1).coef + (*it2).coef, (*it1).expn));
+			  ++it1;
+			  ++it2;
+		  }
+	}
+
+	/** handle remaining*/
+	while(it1 != end() )
+	{
+		sum.append(*it1);
+		++it1;
+	}
+	while(it2 != P.end() )
+	{
+		sum.append(*it2);
+		++it2;
+	}
+	return (sum);
+}
+
+/** put item into list according expn and keep items in order
+ *	time:O(n)
+ **/
 template<typename Item>
 bool Polymial<Item>::
 put(const Item & i)
@@ -68,12 +138,12 @@ put(const Item & i)
 	{
 		if(i.expn > (*it).expn) 
 		{
-			std::cout << i.expn << " > " << (*it).expn << std::endl;
+			//std::cout << i.expn << " > " << (*it).expn << std::endl;
 			pos++;
 		}
 		else if(i.expn == (*it).expn) return false;
 	}
-	std::cout << "pos = " << pos << std:: endl;
+	//std::cout << "pos = " << pos << std:: endl;
 	return base::insert_n(pos, i);
 }
 
