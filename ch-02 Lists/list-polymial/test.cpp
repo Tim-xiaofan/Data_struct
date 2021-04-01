@@ -30,8 +30,8 @@ int main()
 	p.show();
 	p1.show();
 	p2 = p1 + p;
-	cout << p2.size() << endl;
-	cout << p2.length() << endl;
+	//cout << p2.size() << endl;
+	//cout << p2.length() << endl;
 
 	cout << "p + p1 : ";
 	p2.show();

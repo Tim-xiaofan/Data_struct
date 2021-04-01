@@ -43,6 +43,7 @@ class Polymial: private List<Item>
 		Polymial(const Polymial & P) = delete;
 		~Polymial(){/**std::cout << "~Polymial()\n";*/}
 		Polymial & operator=(const Polymial & P);
+		Polymial & operator=(Polymial && P);
 		Polymial operator+(const Polymial & P) const;
 		Polymial operator-(const Polymial & P) const;
 		Polymial operator*(const Polymial & P) const;
@@ -71,7 +72,10 @@ Polymial(const Item *is, int ct):base::List(2 * ct)
 }
 
 
-/**  time:O(n) **/
+/**
+ * time:O(n)
+ * normal assignment operator
+ **/
 template<typename Item>
 Polymial<Item> & Polymial<Item>::
 operator=(const Polymial & P)
@@ -84,6 +88,20 @@ operator=(const Polymial & P)
 	base::clear();
 	for(it = P.begin(); it != P.end(); ++it)
 	  base::append(*it);//O(1)
+	return *this;
+}
+
+
+/**
+ * time:O(1)
+ * move assignment operator
+ **/
+template<typename Item>
+Polymial<Item> & Polymial<Item>::
+operator=(Polymial && P)
+{
+	base::operator=(std::move(P));
+	std::cout << "Polymial : move assignment\n";
 	return *this;
 }
 

@@ -62,8 +62,8 @@ class List
 		explicit List(int size = DEFAULT_SIZE);
 		List(const List & l);
 		List(List && l):
-			_size(l._size), _length(l._length), _current(l._current),
-			_head(l._head), _tail(l._tail), _cursor(l._cursor)
+			_size(l._size), _length(l._length), _current(-1),
+			_head(l._head), _tail(l._tail), _cursor(_head)
 		{
 			//std::cout << "-------List-------\n";
 			//std::cout << "List : move constructor\n";
@@ -87,6 +87,7 @@ class List
 		}
 		List(const Item *is, int n);
 		List & operator=(const List &) = delete;
+		List & operator=(List && l);
 		
 		/** interface*/
 		int length(void) const {return _length;}
@@ -161,7 +162,32 @@ List<Item>::
 	}
 }
 
-/** clear all items in list*/
+template <typename Item>
+List<Item> & List<Item> :: 
+operator=(List && l)
+{
+	std::cout << "List:move assignment\n";
+	clear();/*O(1)*/
+	delete _head;
+	_head = l._head;
+	_tail = l._tail;
+	_cursor = _head;
+	_length = l._length;
+	_size = l._size;
+	_current = -1;
+	l._size = 0;
+	l._length = 0;
+	l._current = -1;
+	l._head = nullptr; 
+	l._tail = nullptr;
+	l._cursor = nullptr;
+	return *this;
+}
+
+/** 
+ * clear all items in list
+ * time:O(n)
+ */
 template <typename Item>
 void List<Item>::
 clear(void)
