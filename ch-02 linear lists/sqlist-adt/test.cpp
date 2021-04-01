@@ -79,11 +79,13 @@ int main()
 	cout << endl;
 	cout << "------- STL algorithms -------" << endl;
 
-	SqList<string> ls1 = ls, ls2;
+	SqList<string> ls1 = ls, ls2, ls3(ls);
 	show(ls1, "ls1 : ");
 	ls1.clear();
 	cout << "after clearing, ls1(" << ls1.length() << ") : ";
 	ls1.show();
+
+	show(ls3, "ls3 : ");
 }
 
 template<typename List>

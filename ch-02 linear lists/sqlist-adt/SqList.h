@@ -98,6 +98,7 @@ template <typename Item>
 SqList<Item>::
 SqList(const SqList & l):SqList(l._size)
 {
+	_length = l._length;
 	input_iterator it;
 	for(it = l.begin(); it != l.end(); ++it)
 	  append(*it);

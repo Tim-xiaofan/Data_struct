@@ -20,3 +20,12 @@ ch-02 Lists/sqlist-adt/core
 ch-02 Lists/dulist-adt/test
 ch-02 Lists/list-polymial/test
 ch-02 Lists/list-polymial/core
+ch-02 linear lists/dulist-adt/test
+ch-02 linear lists/list-polymial/core
+ch-02 linear lists/list-polymial/test
+ch-02 linear lists/sqlist-adt/test
+ch-02 linear lists/list-adt/test
+ch-02 linear lists/list-merge/list_merge
+ch-02 linear lists/sqlist-union/sqlist_union
+ch-02 linear lists/list-union/list_union
+ch-03 stack and queue/sqstack-adt/test
