@@ -33,9 +33,15 @@ class Polymial: private List<Item>
 		typedef typename base::fwd_iterator fwd_iterator;
 		Polymial(int size = default_size):base(size){}
 		Polymial(const Item *is, int ct);
-		Polymial(Polymial && P) {base((base &&)P);};
+		Polymial(Polymial && P) :base((std::move(P))) 
+		{
+			//std::cout << "-------Polymial-------\n";
+			//std::cout << "Polymial : move\n";
+			//show();
+			//std::cout << "-------Polymial-------\n";
+		}
 		Polymial(const Polymial & P) = delete;
-		~Polymial(){}
+		~Polymial(){/**std::cout << "~Polymial()\n";*/}
 		Polymial & operator=(const Polymial & P);
 		Polymial operator+(const Polymial & P) const;
 		Polymial operator-(const Polymial & P) const;
@@ -121,6 +127,8 @@ operator+(const Polymial & P) const
 		sum.append(*it2);
 		++it2;
 	}
+	//std::cout << "sum ：";
+	//sum.show();
 	return (sum);
 }
 

@@ -58,19 +58,35 @@ class List
 		typedef Item item_type;
 
 		/** constructor and assignment operator*/
+		~List();
 		explicit List(int size = DEFAULT_SIZE);
 		List(const List & l);
 		List(List && l):
 			_size(l._size), _length(l._length), _current(l._current),
 			_head(l._head), _tail(l._tail), _cursor(l._cursor)
 		{
-			std::cout << "move constructor\n";
-			l._size = l._length = l._current = 0;
-			l._head = l._tail = l._cursor = nullptr;
+			//std::cout << "-------List-------\n";
+			//std::cout << "List : move constructor\n";
+			//std::cout << "test\n";
+			//std::cout << "oringinal: " << l._size << " " << l._length <<
+			//	" " << l._current << std::endl;
+			//std::cout << "oringinal: " << (void *)l._head << " " << 
+			//	(void *)l._tail << " " << (void *)l._cursor << std::endl;
+			l._size = 0;
+			l._length = 0;
+			l._current = 0;
+			l._head = nullptr; 
+			l._tail = nullptr;
+			l._cursor = nullptr;
+			//std::cout << "dst: " << l._size << " " << l._length <<
+			//	" " << l._current << std::endl;
+			//std::cout << "dst: " << (void *)_head << " " << 
+			//	(void *)_tail << " " << (void *)_cursor << std::endl;
+			//show();
+			//std::cout << "-------List-------\n";
 		}
 		List(const Item *is, int n);
 		List & operator=(const List &) = delete;
-		~List();
 		
 		/** interface*/
 		int length(void) const {return _length;}
@@ -123,7 +139,7 @@ template <typename Item>
 List<Item>::
 List(const List & l):List(l._size)
 {
-	std::cout << "copy constructor\n";
+	//std::cout << "copy constructor\n";
 	input_iterator it;
 	for(it = l.begin(); it != l.end(); ++it)
 	  append(*it);
@@ -134,6 +150,8 @@ List<Item>::
 ~List()
 {
 	node *p = _head, *tmp;
+	//std::cout << "~List: _head = " 
+	//	<< _head << std::endl;
 	/** free nodes*/
 	while(p)
 	{

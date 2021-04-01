@@ -29,6 +29,10 @@ int main()
 	P p(is, 4), p1(is1, 3), p2;
 	p.show();
 	p1.show();
+	p2 = p1 + p;
+	cout << p2.size() << endl;
+	cout << p2.length() << endl;
+
 	cout << "p + p1 : ";
-	(p + p1).show();
+	p2.show();
 }
