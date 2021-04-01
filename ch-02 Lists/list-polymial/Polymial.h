@@ -4,6 +4,7 @@
 #define POLYMIAL_H
 #include "../list-adt/List.h"
 #include <iostream>
+#include <cstdlib>
 
 template<typename T1 = float, typename T2 = int>
 struct Item
@@ -11,7 +12,40 @@ struct Item
 	T1 coef;
 	T2 expn;
 	Item(T1 c = 0, T2 e = 0):coef(c), expn(e){}
+	Item & operator-(void){coef = -coef; return *this;};
+	Item operator-(void)const{return Item(-coef, expn);};
+	Item operator-(const Item & i) const;
+	Item operator+(const Item & i) const;
+	Item operator*(const Item & i) const{return Item(coef * i.coef, expn + i.expn);};
 };
+
+template<typename T1, typename T2>
+Item<T1, T2> Item<T1, T2>::
+operator-(const Item & i) const
+{
+	if(i.expn == expn)
+	  return Item(coef - i.coef, expn);
+	else
+	{
+		std::cerr << "operator- : not same expn, first is "
+			<< expn <<" and second is "<< i.expn <<"\n";
+		abort();
+	}
+}
+
+template<typename T1, typename T2>
+Item<T1, T2> Item<T1, T2>::
+operator+(const Item & i) const
+{
+	if(i.expn == expn)
+	  return Item(coef + i.coef, expn);
+	else
+	{
+		std::cerr << "operator+ : not same expn, first is "
+			<< expn <<" and second is "<< i.expn <<"\n";
+		abort();
+	}
+}
 
 template<typename T1, typename T2>
 std::ostream & operator<<(std::ostream & os, const Item<T1, T2> & it)
@@ -36,7 +70,7 @@ class Polymial: private List<Item>
 		Polymial(Polymial && P) :base((std::move(P))) 
 		{
 			//std::cout << "-------Polymial-------\n";
-			//std::cout << "Polymial : move\n";
+			std::cout << "Polymial : move constructor\n";
 			//show();
 			//std::cout << "-------Polymial-------\n";
 		}
@@ -44,9 +78,16 @@ class Polymial: private List<Item>
 		~Polymial(){/**std::cout << "~Polymial()\n";*/}
 		Polymial & operator=(const Polymial & P);
 		Polymial & operator=(Polymial && P);
+		/** Polymial + Polymial*/
 		Polymial operator+(const Polymial & P) const;
+		/** Polymial - Polymial*/
 		Polymial operator-(const Polymial & P) const;
-		Polymial operator*(const Polymial & P) const;
+		/** TODO:Polymial * Polymial*/
+		Polymial operator*(const Polymial & P) const = delete;
+		/** TODO:Polymial * item */
+		Polymial operator*(const Item & i) const = delete;
+		/** TODO:item * Polymial */
+		friend operator*(const Item & i, const Polymial & P) const = delete;
 		int length() const {return base::length();}
 		int size() const {return base::size();}
 		bool puts(const Item *is, int ct);
@@ -149,6 +190,52 @@ operator+(const Polymial & P) const
 	//sum.show();
 	return (sum);
 }
+
+/**  time:O(n + n) **/
+template<typename Item>
+Polymial<Item> Polymial<Item>::
+operator-(const Polymial & P) const
+{
+	Polymial<Item> sum(length() + P.length());
+	input_iterator it1 = begin(), it2 = P.begin();
+
+	while(it1 != end() && it2 != P.end())
+	{
+		  if((*it1).expn < (*it2).expn) 
+		  {
+			  sum.append(*it1);
+			  ++it1;
+		  }
+		  else if((*it1).expn > (*it2).expn) 
+		  {/** - */
+			  sum.append(-(*it2));
+			  ++it2;
+		  }
+		  else 
+		  {/** same expn*/
+			  if((*it1).coef - (*it2).coef != 0)
+				sum.append(Item((*it1).coef - (*it2).coef, (*it1).expn));
+			  ++it1;
+			  ++it2;
+		  }
+	}
+
+	/** handle remaining*/
+	while(it1 != end() )
+	{
+		sum.append(*it1);
+		++it1;
+	}
+	while(it2 != P.end() )
+	{
+		sum.append(-(*it2));
+		++it2;
+	}
+	//std::cout << "sum ：";
+	//sum.show();
+	return (sum);
+}
+
 
 /** put item into list according expn and keep items in order
  *	time:O(n)

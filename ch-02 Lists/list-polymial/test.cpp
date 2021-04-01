@@ -26,13 +26,17 @@ static item is1[3] = {
 int main()
 {
 	using namespace std;
-	P p(is, 4), p1(is1, 3), p2;
+	P p(is, 4), p1(is1, 3), p2, p3;
 	p.show();
 	p1.show();
-	p2 = p1 + p;
+	p2 = p + p1;
 	//cout << p2.size() << endl;
 	//cout << p2.length() << endl;
 
 	cout << "p + p1 : ";
 	p2.show();
+
+	p3 = p - p1;
+	cout << "p - p1 : ";
+	p3.show();
 }

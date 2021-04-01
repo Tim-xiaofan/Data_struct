@@ -66,7 +66,7 @@ class List
 			_head(l._head), _tail(l._tail), _cursor(_head)
 		{
 			//std::cout << "-------List-------\n";
-			//std::cout << "List : move constructor\n";
+			std::cout << "List : move constructor\n";
 			//std::cout << "test\n";
 			//std::cout << "oringinal: " << l._size << " " << l._length <<
 			//	" " << l._current << std::endl;
