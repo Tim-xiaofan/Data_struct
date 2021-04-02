@@ -37,7 +37,7 @@ class sqstack : private SqList<Item>
 ### 应用
 #### 进制转换
 ```c++
-template <typename T>
+template <typename T>//must be  an integer
 std::string base_conversion<T>::
 conversion(T t) const
 {
