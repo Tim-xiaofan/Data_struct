@@ -244,7 +244,7 @@ show(void)const
 
 	if(is_empty())
 	{
-		printf("EMPTY LIST!\n");
+		//printf("EMPTY LIST!\n");
 		return;
 	}
 
