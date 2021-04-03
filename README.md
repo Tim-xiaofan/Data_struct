@@ -19,6 +19,7 @@
 >> ```
 >> * 使用其他实现替换上面的路径即可
 >> * 注意不能改变项目目录结构
+# 遇到什么问题欢迎在[Issues](https://github.com/Tim-xiaofan/Data_struct/issues)中提出
 ## 第三章 栈和队列
 ### Stack ADT
 #### 实现一、采用的存储结构为顺序存储结构
