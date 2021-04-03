@@ -36,7 +36,7 @@ class sqstack : private SqList<Item>
 ```
 ### 应用
 #### 进制转换
-##### 算法描述
+##### 算法描述（书）
 ![](https://github.com/Tim-xiaofan/Data_struct/blob/06a1118a4498ddfb7edd67e53bd5967f1ef06e4d/ch-03%20stack%20and%20queue/base-conversion/base_conversion.png) 
 ##### c++实现
 ```c++
@@ -75,6 +75,9 @@ conversion(T t) const
 ```
 
 ### 括号匹配
+##### 算法描述(书)
+由此，在算法中设置一个栈，每读入一个括号，若是右括号，则或者使置于栈顶的最急迫的期待得以消解，或者是不合法的情况;若是左括号，则作为—个新的更急迫的期待压入栈中，自然使原有的在栈中的所有未消解的期待的急迫性都降了一级。另外，在算法的开始和结束时，栈都应该是空的。
+##### c++实现
 ```c++
 /** check if the brackets are matched*/
 bool bracket_match::
