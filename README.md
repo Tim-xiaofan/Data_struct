@@ -36,6 +36,9 @@ class sqstack : private SqList<Item>
 ```
 ### 应用
 #### 进制转换
+##### 算法描述
+![](https://github.com/Tim-xiaofan/Data_struct/blob/06a1118a4498ddfb7edd67e53bd5967f1ef06e4d/ch-03%20stack%20and%20queue/base-conversion/base_conversion.png) 
+##### c++实现
 ```c++
 template <typename T>//must be  an integer
 std::string base_conversion<T>::
@@ -70,7 +73,6 @@ conversion(T t) const
 	return result;
 }
 ```
-![](https://github.com/Tim-xiaofan/Data_struct/blob/06a1118a4498ddfb7edd67e53bd5967f1ef06e4d/ch-03%20stack%20and%20queue/base-conversion/base_conversion.png) 
 
 ### 括号匹配
 ```c++
