@@ -31,3 +31,6 @@ ch-02 linear lists/list-union/list_union
 ch-03 stack and queue/sqstack-adt/test
 ch-03 stack and queue/base-conversion/test
 ch-03 stack and queue/bracket-matching/test
+ch-03 stack and queue/maze-path/core
+ch-03 stack and queue/maze-path/maze_path
+ch-03 stack and queue/line-edit/test

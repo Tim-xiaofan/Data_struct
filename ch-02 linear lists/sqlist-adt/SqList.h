@@ -150,7 +150,7 @@ get_n(int pos, Item & i) const
 		return false;
 	if(out_bound(pos))
 	{
-		fprintf(stderr, "ERROR:out of boundary\n");
+		//fprintf(stderr, "SqList::get_n:ERROR:out of boundary\n");
 		return false;
 	}
 
@@ -170,7 +170,7 @@ del_n(int pos, Item &i)
 
 	if(out_bound(pos))
 	{
-		fprintf(stderr, "ERROR : out of boundary\n");
+		//fprintf(stderr, "SqList::del_n:ERROR : out of boundary\n");
 		return false;
 	}
 	i = _items[pos];
@@ -192,13 +192,13 @@ insert_n(int pos, const Item &i)
 
 	if(is_full())
 	{
-		fprintf(stderr, "ERROR : list is full\n");
+		//fprintf(stderr, "SqList::insert_n:ERROR : list is full\n");
 		return false;
 	}
 
 	if(pos < 0)
 	{
-		fprintf(stderr, "ERROR : out of boundary\n");
+		//fprintf(stderr, "SqList::insert:ERROR : out of boundary\n");
 		return false;
 	}
 
