@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <initializer_list>
-#include "../sqstack-adt/sqstack.h"
+#include "sqstack.h"
 
 #define N 2
 #define M 5

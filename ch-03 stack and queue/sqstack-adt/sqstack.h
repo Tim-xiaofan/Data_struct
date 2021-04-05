@@ -2,7 +2,7 @@
 #ifndef SQSTACK_H
 #define SQSTACK_H
 #include <iostream>
-#include "../../ch-02 linear lists/sqlist-adt/SqList.h"
+#include "SqList.h"
 
 template <typename Item>
 class sqstack : private SqList<Item>

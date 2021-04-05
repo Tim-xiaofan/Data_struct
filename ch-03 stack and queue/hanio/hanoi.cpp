@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
-#include "../sqstack-adt/sqstack.h"
+#include "sqstack.h"
 
 template <typename Tower>
 bool move(Tower & a, int no, Tower & b)

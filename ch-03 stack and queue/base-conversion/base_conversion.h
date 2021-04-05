@@ -3,7 +3,7 @@
 #define BASE_CONVERSION_H
 #include <iostream>
 #include <string>
-#include "../sqstack-adt/sqstack.h"
+#include "sqstack.h"
 
 template <typename T = int>
 class base_conversion

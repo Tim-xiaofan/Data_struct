@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
-#include "../sqstack-adt/sqstack.h"
+#include "sqstack.h"
 
 template<typename Value>
 struct item

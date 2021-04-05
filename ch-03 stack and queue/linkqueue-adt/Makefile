@@ -1,8 +1,11 @@
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright(c) 2010-2014 Intel Corporation
+
 # binary name
-APP = list_union
+APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := list_union.cpp
+SRCS-y := test.cpp linkqueue.h
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -17,14 +20,11 @@ endif
 endif
 endif
 
-# Add flag
-#INCLUDEFLAGS += -I../list-adt -I../algorithm
-#CFLAGS += -g -Wall -Wl,-rpath=../list-adt
-CFLAGS += -g -Wall
-CC = g++
+# Add flag 
+CPPFLAGS += -g -Wall -I./ 
 
 $(APP): $(SRCS-y) Makefile 
-	$(CC) $(CFLAGS) $(INCLUDEFLAGS) $(SRCS-y) -o $@
+	$(CXX) $(CPPFLAGS) $(SRCS-y) -o $@
 
 
 ifeq ($(shell uname),Linux)

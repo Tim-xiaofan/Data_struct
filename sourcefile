@@ -1,0 +1,6 @@
+CPLUS_INCLUDE_PATH=`pwd`/ch-02\ linear\ lists/node/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/list-adt/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/algorithm/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/sqlist-adt/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/sqstack-adt/
+export CPLUS_INCLUDE_PATH

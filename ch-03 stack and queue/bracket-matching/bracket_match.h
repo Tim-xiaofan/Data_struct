@@ -3,7 +3,7 @@
 #define BRACKET_MATCH_H
 #include <iostream>
 #include <string>
-#include "../sqstack-adt/sqstack.h"
+#include "sqstack.h"
 
 struct pair
 {

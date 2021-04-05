@@ -18,8 +18,8 @@ endif
 endif
 
 # Add flag
-LISTFLAGS += -I../sqlist-adt -I../algorithm
-CFLAGS += -g -Wall -Wl,-rpath=../sqlist-adt
+LISTFLAGS += 
+CFLAGS += -g -Wall 
 CC = g++
 
 $(APP): $(SRCS-y) Makefile 

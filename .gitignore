@@ -3,7 +3,7 @@
 *.s
 *.exe
 *tags
-*core
+*core*
 ch-02 Lists/List ADT/list
 ch-02 Lists/List ADT/core
 ch-02 Lists/list-union/list_union
@@ -36,3 +36,5 @@ ch-03 stack and queue/maze-path/maze_path
 ch-03 stack and queue/line-edit/test
 ch-03 stack and queue/evaluate-expression/evaluate_expression
 ch-03 stack and queue/hanio/hanoi
+ch-02 linear lists/sqlist-merge/sqlist_merge
+ch-03 stack and queue/linkqueue-adt/test
