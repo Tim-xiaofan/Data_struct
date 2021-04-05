@@ -9,6 +9,8 @@ class sqstack : private SqList<Item>
 {
 	private:
 		typedef SqList<Item> base; 
+	public:
+		typedef Item value_type;
 	private:
 		enum {default_size = 512};
 	public:
