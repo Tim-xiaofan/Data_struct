@@ -93,7 +93,7 @@ conversion(T t) const
 ### 括号匹配
 ##### 算法描述(书)
 由此，在算法中设置一个栈，每读入一个括号，若是右括号，则或者使置于栈顶的最急迫的期待得以消解，或者是不合法的情况;若是左括号，则作为—个新的更急迫的期待压入栈中，自然使原有的在栈中的所有未消解的期待的急迫性都降了一级。另外，在算法的开始和结束时，栈都应该是空的。
-##### c++实现
+##### c++实现（未OJ）
 ```c++
 /** check if the brackets are matched*/
 bool bracket_match::
@@ -140,7 +140,7 @@ match(const std::string & bkts)
 >> 若栈不空 ，则重新测试新的栈顶位置，<br>
 >> 直至找到一个可通的相邻块或出栈至栈空;<br>
 > }while（栈不空）;<br>
-##### c++实现(未进行完整用例测试)
+##### c++实现（未OJ）
 ```c++
 template<typename Maze>
 bool maze_path(Maze & maze)
@@ -231,7 +231,7 @@ bool maze_path(Maze & maze)
 ##### 算法描述（书）
 （1）首先置操作数栈为空栈，表达式起始符"#"为运算符栈的栈底元素;<br>
 （2）依次读入表达式中每个字符，若是操作数则进 OPND 栈，若是运算符则和 OPTR 栈的栈顶运算符比较优先权后作相应操作，直至整个表达式求值完毕（即 OPTR栈的栈顶元素和当前读入的字符均为"#"）。<br>
-##### c++实现(未进行完整用例测试)
+##### c++实现（未OJ）
 ```c++
 template<typename Expression, typename Operand>
 bool evaluate_expression(const Expression & expr, Operand & result)
