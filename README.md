@@ -285,3 +285,40 @@ bool evaluate_expression(const Expression & expr, Operand & result)
 	return true;
 }
 ```
+### Hanoi Tower
+##### 算法描述（书）
+如何实现移动圆盘的操作呢?<br>
+当 n=1 时，问题比较简单，只要将编号为1 的圆盘从塔座 X直接移至塔座 乙 上即可∶<br>
+当 n>1 时，需利用塔座 Y 作辅助塔座，若能设法将压在<br>
+编号为 n 的圆盘之上的n—1 个圆盘从塔座 X（依照上述法则）移至塔座 Y 上，则可先将编号为n 的圆盘从塔座X移至塔座Z上，然后再将塔座 Y 上的 n—1个圆盘（依照上述法则）移至塔座Z上。而如何将n—1个圆盘从一个塔座移至另一个塔座的问题是一个和原问题具有相同特征属性的问题，只是问题的规模小1，因此可以用同样的方法求解。<br>
+##### c++实现（未OJ）
+```c++
+template <typename Tower>
+void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
+{
+	//std::cout << "----------------\n";
+	//std::cout << "ct : " << mv_ct << std::endl;
+	//std::cout << "x : ";x.show();
+	//std::cout << "y : ";y.show();
+	//std::cout << "z : ";z.show();
+	//std::cout << "\n----------------\n";
+
+	if(n == 1)
+	{
+		move(x, 1, z);
+		mv_ct++;
+		std::cout << mv_ct << ", " << "moving \"1\" "<< x.name() << "-->" << z.name() <<"\n";
+	}
+	else
+	{
+		/** move the discs numbered from 1 to n-1 on x to y, and z as auxiliary tower*/
+		hanoi(n-1, x, z, y, mv_ct); 
+		/** move the discs numbered n on x to z*/
+		move(x, n, z);
+		mv_ct++;
+		std::cout << mv_ct << ", " << "moving \""<< n << "\" "<< x.name() << "-->" << z.name() <<"\n";
+		/** move the discs numbered from 1 to n-1 on y to z, and x as auxiliary tower*/
+		hanoi(n-1, y, x, z, mv_ct); 
+	}
+}
+```
