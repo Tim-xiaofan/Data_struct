@@ -5,11 +5,6 @@
 （3）笔者环境：Linux、g++、make。<br>
 （4）ADT命名：***-adt存放的是对应抽象数据类型的定义和实现，例如sqlist-adt就是顺序表的顺序存储结构实现。<br>
 （5）书中算法（不包括习题）命名：以算法命名，例如base-conversion存放的是进制转换的实现<br>
-（6）why C++ not C?：<br>
->> * ADT设计是以面向对象设计的，虽然面向对象与语言无关，但是使用C语言进行面向对象设计对笔者这种菜鸡难度过大，而C++从语言层面提供了支持<br>
->> * ADT要求多形数据类型（polymorphic data type）。例如一个顺序表的ADT，其中的数据项可以是任意类型(char, int, float, struct, pointer), 使用C语言实现对笔者这种菜鸡难度过大, 而C++模板（Generic Programming）对此进行了支持。<br>
->> * 书中的typedef int ElemType使用环境是类C的伪代码：也就是实际实现时，单纯把int替换成long、char、short可能相关的你的 Stack ADT依然能用，但是换成strut book可能就要修改ADT了。而c++的重载可以满足不修改ADT的期望<br>
->> * 笔者自身感受（个人）：后面的章节发现之前的ADT不能开箱即用，会有巨大挫败感。<br>
 # 使用（Linux）:
 >> * 获取<br>
 >> ``` shell git clone git@github.com:Tim-xiaofan/Data_struct.git<br> ```
