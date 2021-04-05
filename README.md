@@ -43,7 +43,7 @@ ch 03 stack and queue
 ============
 stack ADT
 ===========
-#### [实现一、采用的存储结构为顺序存储结构]()
+#### [实现一、采用的存储结构为顺序存储结构](https://github.com/Tim-xiaofan/Data_struct/blob/3db2295b3607cd276ac7eab763b57425fa126d91/ch-03%20stack%20and%20queue/sqstack-adt/sqstack.h)
 ```c++
 #ifndef SQSTACK_H
 #define SQSTACK_H
