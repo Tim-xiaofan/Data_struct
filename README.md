@@ -124,4 +124,164 @@ match(const std::string & bkts)
 	return stack.is_empty();
 }
 ```
+### 迷宫求解
+#### 算法描述(书)
+> 设定当前位置的初值为入口位置; <br>
+> do (<br>
+> 若当前位置可通，// 纳入路径<br>
+> 则{ 将当前位置插入栈顶;// 求得路径存放在栈中<br>
+>> 若该位置是出口位置，则结束;<br>
+>> 否则切换当前位置的东邻方块为新的当前位置;<br>
+> }<br>
+> 否则，<br>
+>> 若栈不空且栈顶位置尚有其他方向未经探索，<br>
+>> 则设定新的当前位置为沿顺时针方向旋转找到的栈顶位置的下一相邻块;若栈不空但栈顶位置的四周均不可通，<br>
+>> 则{ 删去栈顶位置;// 从路径中删去该通道块<br>
+>> 若栈不空 ，则重新测试新的栈顶位置，<br>
+>> 直至找到一个可通的相邻块或出栈至栈空;<br>
+> }while（栈不空）;<br>
+##### c++实现(未进行完整用例测试)
+```c++
+template<typename Maze>
+bool maze_path(Maze & maze)
+{
+	typedef typename Maze::room_type room;
+	int rows, cols, loop = 0;
+	room start, end, cur, next, top;
+
+	/** check start and end*/
+	start = maze.start();
+	end = maze.end();
+	if(!start.is_room() || !end.is_room())
+	{
+		std::cout << "invalid start or end\n";
+		return false;
+	}
+
+	/** init stack*/
+	rows = maze.rows();
+	cols = maze.cols();
+	sqstack<room> path(rows * cols);
+
+	cur = start;
+	do
+	{
+		++loop;
+		if(maze.is_room(cur))/** room*/
+		{
+			if(!path.push(cur))
+			{
+				//std::cout << "path is full\n";
+				return false;
+			}
+			maze.in_path(cur, true);/** marked*/
+			if(cur == end)
+			{
+				std::cout << "got a path : ";
+				path.show();
+				return true;
+			}
+			//std::cout << cur << " is room\n";
+			maze.get_next(cur, next);
+			cur = next;
+			//std::cout << next << " is next\n";
+		}
+		else
+		{
+			//std::cout << cur << " is not room\n";
+			
+			if(path.get_top(top)&&maze.has_other(top))/** there are other direction to explore*/
+			{
+				//std::cout << "there are other direction in top : "<< top << "\n";
+				maze.get_next(top, next);
+				cur =next;
+				//std::cout << next << " is next\n";
+			}
+			else
+			{/** there are not other direction to explore in top */
+				//path.get_top(top);
+				while(path.get_top(top)&&!maze.has_other(top))
+				{
+					maze.reset_status(top);
+					path.pop(top);
+					//std::cout << "no other, pop : " << top << std::endl;
+					//path.get_top(top);
+				}
+				if(!path.is_empty()) 
+				{/** found one that has other direction to explore*/
+					path.get_top(top);
+					//std::cout << "found one in stack"<< top <<"\n";
+					maze.get_next(top, next);
+					cur =next;
+					//std::cout << next << " is next\n";
+				}
+			}
+		}
+		//std::cout << "current path : ";
+		//path.show();
+		//std::cout << "current maze : \n";
+		//maze.show();
+		//std::cout << "\n";
+	}while(!path.is_empty());
+	std::cout << "no path found : " << loop <<"\n";
+	return false;
+}
+```
+#### 表达式求值
+### 算法描述（书）
+（1）首先置操作数栈为空栈，表达式起始符"#"为运算符栈的栈底元素;<br>
+（2）依次读入表达式中每个字符，若是操作数则进 OPND 栈，若是运算符则和 OPTR 栈的栈顶运算符比较优先权后作相应操作，直至整个表达式求值完毕（即 OPTR栈的栈顶元素和当前读入的字符均为"#"）。<br>
+##### c++实现(未进行完整用例测试)
+```c++
+template<typename Expression, typename Operand>
+bool evaluate_expression(const Expression & expr, Operand & result)
+{
+	if(!expr.is_valid())
+		return false;
+
+	typedef typename Expression::item_type item;
+
+	int count = expr.count(), i;
+	sqstack<item> optr(count);
+	optr.push(Expression::delimiter);
+	sqstack<item> opnd(count);
+	item a, b, theta, top;
+
+	for(i = 0; i < count; i++)
+	{
+		std::cout << "#0---------------\n";
+		std::cout << "cur = " << expr[i] << std::endl;
+		if((expr[i]).type() == Expression::OPND)/** It's operand*/
+		  opnd.push(expr[i]);
+		else/** It's operator*/
+		{
+			optr.get_top(top);
+			switch(Expression::precede(top, expr[i]))
+			{
+				case Expression::LOW: /** top < current*/
+					optr.push(expr[i]);
+					break;
+				case Expression::EQUAL: /** rm bracket*/
+					optr.pop(theta);
+					break;
+				case Expression::HIGH:/** top > current*/
+					if(!opnd.pop(b) || !opnd.pop(a))
+					  return false;
+					optr.pop(theta);
+					/** get result and push result inito operator stack*/
+					opnd.push(Expression::operator_theta(theta, a, b));
+					--i;
+					//optr.push(expr[i]);
+					break;
+				case Expression::UNKNOWN:/** incomparable*/
+					return false;/** error*/
+			}
+		}
+		opnd.show();
+		optr.show();
+		std::cout << "#1---------------\n";
+	}
+	opnd.get_top(result);
+	return true;
+}
 ```
