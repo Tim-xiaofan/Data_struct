@@ -20,22 +20,12 @@ Table of contents
 
 <!--ts-->
    * [ch 03 stack and queue](#ch-03-stack-and-queue)
-   * [Table of contents](#table-of-contents)
-   * [Installation](#installation)
-   * [Usage](#usage)
-      * [STDIN](#stdin)
-      * [Local files](#local-files)
-      * [Remote files](#remote-files)
-      * [Multiple files](#multiple-files)
-      * [Combo](#combo)
-      * [Auto insert and update TOC](#auto-insert-and-update-toc)
-      * [GitHub token](#github-token)
-      * [TOC generation with Github Actions](#toc-generation-with-github-actions)
-   * [Tests](#tests)
-   * [Dependency](#dependency)
-   * [Docker](#docker)
-     * [Local](#local)
-     * [Public](#public)
+      * [stack adt](#stack-adt)
+      * [base conversion](#base-conversion)
+      * [bracket matching](#bracket-matching)
+      * [maze path](#maze-path)
+      * [evaluate expression](#evaluate-expression)
+      * [hanoi tower](#hanoi-tower)
 <!--te-->
 
 
@@ -44,7 +34,8 @@ Installation
 # 遇到什么问题欢迎在[Issues](https://github.com/Tim-xiaofan/Data_struct/issues)中提出
 ch 03 stack and queue
 ============
-### Stack ADT
+stack ADT
+===========
 #### 实现一、采用的存储结构为顺序存储结构
 ```c++
 #ifndef SQSTACK_H
@@ -79,7 +70,8 @@ class sqstack : private SqList<Item>
 #endif
 ```
 ### 应用
-#### 进制转换
+base conversion
+============
 ##### 算法描述（书）
 ![](https://github.com/Tim-xiaofan/Data_struct/blob/06a1118a4498ddfb7edd67e53bd5967f1ef06e4d/ch-03%20stack%20and%20queue/base-conversion/base_conversion.png) 
 ##### c++实现
@@ -118,7 +110,8 @@ conversion(T t) const
 }
 ```
 
-### 括号匹配
+bracket matching
+============
 ##### 算法描述(书)
 由此，在算法中设置一个栈，每读入一个括号，若是右括号，则或者使置于栈顶的最急迫的期待得以消解，或者是不合法的情况;若是左括号，则作为—个新的更急迫的期待压入栈中，自然使原有的在栈中的所有未消解的期待的急迫性都降了一级。另外，在算法的开始和结束时，栈都应该是空的。
 ##### c++实现（未OJ）
@@ -152,7 +145,8 @@ match(const std::string & bkts)
 	return stack.is_empty();
 }
 ```
-### 迷宫求解
+maze path
+============
 ##### 算法描述(书)
 > 设定当前位置的初值为入口位置; <br>
 > do (<br>
@@ -255,7 +249,8 @@ bool maze_path(Maze & maze)
 	return false;
 }
 ```
-### 表达式求值
+evaluate expression
+============
 ##### 算法描述（书）
 （1）首先置操作数栈为空栈，表达式起始符"#"为运算符栈的栈底元素;<br>
 （2）依次读入表达式中每个字符，若是操作数则进 OPND 栈，若是运算符则和 OPTR 栈的栈顶运算符比较优先权后作相应操作，直至整个表达式求值完毕（即 OPTR栈的栈顶元素和当前读入的字符均为"#"）。<br>
@@ -313,7 +308,8 @@ bool evaluate_expression(const Expression & expr, Operand & result)
 	return true;
 }
 ```
-### Hanoi Tower
+hanoi tower
+============
 ##### 算法描述（书）
 如何实现移动圆盘的操作呢?<br>
 当 n=1 时，问题比较简单，只要将编号为1 的圆盘从塔座 X直接移至塔座 乙 上即可∶<br>
