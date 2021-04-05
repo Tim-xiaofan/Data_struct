@@ -26,7 +26,7 @@ Table of contents
 =================
 
 <!--ts-->
-   * [ch 03 stack and queue](#ch-03-stack-and-queue)
+   * [ch-03 stack and queue](#ch-03-stack-and-queue)
       * [stack adt](#stack-adt)
       	* [base conversion](#base-conversion)（ 进制转换）
       	* [bracket matching](#bracket-matching)（括号匹配）
@@ -48,7 +48,7 @@ stack ADT
 #ifndef SQSTACK_H
 #define SQSTACK_H
 #include <iostream>
-#include "../../ch-02 linear lists/sqlist-adt/SqList.h"
+#include "SqList.h"
 
 template <typename Item>
 class sqstack : private SqList<Item>
