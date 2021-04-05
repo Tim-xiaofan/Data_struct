@@ -300,7 +300,7 @@ bool maze_path(Maze & maze)
 		{
 			if(!path.push(cur))
 			{
-				std::cout << "path is full\n";
+				//std::cout << "path is full\n";
 				return false;
 			}
 			maze.in_path(cur, true);/** marked*/
@@ -310,47 +310,47 @@ bool maze_path(Maze & maze)
 				path.show();
 				return true;
 			}
-			std::cout << cur << " is room\n";
+			//std::cout << cur << " is room\n";
 			maze.get_next(cur, next);
 			cur = next;
-			std::cout << next << " is next\n";
+			//std::cout << next << " is next\n";
 		}
 		else
 		{
-			std::cout << cur << " is not room\n";
-			path.get_top(top);
-			if(maze.has_other(top))/** there are other direction to explore*/
+			//std::cout << cur << " is not room\n";
+			
+			if(path.get_top(top)&&maze.has_other(top))/** there are other direction to explore*/
 			{
-				std::cout << "there are other direction in top : "<< top << "\n";
+				//std::cout << "there are other direction in top : "<< top << "\n";
 				maze.get_next(top, next);
 				cur =next;
-				std::cout << next << " is next\n";
+				//std::cout << next << " is next\n";
 			}
 			else
 			{/** there are not other direction to explore in top */
-				path.get_top(top);
-				while(!maze.has_other(top))
+				//path.get_top(top);
+				while(path.get_top(top)&&!maze.has_other(top))
 				{
 					maze.reset_status(top);
 					path.pop(top);
-					std::cout << "no other, pop : " << top << std::endl;
-					path.get_top(top);
+					//std::cout << "no other, pop : " << top << std::endl;
+					//path.get_top(top);
 				}
 				if(!path.is_empty()) 
 				{/** found one that has other direction to explore*/
 					path.get_top(top);
-					std::cout << "found one in stack"<< top <<"\n";
+					//std::cout << "found one in stack"<< top <<"\n";
 					maze.get_next(top, next);
 					cur =next;
-					std::cout << next << " is next\n";
+					//std::cout << next << " is next\n";
 				}
 			}
 		}
-		std::cout << "current path : ";
-		path.show();
-		std::cout << "current maze : \n";
-		maze.show();
-		std::cout << "\n";
+		//std::cout << "current path : ";
+		//path.show();
+		//std::cout << "current maze : \n";
+		//maze.show();
+		//std::cout << "\n";
 	}while(!path.is_empty());
 	std::cout << "no path found : " << loop <<"\n";
 	return false;
@@ -373,12 +373,14 @@ show(const Array & a)
 
 static array_2d<int> values = 
 {
-	{0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,1},
-	{0,0,0,0,0,1,0}
+	{0,0,0,0,1,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,0},
+	{0,0,0,0,0,0,0,0,1},
+	{0,0,0,0,0,0,0,1,0}
 };
 
 int main()

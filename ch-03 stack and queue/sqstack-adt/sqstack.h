@@ -18,7 +18,7 @@ class sqstack : private SqList<Item>
 		sqstack(const sqstack & st): base(st){};
 		sqstack & operator=(const sqstack &) = delete;
 		/** read top item*/
-		void get_top(Item & i)const{i = base::operator[](base::length()-1);};
+		bool get_top(Item & i)const;
 		bool push(const Item & i){return base::append(i);}
 		/** read top item and delete it*/
 		bool pop(Item & i){return base::del_n(base::length()-1, i);}
@@ -30,4 +30,13 @@ class sqstack : private SqList<Item>
 		/** random access*/
 		const Item & operator[](int i){return base::operator[](i);}
 };
+template<typename Item>
+bool sqstack<Item>::
+get_top(Item & i)const
+{
+	if(is_empty())
+	  return false;
+	i = base::operator[](base::length()-1);
+	return true;
+}
 #endif
