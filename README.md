@@ -21,11 +21,11 @@ Table of contents
 <!--ts-->
    * [ch 03 stack and queue](#ch-03-stack-and-queue)
       * [stack adt](#stack-adt)
-      * [base conversion](#base-conversion)
-      * [bracket matching](#bracket-matching)
-      * [maze path](#maze-path)
-      * [evaluate expression](#evaluate-expression)
-      * [hanoi tower](#hanoi-tower)
+      * [base conversion](#base-conversion)（ 进制转换）
+      * [bracket matching](#bracket-matching)（括号匹配）
+      * [maze path](#maze-path)（迷宫求解）
+      * [evaluate expression](#evaluate-expression)（表达式求值）
+      * [hanoi tower](#hanoi-tower)（汉诺塔）
 <!--te-->
 
 
