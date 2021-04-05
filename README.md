@@ -7,14 +7,21 @@
 （5）书中算法（不包括习题）命名：以算法命名，例如base-conversion存放的是进制转换的实现<br>
 # 使用（Linux）:
 >> * 获取<br>
->> ``` shell git clone git@github.com:Tim-xiaofan/Data_struct.git<br> ```
+>> ``` shell 
+>> git clone git@github.com:Tim-xiaofan/Data_struct.git<br> 
+>> ```
+>> * 设置环境变量<br>
+>> ```shell
+>> cd /path/Data_struct/<br>
+>> source sourcefile<br>
+>> ```
 >> * 使用sqlist : <br>
 >> ```C++
->> #include "/Data_struct/ch-02 linear lists/sqlist-adt/SqList.h"
+>> #include "SqList.h"
 >> ```
->> * 使用其他实现替换上面的路径即可
+>> * 使用其他ADT依次类推
 >> * 注意不能改变项目目录结构
-# 目录
+
 Table of contents
 =================
 
