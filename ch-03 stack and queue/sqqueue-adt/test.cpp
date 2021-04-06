@@ -8,17 +8,17 @@
 #include <algorithm>
 #include <iterator>
 
-#include "linkqueue.h"
+#include "sqqueue.h"
 
 #define N 16
 
 int main()
 {
 	using namespace std;
-	int i;
-	linkqueue<int> queue(N);
-	for(i = 0; i < N; i++)
-	  queue.enqueue(i);
+	int i = 0;
+	sqqueue<int> queue(N);
+	while(queue.enqueue(i)) ++i;
+	//cout << "i = " << i << endl;
 	cout << "after enqueueing : \n";
 	cout << "empty : " << std::boolalpha << queue.is_empty() << endl;
 	cout << "full : " << std::boolalpha << queue.is_full() << endl;
@@ -27,12 +27,13 @@ int main()
 	queue.show();
 
 
-	for(i = 0; i < N; i++)
-	  queue.dequeue(i);
+	while(queue.dequeue(i));
 	cout << "after dequeueing : \n";
 	cout << "empty : " << std::boolalpha << queue.is_empty() << endl;
 	cout << "full : " << std::boolalpha << queue.is_full() << endl;
 	cout << "size : " << queue.size() << endl;
 	cout << "length : " << queue.length() << endl;
 	queue.show();
+
+	return 0;
 }

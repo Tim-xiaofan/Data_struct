@@ -7,5 +7,18 @@
 template <typename Item>
 class linkqueue : private List<Item>
 {
+	private:
+		typedef List<Item> base;
+	public:
+		typedef Item value_type;
+	public:
+		linkqueue(int size):base(size){}
+		bool enqueue(const Item & i){return base::append(i);}
+		bool dequeue(Item & i){return base::del_n(0, i);}
+		int length(void)const{return base::length();}
+		int size(void)const{return base::size();}
+		bool is_full(void)const {return base::is_full();}
+		bool is_empty(void)const {return base::is_empty();}
+		void show(void)const {base::show();}
 };
 #endif
