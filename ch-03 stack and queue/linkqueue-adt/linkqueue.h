@@ -9,10 +9,11 @@ class linkqueue : private List<Item>
 {
 	private:
 		typedef List<Item> base;
+		enum{default_size = 512};
 	public:
 		typedef Item value_type;
 	public:
-		linkqueue(int size):base(size){}
+		linkqueue(int size = default_size):base(size){}
 		bool enqueue(const Item & i){return base::append(i);}
 		bool dequeue(Item & i){return base::del_n(0, i);}
 		int length(void)const{return base::length();}

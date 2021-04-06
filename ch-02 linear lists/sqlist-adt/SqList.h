@@ -3,24 +3,9 @@
 #include <iostream>
 #include <iterator>
 #include <cstring> /** memset*/
-#ifndef LIST_H
-#define LIST_H
+#ifndef SQLIST_H
+#define SQLIST_H
 
-template<typename Item>
-class iterator : public std::iterator<std::input_iterator_tag, Item>
-{
-	private:
-		Item * _pi;
-	public:
-		iterator(Item * pi = nullptr) : _pi(pi) {}
-		virtual const Item & operator*() const{ return *_pi;}
-		iterator & operator++(){++_pi; return *this;};
-		iterator operator++(int){iterator tmp = *this; _pi++; return tmp;}
-		iterator & operator=(Item *pi){_pi = pi; return *this;}
-		iterator & operator=(const iterator & it){_pi = it._pi; return *this;}
-		bool operator==(const iterator & it) const {return (_pi == it._pi);}
-		bool operator!=(const iterator & it) const {return (_pi != it._pi);}
-};
 //
 //template <typename Item>
 //class Node
@@ -41,13 +26,29 @@ class iterator : public std::iterator<std::input_iterator_tag, Item>
 template<typename Item>
 class SqList
 {
-    /** data*/
-    private:
+	private:
+		template<typename Item1>
+		class iterator : public std::iterator<std::input_iterator_tag, Item1>
+		{
+			private:
+				Item1 * _pi;
+			public:
+				iterator(Item1 * pi = nullptr) : _pi(pi) {}
+				virtual const Item1 & operator*() const{ return *_pi;}
+				iterator & operator++(){++_pi; return *this;};
+				iterator operator++(int){iterator tmp = *this; _pi++; return tmp;}
+				iterator & operator=(Item *pi){_pi = pi; return *this;}
+				iterator & operator=(const iterator & it){_pi = it._pi; return *this;}
+				bool operator==(const iterator & it) const {return (_pi == it._pi);}
+				bool operator!=(const iterator & it) const {return (_pi != it._pi);}
+		};
+		/** data*/
+	private:
 		enum {DEFAULT_SIZE = 16};
-        int _size, _length;
+		int _size, _length;
 		Item *_items;
-	
-	/** methods*/
+
+		/** methods*/
 	public:
 		/** types*/
 		typedef iterator<Item> input_iterator;
@@ -55,12 +56,12 @@ class SqList
 
 		/** constructor and assignment operator*/
 		explicit SqList(int size = DEFAULT_SIZE):_size(size), _length(0)
-					{_items = new Item[size + 1];}
+	{_items = new Item[size + 1];}
 		SqList(const SqList & l);
 		SqList(const Item *is, int n);
 		SqList & operator=(const SqList &) = delete;
 		~SqList(){delete [] _items;}
-		
+
 		/** interface*/
 		int length(void) const {return _length;}
 		int size(void) const {return _size;}
@@ -134,7 +135,7 @@ append_bulk(const Item *is,  int n)
 	}
 
 	for(pos = 0; pos < n; pos++)
-		append(is[pos]);
+	  append(is[pos]);
 	return true;
 }
 
@@ -147,7 +148,7 @@ bool SqList<Item>::
 get_n(int pos, Item & i) const
 {
 	if(is_empty())
-		return false;
+	  return false;
 	if(out_bound(pos))
 	{
 		//fprintf(stderr, "SqList::get_n:ERROR:out of boundary\n");
@@ -215,8 +216,8 @@ insert_n(int pos, const Item &i)
 }
 
 /** 
-  * time: O(n)
-  * @return -1 indicates item is not in list , or return index*/
+ * time: O(n)
+ * @return -1 indicates item is not in list , or return index*/
 template <typename Item>
 int SqList<Item>::
 search(const Item &i) const

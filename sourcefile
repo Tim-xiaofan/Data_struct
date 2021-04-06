@@ -3,4 +3,7 @@ CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/list-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/algorithm/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/sqlist-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/sqstack-adt/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/sqqueue-adt
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/iterator/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/linkqueue-adt/
 export CPLUS_INCLUDE_PATH

@@ -4,50 +4,8 @@
 #define LIST_H
 #include <iostream>
 #include <iterator>
-#include <Node.h>
-
-template<typename Node>
-class forward_iterator;
-
-template<typename Node>
-class iterator : public std::iterator<std::input_iterator_tag, Node>
-{
-	protected:
-		Node * _pn;
-	public:
-		iterator(Node * pn = nullptr) : _pn(pn) {}
-		virtual const typename Node::item_type & 
-			operator*() const  { return _pn->_i;}
-		//virtual typename Node::item_type & 
-		//	operator*()  { return _pn->_i;}
-		iterator & operator++(){_pn = _pn->_next; return *this;};
-		iterator operator++(int){iterator tmp; _pn =_pn->_next; return tmp;}
-		iterator & operator=(Node *pn){_pn = pn; return *this;}
-		iterator & operator=(const iterator &) = default;
-		iterator & operator=(const forward_iterator<Node> & it) {_pn = it._pn; return *this;};
-		bool operator==(const iterator & it) const {return (_pn == it._pn);}
-		bool operator!=(const iterator & it) const {return (_pn != it._pn);}
-		bool operator!=(const forward_iterator<Node> & it) const {return (_pn != it._pn);}
-};
-
-template<typename Node>
-class forward_iterator :  public std::iterator<std::forward_iterator_tag, Node>
-{
-	private:
-		Node * _pn;
-	public:
-		forward_iterator(Node * pn = nullptr) : _pn(pn) {}
-		typename Node::item_type & 
-			operator*() { return _pn->_i;}
-		forward_iterator & operator++(){_pn = _pn->_next; return *this;};
-		forward_iterator operator++(int){forward_iterator tmp; _pn =_pn->_next; return tmp;}
-		forward_iterator & operator=(Node *pn){_pn = pn; return *this;}
-		forward_iterator & operator=(const forward_iterator &) = default;
-		forward_iterator & operator=(iterator<Node> & it){ _pn = it->_pn; return *this;}
-		bool operator==(const forward_iterator & it) const {return (_pn == it._pn);}
-		bool operator!=(const forward_iterator & it) const {return (_pn != it._pn);}
-		friend class iterator<Node>;
-};
+#include "Node.h"
+#include "Iterator.h"
 
 template<typename Item>
 class List
@@ -76,23 +34,12 @@ class List
 		{
 			//std::cout << "-------List-------\n";
 			std::cout << "List : move constructor\n";
-			//std::cout << "test\n";
-			//std::cout << "oringinal: " << l._size << " " << l._length <<
-			//	" " << l._current << std::endl;
-			//std::cout << "oringinal: " << (void *)l._head << " " << 
-			//	(void *)l._tail << " " << (void *)l._cursor << std::endl;
 			l._size = 0;
 			l._length = 0;
 			l._current = 0;
 			l._head = nullptr; 
 			l._tail = nullptr;
 			l._cursor = nullptr;
-			//std::cout << "dst: " << l._size << " " << l._length <<
-			//	" " << l._current << std::endl;
-			//std::cout << "dst: " << (void *)_head << " " << 
-			//	(void *)_tail << " " << (void *)_cursor << std::endl;
-			//show();
-			//std::cout << "-------List-------\n";
 		}
 		List(const Item *is, int n);
 		List & operator=(const List &) = delete;
@@ -108,6 +55,8 @@ class List
 		bool get_next(Item &i);
 		bool del_n(int pos, Item &i);
 		bool insert_n(int pos, const Item & i);
+		template <typename BinaryPredicate>
+		bool insert_sorted(const Item & i, const BinaryPredicate & pre);
 		bool append(const Item & i);
 		bool append_bulk(const Item *is, int n);
 		void show(void) const;
@@ -160,8 +109,6 @@ List<Item>::
 ~List()
 {
 	node *p = _head, *tmp;
-	//std::cout << "~List: _head = " 
-	//	<< _head << std::endl;
 	/** free nodes*/
 	while(p)
 	{
@@ -447,6 +394,70 @@ insert_n(int pos, const Item &i)
 		p->_next = tmp;
 	}
 	_length++;
+	return true;
+}
+
+template <typename Item>
+template <typename BinaryPredicate>
+bool List<Item>:: 
+insert_sorted(const Item & i, const BinaryPredicate & pre)
+{
+	node *tmp, *p;
+
+	if(is_full())
+	{
+		//fprintf(stderr, "ERROR : list is full\n");
+		return false;
+	}
+
+	tmp = new node(i);
+
+	/** 0 --> 1*/
+	int pos = 0;
+	if(is_empty())
+	{
+		_tail = tmp;
+		_head->_next = _tail;
+		//fprintf(stderr, "empty, insert %d at %d\n", tmp->_i, pos);
+	}
+	else
+	{/** n --> n + 1*/
+		/** p << i << p + 1*/
+		p = _head;
+		while(p)
+		{
+			if(p == _head && pre(i, p->_next->_i) <= 0)
+			{
+				tmp->_next = _head->_next;
+				_head->_next = tmp;
+				//fprintf(stderr, "0 insert %d at %d\n", tmp->_i, pos);
+				break;
+			}
+			else if(p == _tail)
+			{
+				_tail->_next = tmp;
+				_tail = tmp;
+				//fprintf(stderr, "1 insert %d at %d\n", tmp->_i, pos);
+				break;
+			}
+			else
+			{
+				if(pre(i, p->_i) >= 0 && pre(i, p->_next->_i) <= 0)
+				{
+					tmp->_next = p->_next;
+					p->_next = tmp;
+					//fprintf(stderr, "insert at %d\n", pos);
+					//fprintf(stderr, "2 insert %d at %d\n", tmp->_i, pos);
+					break;
+				}
+			}
+			p = p->_next;
+			++pos;
+		}
+	}
+	_length++;
+	//std::cout << "after inserting : ";
+	//show();
 	return true;
 }
 

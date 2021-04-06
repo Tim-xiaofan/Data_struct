@@ -6,6 +6,7 @@
 #include <List.h>
 #include <algorithm>
 #include <iterator>
+#include <ctime>
 #define SIZE 16
 
 static int A[4] = {3,5,8,11};
@@ -27,16 +28,19 @@ int main()
 	int i;
 	string s;
 	List<int> li(SIZE);
-	List<string> ls(B, 7);
-
-	li.append_bulk(A, 4);
-	fprintf(stdout, "li(%d) : ", li.length());
+	srand(time(NULL));
+	while(li.insert_sorted(rand() % 100 + 1, [](int x, int y){return x - y;}));
 	li.show();
-	show(li, "li : ");
-	//ls.append_bulk(B, 7);	
-	fprintf(stdout, "ls(%d) : ", ls.length());
-	ls.show();
-	show(ls, "ls : ");
+	//List<string> ls(B, 7);
+
+	//li.append_bulk(A, 4);
+	//fprintf(stdout, "li(%d) : ", li.length());
+	//li.show();
+	//show(li, "li : ");
+	////ls.append_bulk(B, 7);	
+	//fprintf(stdout, "ls(%d) : ", ls.length());
+	//ls.show();
+	//show(ls, "ls : ");
 
 	//li.set_cursor(0);
 	//fprintf(stdout, "current pos : %d\n", li.current());
@@ -66,11 +70,11 @@ int main()
 	//  cout << *it3 << " ";
 	//cout << endl;
 
-	cout << "enter the position to insert into list ls : ";
-	cin >>  i;
-	ls.insert_n(i, "test");
-	cout << "after inserting, ls (" << ls.length()<< "): ";
-	show(ls, "ls : ");
+	//cout << "enter the position to insert into list ls : ";
+	//cin >>  i;
+	//ls.insert_n(i, "test");
+	//cout << "after inserting, ls (" << ls.length()<< "): ";
+	//show(ls, "ls : ");
 	//
 	//cout << "enter the content to search in list ls : ";
 	//cin >>  s;
