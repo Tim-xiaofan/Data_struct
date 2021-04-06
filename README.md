@@ -8,12 +8,12 @@
 # 使用（Linux）:
 >> * 获取<br>
 >> ``` shell 
->> git clone git@github.com:Tim-xiaofan/Data_struct.git<br> 
+>> git clone git@github.com:Tim-xiaofan/Data_struct.git
 >> ```
 >> * 设置环境变量<br>
 >> ```shell
->> cd /path/Data_struct/<br>
->> source sourcefile<br>
+>> cd /path/Data_struct
+>> source sourcefile
 >> ```
 >> * 使用sqlist : <br>
 >> ```C++
