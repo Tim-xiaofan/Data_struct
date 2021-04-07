@@ -53,6 +53,7 @@ class List
 		bool reset_cursor(void);
 		bool get_n(int pos, Item &i) const ;
 		bool get_next(Item &i);
+		bool back(Item & i)const;
 		bool del_n(int pos, Item &i);
 		bool insert_n(int pos, const Item & i);
 		template <typename BinaryPredicate>
@@ -297,6 +298,18 @@ get_n(int pos, Item & i) const
 	  p = p->_next;
 	i = p->_i;
 
+	return true;
+}
+
+
+/** time : O(1)*/
+template <typename Item>
+bool List<Item>::
+back(Item & i)const
+{
+	if(is_empty()) return false;
+
+	i = _tail->_i;
 	return true;
 }
 

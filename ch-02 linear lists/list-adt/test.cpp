@@ -31,6 +31,8 @@ int main()
 	srand(time(NULL));
 	while(li.insert_sorted(rand() % 100 + 1, [](int x, int y){return x - y;}));
 	li.show();
+	li.back(i);
+	cout <<"back : " << i << endl;
 	//List<string> ls(B, 7);
 
 	//li.append_bulk(A, 4);

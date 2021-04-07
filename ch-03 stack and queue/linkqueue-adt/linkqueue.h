@@ -16,6 +16,7 @@ class linkqueue : private List<Item>
 		linkqueue(int size = default_size):base(size){}
 		bool enqueue(const Item & i){return base::append(i);}
 		bool dequeue(Item & i){return base::del_n(0, i);}
+		bool get_top(Item & i)const {return base::back(i);}
 		int length(void)const{return base::length();}
 		int size(void)const{return base::size();}
 		bool is_full(void)const {return base::is_full();}
