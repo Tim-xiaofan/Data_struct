@@ -14,13 +14,26 @@ struct event
 	friend std::ostream & operator<<(std::ostream & os, const event & ev);
 };
 
+std::ostream & operator<<(std::ostream & os, const event & ev)
+{
+	os << "<event: " << ev.occur_time << ", " << ev.type << ">";
+	return os;
+}
 
 struct customer
 {
 	int arrive_time, duration;/** arrive and processing time*/
 	customer(int arri = 0, int dur = 0)
 		:arrive_time(arri), duration(dur){}
+	friend std::ostream & operator<<(std::ostream & os, const customer & cst);
 };
+
+std::ostream & operator<<(std::ostream & os, const customer & cst)
+{
+
+	os << "<customer: " << cst.arrive_time << ", " << cst.duration << ">";
+	return os;
+}
 
 typedef List<event> ev_list;/** event list type*/
 typedef linkqueue<customer> cu_queue;/** customer queue type*/
@@ -61,22 +74,32 @@ customer_arrived(void)
 	intertime = rand() % 15;/** in minutes*/
 	t = ev.occur_time  + intertime; /** next customer arriving time*/
 	if(t < close_time)/** not closed*/
-	  evl.insert_sorted(event(t, event::ARRIVE), cmp());
+	{
+		evl.insert_sorted(event(t, event::ARRIVE), cmp());
+		std::cout << "new arriving " << 
+			event(t, event::ARRIVE) << std::endl; 
+	}
 
 	min = 0;
 	for(i = 0; i < 4; i++)
 	  if(cst_qs[i].length() < cst_qs[min].length()) 
 		min = i;
 	cst_qs[min].enqueue(customer(ev.occur_time, durtime));
+	std::cout << "new customer " << 
+		customer(ev.occur_time, durtime) << std::endl; 
 	if(cst_qs[min].length() == 1)
-	  evl.insert_sorted(event(ev.occur_time + durtime, min), cmp());/** set first departure time*/
+	{
+		evl.insert_sorted(event(ev.occur_time + durtime, min), cmp());/** set first departure time*/
+		std::cout << "new departure  " << 
+			event(ev.occur_time + durtime, min) << std::endl; 
+	}
 }
 
 static void
 customer_departure(void)
 {
 	int i = ev.type;
-	cst_qs[i].dequeue(cst);
+	cst_qs[i].dequeue(cst);/** first dequeue*/
 	tot_time += ev.occur_time - cst.arrive_time;
 
 	if(!cst_qs[i].is_empty())
@@ -84,9 +107,12 @@ customer_departure(void)
 		cst_qs[i].get_top(cst);
 		/** set next customer departure event*/
 		evl.insert_sorted(event(ev.occur_time + cst.arrive_time, i), cmp());
+		std::cout << "new departure  " << 
+			event(ev.occur_time + cst.arrive_time, i) << std::endl; 
 	}
 }
 
+/** cannot work well*/
 static void 
 bank_simulation(void)
 {
@@ -98,6 +124,8 @@ bank_simulation(void)
 		  customer_arrived();
 		else
 		  customer_departure();
+		//std::cout << "cst_ct = " << cst_ct << ", "
+		//	"tot_time = " << tot_time << std::endl;
 	}
 	std::cout << "The average time is " << tot_time / cst_ct << std::endl;
 }
