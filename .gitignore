@@ -41,3 +41,4 @@ ch-03 stack and queue/linkqueue-adt/test
 ch-03 stack and queue/sqqueue-adt/test
 ch-03 stack and queue/bank-simulation/bank_simulation
 ch-05 array and generalized-table/array-adt/test
+ch-05 array and generalized-table/array-adt/core
