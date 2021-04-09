@@ -16,16 +16,17 @@ class array
 		T * _base;
 		int *_bounds, *_constant, _elemtot;
 	private:
-		array(){}
 		bool construct(int b1 , va_list & ap);
 		bool locate(va_list & ap, int & off)const;
 	public:
+		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
 		static array * instance(int b1, ...);
 		bool value(T & t, ...) const;
 		bool set_value(const T & t, ...);
 		void show_constant(void)const;
 		void show_bounds(void)const;
+		int get_bound(int mdim)const;
 		array & set_values(T * ts, int n);
 };
 
@@ -39,10 +40,14 @@ construct(int b1, va_list & ap)
 		return false;
 	}
 	//std::cout <<"dim = " << dim << std::endl;
-	_bounds = new(std::nothrow) int[dim];
-	if(!_bounds) 
+	try	
 	{
-		std::cerr << "cannot alloc memory fo _bounds\n";
+		_bounds = new int[dim];
+	}
+	catch(std::bad_alloc & e)
+	{
+		std::cerr << "cannot alloc memory fo bounds : " 
+			<< e.what() << std::endl;
 		return false;
 	}
 
@@ -65,17 +70,25 @@ construct(int b1, va_list & ap)
 	}
 
 	//std::cout << "_elemtot = " << _elemtot << std::endl;
-	_base = new(std::nothrow) T[_elemtot];
-	if(!_base) 
+	try
 	{
-		std::cerr << "cannot alloc memory fo base\n";
+		_base = new T[_elemtot];
+	}
+	catch(std::exception & e) 
+	{
+		std::cerr << "cannot alloc memory fo base : "
+			<< e.what() << std::endl;
 		return false;
 	}
 
-	_constant = new(std::nothrow) int[dim];
-	if(!_constant) 
+	try
 	{
-		std::cerr << "cannot alloc memory fo constant\n";
+		_constant = new int[dim];
+	}
+	catch(std::bad_alloc & e) 
+	{
+		std::cerr << "cannot alloc memory fo constant : "
+			<< e.what() << std::endl;
 		return false;
 	}
 	_constant[dim - 1] = 1;
@@ -181,5 +194,24 @@ set_values(T * ts, int n)
 	//for(i = 0; i < min; i++)
 	//  _base[i] = ts[i];
 	return *this;
+}
+
+/**
+  * get dim length
+  * @param mdim start from 1
+ **/
+template<typename T, int dim>
+int array<T, dim>::
+get_bound(int mdim)const
+{
+	int ret;
+	if(mdim <= 0 || mdim > MAX_DIM)
+	{
+		std::cerr << "invalid dim " << mdim << std::endl;
+		ret = -1;
+	}
+	else
+		ret = _bounds[mdim - 1];
+	return ret;
 }
 #endif

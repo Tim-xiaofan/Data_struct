@@ -11,6 +11,16 @@
 #define N 100
 
 //static int a[N];
+static int b[6][7]={
+	{0, 12,9, 0, 0,0,0},
+	{0, 0, 0, 0, 0,0,0},
+	{-3,0, 0, 0, 0,14,0},
+	{0, 0, 24,0, 0,0,0},
+	{0, 18,0, 0, 0,0,0},
+	{15, 0,0, -7,0,0,0}
+};
+
+typedef sparse_matrix<int> matrix_i;
 
 int main()
 {
@@ -19,5 +29,16 @@ int main()
 	using std::cin;
 	using std::srand;
 	using std::rand;
-	
+
+	int i, j;
+
+	array<int, 2> * a2 = array<int, 2>::instance(6, 7);
+	if(!a2) return 0;
+	for(i = 0; i <6; ++i)
+	  for(j = 0; j < 7; ++j)
+		a2->set_value(b[i][j], i, j);
+
+	matrix_i matrix(*a2, matrix_i::count_tu(*a2));
+	matrix.show();
+	return 0;
 }

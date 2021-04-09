@@ -31,9 +31,11 @@ int main()
 	for(i = 0; i < N; i++)
 	  a[i] = i;
 
-	a1 * a_1d = a1::instance(3);
+	a1 * a_1d = a1::instance(-1);
+	if(!a_1d) return 0;
 	a_1d->set_values(a, N);
 	SEPARATE();
+	//a_1d->show_constant();
 	cout << "1d :" << endl;
 	for(i = 0; i <3; ++i)
 	{
@@ -43,6 +45,7 @@ int main()
 	cout << endl;
 
 	a2 * a_2d = a2::instance(3, 4);
+	if(!a_2d) return 0;
 	a_2d->set_values(a, N);
 	SEPARATE();
 	cout << "2d :" << endl;
@@ -58,6 +61,7 @@ int main()
 
 
 	a3 * a_3d = a3::instance(3, 4, 5);
+	if(!a_3d) return 0;
 	a_3d->set_values(a, N);
 	SEPARATE();
 	cout << "3d :" << endl;
@@ -76,6 +80,7 @@ int main()
 	}
 
 	a2 * a_2d1 = a2::instance(4, 4);
+	if(!a_2d1) return 0;
 	for(i = 0; i <4; ++i)
 	  for(j = 0; j < 4; ++j)
 		a_2d1->set_value(b[i][j], i, j);
@@ -92,5 +97,9 @@ int main()
 		cout << endl;
 	}
 
+	SEPARATE();
+	cout << "dim 1 : " << a_3d->get_bound(1) << endl;
+	cout << "dim 2 : " << a_3d->get_bound(2) << endl;
+	cout << "dim 3 : " << a_3d->get_bound(3) << endl;
 	return 0;
 }
