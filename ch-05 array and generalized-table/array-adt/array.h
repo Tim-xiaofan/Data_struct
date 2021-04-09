@@ -20,6 +20,7 @@ class array
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
 		static array * instance(int dim, ...);
 		bool value(T & t, ...) const;
+		bool set_value(const T & t, ...);
 		void show_constant(void)const;
 		void show_bounds(void)const;
 		array & set_values(T * ts, int n);
@@ -106,6 +107,21 @@ value(T & t, ...) const
 	va_start(ap, t);
 	if((ret = locate(ap, off)))
 	  t = _base[off];
+	//std::cout << "off = " << off << std::endl;
+	va_end(ap);
+	return ret;
+}
+
+template<typename T>
+bool array<T>::
+set_value(const T & t, ...)
+{
+	bool ret = false;
+	int off;
+	va_list ap;
+	va_start(ap, t);
+	if((ret = locate(ap, off)))
+	_base[off] = t;
 	//std::cout << "off = " << off << std::endl;
 	va_end(ap);
 	return ret;

@@ -45,3 +45,4 @@ ch-05 array and generalized-table/array-adt/core
 ch-05 array and generalized-table/symmetric-matrix-adt/core
 ch-05 array and generalized-table/symmetric-matrix-adt/test
 ch-05 array and generalized-table/triangular-matrix-adt/test
+ch-05 array and generalized-table/sparse-matrix-adt/test

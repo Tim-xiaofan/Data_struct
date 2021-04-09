@@ -1,3 +1,4 @@
+#attention:must source at same path of this file
 CPLUS_INCLUDE_PATH=`pwd`/ch-02\ linear\ lists/node/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/list-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/algorithm/
@@ -6,4 +7,5 @@ CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/sqstack-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/sqqueue-adt
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/iterator/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-03\ stack\ and\ queue/linkqueue-adt/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ generalized-table/array-adt/
 export CPLUS_INCLUDE_PATH

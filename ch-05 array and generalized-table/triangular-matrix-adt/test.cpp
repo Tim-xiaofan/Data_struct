@@ -35,6 +35,8 @@ int main()
 	tm.type(triangular_matrix<int>::UP);
 	tm.show();
 
+	for(i = 0; i < N; ++i)
+	  a[i] = rand() % 100;
 	cout << endl;
 	triangular_matrix<int> tm1(5, triangular_matrix<int>::UP);
 	cout << "up: \n";
