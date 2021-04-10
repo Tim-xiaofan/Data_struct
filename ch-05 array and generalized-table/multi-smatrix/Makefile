@@ -2,10 +2,10 @@
 # Copyright(c) 2010-2014 Intel Corporation
 
 # binary name
-APP = test
+APP = multi_smatrix
 
 # all source are stored in SRCS-y
-SRCS-y := test.cpp sparse_matrix.h rlsparse_matrix.h
+SRCS-y := multi_smatrix.cpp
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"

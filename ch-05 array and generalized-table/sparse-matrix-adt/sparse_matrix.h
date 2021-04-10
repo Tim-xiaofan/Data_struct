@@ -34,6 +34,7 @@ class sparse_matrix : public SqList<triple<T>>
 {
 	private:
 		typedef SqList<triple<T>> base;
+	protected:
 		typedef triple<T> item;
 	private:
 		enum {MAX_SIZE = 12500};
@@ -54,6 +55,8 @@ class sparse_matrix : public SqList<triple<T>>
 		int get_num(int * num)const;
 		/** get postion first non-zero elements in each column*/
 		int get_cpot(int * cpot, const int * num)const;
+		int rows(void)const{return _m;}
+		int cols(void)const{return _n;}
 };
 
 /** count number of non-zero elements*/
@@ -161,6 +164,8 @@ transposex(sparse_matrix & N)const
 		N[pos1].e = base::operator[](pos).e;
 		cpot[col]+=1;
 	}
+	delete num;
+	delete cpot;
 	return true;
 }
 /** 

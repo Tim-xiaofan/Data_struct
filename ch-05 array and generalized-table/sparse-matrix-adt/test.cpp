@@ -7,6 +7,7 @@
 #include <ctime>
 
 #include "sparse_matrix.h"
+#include "rlsparse_matrix.h"
 
 //#define N 100
 
@@ -20,7 +21,22 @@ static int b[6][7]={
 	{15, 0,0, -7,0,0,0}
 };
 
+static int c[3][4]{
+	{3,0,0,5},
+	{0,-1,0,0},
+	{2,0,0,0}
+};
+
+static int d[4][2]
+{
+	{0,2},
+	{1,0},
+	{-2,4},
+	{0,0},
+};
+
 typedef sparse_matrix<int> matrix_i;
+typedef rlsparse_matrix<int> rlmatrix_i;
 
 int main()
 {
@@ -37,6 +53,20 @@ int main()
 	for(i = 0; i <6; ++i)
 	  for(j = 0; j < 7; ++j)
 		a2->set_value(b[i][j], i, j);
+
+	array<int, 2> * a21 = array<int, 2>::instance(3, 4);
+	if(!a21) return 0;
+	for(i = 0; i <3; ++i)
+	  for(j = 0; j < 4; ++j)
+		a21->set_value(c[i][j], i, j);
+
+	array<int, 2> * a22 = array<int, 2>::instance(4, 2);
+	if(!a22) return 0;
+	for(i = 0; i <4; ++i)
+	  for(j = 0; j < 2; ++j)
+		a22->set_value(d[i][j], i, j);
+
+	cout << "-----------test sparse_matrix-----------\n";
 	tu = matrix_i::count_tu(*a2);
 
 	matrix_i M(*a2, tu);
@@ -61,5 +91,12 @@ int main()
 
 	if(M.transposex(N))
 	  N.show();
+
+	cout << "\n\n-----------test rlsparse_matrix-----------\n";
+	tu = rlmatrix_i::count_tu(*a22);
+	rlmatrix_i M1(*a22, tu);
+	M1.show();
+	cout << "rpos : ";
+	M1.show_rpos();
 	return 0;
 }
