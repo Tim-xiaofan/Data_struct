@@ -38,11 +38,15 @@ class sparse_matrix : public SqList<triple<T>>
 		int _m, _n, _tu;/** rows, cols and non-zero elements count*/
 	public:
 		sparse_matrix(const array<T, 2> & a2, int tu);
+		sparse_matrix(int m, int n, int tu)
+			:base(tu), _m(m), _n(n), _tu(tu){}
 		int tu(void)const{return _tu;}
 		static int count_tu(const array<T, 2> & a2);
 		void show(void)const;
+		bool transpose(sparse_matrix & N)const;
+		item & operator[](int pos){return base::operator[](pos);} 
+		const item & operator[](int pos)const{return base::operator[](pos);} 
 };
-
 
 /** count number of non-zero elements*/
 template<typename T>
@@ -90,5 +94,30 @@ show(void)const
 	for(i = 0; i < _tu; ++i)
 	  std::cout << base::operator[](i) << " ";
 	std::cout << "\n";
+}
+
+/** M(m x n) --> N(n x m)
+  * time:O(M.nu * tu)
+ **/
+template<typename T>
+bool sparse_matrix<T>:: 
+transpose(sparse_matrix & N)const
+{
+	/** TODO: to suport that target matrix is matrix self*/
+	if(N._m != _n || N._n != _m || N._tu < _tu || &N == this)
+	  return false;
+
+	/** get a col in M*/
+	int col, pos, pos1 = 0;
+	for(col = 0; col < _n; ++col)
+	  for(pos = 0; pos < _tu; ++pos)
+		if(base::operator[](pos).j == col)
+		{
+			N[pos1].i = base::operator[](pos).j;
+			N[pos1].j = base::operator[](pos).i;
+			N[pos1].e = base::operator[](pos).e;
+			++pos1;
+		}
+	return true;
 }
 #endif

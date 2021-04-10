@@ -8,7 +8,7 @@
 
 #include "sparse_matrix.h"
 
-#define N 100
+//#define N 100
 
 //static int a[N];
 static int b[6][7]={
@@ -30,15 +30,20 @@ int main()
 	using std::srand;
 	using std::rand;
 
-	int i, j;
+	int i, j, tu;
 
 	array<int, 2> * a2 = array<int, 2>::instance(6, 7);
 	if(!a2) return 0;
 	for(i = 0; i <6; ++i)
 	  for(j = 0; j < 7; ++j)
 		a2->set_value(b[i][j], i, j);
+	tu = matrix_i::count_tu(*a2);
 
-	matrix_i matrix(*a2, matrix_i::count_tu(*a2));
-	matrix.show();
+	matrix_i M(*a2, tu);
+	M.show();
+
+	matrix_i N(7, 6, tu);
+	if(M.transpose(N))
+	  N.show();
 	return 0;
 }
