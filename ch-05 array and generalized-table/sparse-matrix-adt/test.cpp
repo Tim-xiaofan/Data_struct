@@ -42,8 +42,24 @@ int main()
 	matrix_i M(*a2, tu);
 	M.show();
 
+	/** test transpose algorithm one*/
 	matrix_i N(7, 6, tu);
 	if(M.transpose(N))
+	  N.show();
+
+	/** test transpose algorithm two*/
+	int num[7], cpot[7], cols;
+	cols = M.get_num(num);
+	for(i = 0; i < cols; ++i)
+	  cout << num[i] << " ";
+	cout << endl;
+
+	cols = M.get_cpot(cpot, num);
+	for(i = 0; i < cols; ++i)
+	  cout << cpot[i] << " ";
+	cout << endl;
+
+	if(M.transposex(N))
 	  N.show();
 	return 0;
 }
