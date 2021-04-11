@@ -33,6 +33,12 @@ Table of contents
       	* [maze path](#maze-path)（迷宫求解）
       	* [evaluate expression](#evaluate-expression)（表达式求值）
       	* [hanoi tower](#hanoi-tower)（汉诺塔）
+   * [ch-05 array and generalized-table](#ch-05-array-and-generalized-table)
+      * [array adt](#array-adt)
+      * [symmetric matrix adt](#symmetric-matrix-adt )（对称矩阵）
+      * [triangular matrix adt](#triangular-matrix-adt)（三角矩阵）
+      * [sparse matrix adt](#sparse-matrix-adt)（稀疏矩阵）
+      	* [multi smatrix](#evaluate-expression)（稀疏矩阵的乘法）
 <!--te-->
 
 
@@ -351,5 +357,190 @@ void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
 		/** move the discs numbered from 1 to n-1 on y to z, and x as auxiliary tower*/
 		hanoi(n-1, y, x, z, mv_ct); 
 	}
+}
+```
+ch-05 array and generalized-table
+============
+array ADT
+===========
+#### 实现
+```C++
+template<typename T, int dim = 1>
+class array
+{
+	private:
+		enum{MAX_DIM = 8};
+		T * _base;
+		int *_bounds, *_constant, _elemtot;
+	private:
+		bool construct(int b1 , va_list & ap);
+		bool locate(va_list & ap, int & off)const;
+	public:
+		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
+		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
+		static array * instance(int b1, ...);
+		bool value(T & t, ...) const;
+		bool set_value(const T & t, ...);
+		void show_constant(void)const;
+		void show_bounds(void)const;
+		int get_bound(int mdim)const;
+		array & set_values(T * ts, int n);
+};
+```
+symmetric-matrix ADT
+===========
+#### 实现
+```C++
+template<typename Item>
+class symmetric_matrix
+{
+	private:
+		Item * _base;
+		int _size, _n;
+		static int map(int i, int j);
+	public:
+		~symmetric_matrix(){delete [] _base;}
+		symmetric_matrix(int n){_size = (n + 1) *n / 2; _base = new Item[_size];  _n = n;}
+		Item & at(int i, int j){return _base[map(i, j)]; }
+		const Item & at(int i, int j) const{return _base[map(i, j)];}
+		void set_values(const Item * is, int ct);
+		void show(void)const;
+};
+```
+triangular-matrix ADT
+===========
+#### 实现
+```C++
+template<typename Item>
+class triangular_matrix
+{
+	private:
+		Item * _base, _c;
+		int _size, _n, _type;
+		int map(int i, int j) const;
+	public:
+		enum{UP = 0, DOWN = 1};
+		~triangular_matrix(){delete [] _base;}
+		triangular_matrix(int n, int type = DOWN, const Item & c = 0);
+		Item & at(int i, int j);
+		const Item & at(int i, int j) const;
+		void set_values(const Item * is, int ct);
+		void show(void)const;
+		int type(void)const{return type;}
+		bool type(int new_type);
+};
+```
+sparse-matrix ADT
+===========
+#### 实现一
+```C++
+template<typename T>/** value type*/
+class sparse_matrix : public SqList<triple<T>>
+{
+	private:
+		typedef SqList<triple<T>> base;
+	protected:
+		typedef triple<T> item;
+	private:
+		enum {MAX_SIZE = 12500};
+		int _m, _n, _tu;/** rows, cols and non-zero elements count*/
+	public:
+		sparse_matrix(const array<T, 2> & a2, int tu);
+		sparse_matrix(int m, int n, int tu)
+			:base(tu), _m(m), _n(n), _tu(tu){}
+		int tu(void)const{return _tu;}
+		static int count_tu(const array<T, 2> & a2);
+		void show(void)const;
+		/** matrix transpose algorithm*/
+		bool transpose(sparse_matrix & N)const;
+		bool transposex(sparse_matrix & N)const;
+		item & operator[](int pos){return base::operator[](pos);} 
+		const item & operator[](int pos)const{return base::operator[](pos);} 
+		/** get number of non-zero elements in each column*/
+		int get_num(int * num)const;
+		/** get postion first non-zero elements in each column*/
+		int get_cpot(int * cpot, const int * num)const;
+		int rows(void)const{return _m;}
+		int cols(void)const{return _n;}
+};
+```
+#### 实现二 行逻辑
+```C++
+template<typename T>/** value type*/
+class rlsparse_matrix : public sparse_matrix<T>
+{
+	private:
+		typedef sparse_matrix<T> base;
+		typedef typename base::item item;
+	public:
+		typedef T value_type;
+	private:
+		int * _rpos;
+	public:
+		~rlsparse_matrix(){delete [] _rpos;};
+		rlsparse_matrix(const array<T, 2> & a2, int tu);
+		/** FIXME: need to handle new exception*/
+		rlsparse_matrix(int m, int n, int tu):base(m, n, tu){_rpos = new int[m];}
+		void show_rpos(void)const;
+		int row_first(int row)const{return _rpos[row];}
+		int row_last(int row)const;
+};
+```
+multi-smatrix
+===========
+##### 算法描述（书）
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/dc0f3b33b70c26a9c0444fcc8baa5f446c07163e/ch-05%20array%20and%20generalized-table/multi-smatrix/multi_smatrix.cpp)
+```c++
+/** time: O(m1 * n2 + tu1 * tu2 / m2)*/
+template<typename SMatrix, typename Array>
+bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
+{
+	int m1, n1, m2, n2, tu = 0, mrow, nrow, *rpos, *ctemp;
+	m1 = M.rows();
+	n1 = M.cols();
+	m2 = N.rows();
+	n2 = N.cols();
+	rpos = new int[m1];
+
+	if(n1 != m2)
+	  return false;
+	if(M.tu() * N.tu() == 0)
+	  return true;
+
+	ctemp = new int[n2];
+	for(mrow = 0; mrow < m1; ++mrow)
+	{
+		int mfirst, mlast, nfirst, nlast, mpos, npos, ccol;
+
+		/** initialize */
+		for(ccol = 0; ccol < n2; ++ccol)
+		  ctemp[ccol] = 0;
+		rpos[mrow] = tu;
+		mfirst = M.row_first(mrow);
+		mlast = M.row_last(mrow);
+		std::cout << "-----------start-----------\n";
+		for(mpos = mfirst; mpos < mlast; ++mpos)
+		{
+			nrow = M[mpos].j;/** get row of coorresponding in N*/
+			nfirst = N.row_first(nrow);
+			nlast = N.row_last(nrow);
+			//std::cout << "N : [" << nfirst << ", "<< nlast << ")\n";
+			for(npos = nfirst; npos < nlast; ++npos)
+			{
+				std::cout << "{" << M[mpos] << " * " << N[npos] << "} "; 
+				ctemp[N[npos].j]+= M[mpos].e * N[npos].e;
+			}
+			std::cout << "\n";
+		}/** get non-zero elemets of Q's mrow-th row*/
+		for(ccol = 0; ccol < n2; ++ccol)
+		{
+			//std::cout << triple<int>(mrow, ccol, ctemp[ccol]) << " ";
+			a2.set_value(ctemp[ccol], mrow, ccol);
+		}
+		a2_show(a2);
+		std::cout << "\n-----------end-----------\n\n";
+	}
+	/** need a move constructor*/
+	return true;
 }
 ```
