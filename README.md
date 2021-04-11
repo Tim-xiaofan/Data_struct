@@ -10,7 +10,7 @@
 >> ``` shell 
 >> git clone git@github.com:Tim-xiaofan/Data_struct.git
 >> ```
->> * 设置环境变量<br>
+>> * 设置环境变量(非永久)<br>
 >> ```shell
 >> cd /path/Data_struct
 >> source sourcefile
