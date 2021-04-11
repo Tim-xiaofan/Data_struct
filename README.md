@@ -89,7 +89,7 @@ base conversion
 ============
 ##### 算法描述（书）
 ![](https://github.com/Tim-xiaofan/Data_struct/blob/06a1118a4498ddfb7edd67e53bd5967f1ef06e4d/ch-03%20stack%20and%20queue/base-conversion/base_conversion.png) 
-##### [c++实现](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/base-conversion/base_conversion.h)
+##### [c++实现](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/base-conversion/base_conversion.h#L52)
 ```c++
 template <typename T>//must be  an integer
 std::string base_conversion<T>::
@@ -129,7 +129,7 @@ bracket matching
 ============
 ##### 算法描述(书)
 由此，在算法中设置一个栈，每读入一个括号，若是右括号，则或者使置于栈顶的最急迫的期待得以消解，或者是不合法的情况;若是左括号，则作为—个新的更急迫的期待压入栈中，自然使原有的在栈中的所有未消解的期待的急迫性都降了一级。另外，在算法的开始和结束时，栈都应该是空的。
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/bracket-matching/bracket_match.h)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/bracket-matching/bracket_match.h#L69)
 ```c++
 /** check if the brackets are matched*/
 bool bracket_match::
@@ -177,7 +177,7 @@ maze path
 >> 若栈不空 ，则重新测试新的栈顶位置，<br>
 >> 直至找到一个可通的相邻块或出栈至栈空;<br>
 > }while（栈不空）;<br>
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/maze-path/maze_path.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/maze-path/maze_path.cpp#L275)
 ```c++
 template<typename Maze>
 bool maze_path(Maze & maze)
@@ -269,7 +269,7 @@ evaluate expression
 ##### 算法描述（书）
 （1）首先置操作数栈为空栈，表达式起始符"#"为运算符栈的栈底元素;<br>
 （2）依次读入表达式中每个字符，若是操作数则进 OPND 栈，若是运算符则和 OPTR 栈的栈顶运算符比较优先权后作相应操作，直至整个表达式求值完毕（即 OPTR栈的栈顶元素和当前读入的字符均为"#"）。<br>
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/evaluate-expression/evaluate_expression.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/evaluate-expression/evaluate_expression.cpp#L179)
 ```c++
 template<typename Expression, typename Operand>
 bool evaluate_expression(const Expression & expr, Operand & result)
@@ -330,7 +330,7 @@ hanoi tower
 当 n=1 时，问题比较简单，只要将编号为1 的圆盘从塔座 X直接移至塔座 乙 上即可∶<br>
 当 n>1 时，需利用塔座 Y 作辅助塔座，若能设法将压在<br>
 编号为 n 的圆盘之上的n—1 个圆盘从塔座 X（依照上述法则）移至塔座 Y 上，则可先将编号为n 的圆盘从塔座X移至塔座Z上，然后再将塔座 Y 上的 n—1个圆盘（依照上述法则）移至塔座Z上。而如何将n—1个圆盘从一个塔座移至另一个塔座的问题是一个和原问题具有相同特征属性的问题，只是问题的规模小1，因此可以用同样的方法求解。<br>
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/hanio/hanoi.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/hanio/hanoi.cpp#L17)
 ```c++
 template <typename Tower>
 void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
