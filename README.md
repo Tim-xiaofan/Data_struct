@@ -372,16 +372,21 @@ class array
 		int *_bounds, *_constant, _elemtot;
 	private:
 		bool construct(int b1 , va_list & ap);
+		/** Map n-dimensional to one-dimensional*/
 		bool locate(va_list & ap, int & off)const;
 	public:
 		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
 		static array * instance(int b1, ...);
+		/** get value at (i, j, ...)*/
 		bool value(T & t, ...) const;
+		/** set value at (i, j, ...)*/
 		bool set_value(const T & t, ...);
 		void show_constant(void)const;
 		void show_bounds(void)const;
+		/** get dimensin length*/
 		int get_bound(int mdim)const;
+		/** initialize values from ts*/
 		array & set_values(T * ts, int n);
 };
 ```
@@ -395,10 +400,12 @@ class symmetric_matrix
 	private:
 		Item * _base;
 		int _size, _n;
+		/** Map two-dimensional to one-dimensional*/
 		static int map(int i, int j);
 	public:
 		~symmetric_matrix(){delete [] _base;}
 		symmetric_matrix(int n){_size = (n + 1) *n / 2; _base = new Item[_size];  _n = n;}
+		/** get value at (i, j, ...)*/
 		Item & at(int i, int j){return _base[map(i, j)]; }
 		const Item & at(int i, int j) const{return _base[map(i, j)];}
 		void set_values(const Item * is, int ct);
@@ -421,6 +428,7 @@ class triangular_matrix
 		~triangular_matrix(){delete [] _base;}
 		triangular_matrix(int n, int type = DOWN, const Item & c = 0);
 		Item & at(int i, int j);
+		/** get value at (i, j)*/
 		const Item & at(int i, int j) const;
 		void set_values(const Item * is, int ct);
 		void show(void)const;
@@ -458,6 +466,7 @@ class sparse_matrix : public SqList<triple<T>>
 		int get_num(int * num)const;
 		/** get postion first non-zero elements in each column*/
 		int get_cpot(int * cpot, const int * num)const;
+		/** get matrix's rows*/
 		int rows(void)const{return _m;}
 		int cols(void)const{return _n;}
 };
@@ -480,7 +489,9 @@ class rlsparse_matrix : public sparse_matrix<T>
 		/** FIXME: need to handle new exception*/
 		rlsparse_matrix(int m, int n, int tu):base(m, n, tu){_rpos = new int[m];}
 		void show_rpos(void)const;
-		int row_first(int row)const{return _rpos[row];}
+		/** get the position of the row's first element*/
+		int row_first(int row)const{return _rpos[row];
+		/** get (the position of the row's one last element +1)*/
 		int row_last(int row)const;
 };
 ```
@@ -584,7 +595,7 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 	{
 		int mfirst, mlast, nfirst, nlast, mpos, npos, ccol;
 
-		/** initialize */
+		/** initialize ctemp*/
 		for(ccol = 0; ccol < n2; ++ccol)
 		  ctemp[ccol] = 0;
 		mfirst = M.row_first(mrow);
@@ -592,7 +603,7 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		std::cout << "-----------start-----------\n";
 		for(mpos = mfirst; mpos < mlast; ++mpos)
 		{
-			nrow = M[mpos].j;/** get row of coorresponding in N*/
+			nrow = M[mpos].j;/** get row of corresponding in N*/
 			nfirst = N.row_first(nrow);
 			nlast = N.row_last(nrow);
 			//std::cout << "N : [" << nfirst << ", "<< nlast << ")\n";
