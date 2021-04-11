@@ -363,7 +363,7 @@ ch-05 array and generalized-table
 ============
 array ADT
 ===========
-#### 实现
+#### [实现](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/array-adt/array.h#L12)
 ```C++
 template<typename T, int dim = 1>
 class array
@@ -389,7 +389,7 @@ class array
 ```
 symmetric-matrix ADT
 ===========
-#### 实现
+#### [实现](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/symmetric-matrix-adt/symmetric_matrix.h#L10)
 ```C++
 template<typename Item>
 class symmetric_matrix
@@ -409,7 +409,7 @@ class symmetric_matrix
 ```
 triangular-matrix ADT
 ===========
-#### 实现
+#### [实现](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/triangular-matrix-adt/triangular_matrix.h#L10)
 ```C++
 template<typename Item>
 class triangular_matrix
@@ -432,7 +432,7 @@ class triangular_matrix
 ```
 sparse-matrix ADT
 ===========
-#### 实现一
+#### [实现一](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/sparse_matrix.h#L32)
 ```C++
 template<typename T>/** value type*/
 class sparse_matrix : public SqList<triple<T>>
@@ -464,7 +464,7 @@ class sparse_matrix : public SqList<triple<T>>
 		int cols(void)const{return _n;}
 };
 ```
-#### 实现二 行逻辑
+#### [实现二 行逻辑](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/rlsparse_matrix.h#L13)
 ```C++
 template<typename T>/** value type*/
 class rlsparse_matrix : public sparse_matrix<T>
@@ -489,7 +489,7 @@ class rlsparse_matrix : public sparse_matrix<T>
 multi-smatrix
 ===========
 ##### 算法描述（书）
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/dc0f3b33b70c26a9c0444fcc8baa5f446c07163e/ch-05%20array%20and%20generalized-table/multi-smatrix/multi_smatrix.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/multi-smatrix/multi_smatrix.cpp#L83)
 ```c++
 /** time: O(m1 * n2 + tu1 * tu2 / m2)*/
 template<typename SMatrix, typename Array>
