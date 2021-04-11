@@ -10,7 +10,7 @@
 >> ``` shell 
 >> git clone git@github.com:Tim-xiaofan/Data_struct.git
 >> ```
->> * 设置环境变量<br>
+>> * 设置环境变量(非永久)<br>
 >> ```shell
 >> cd /path/Data_struct
 >> source sourcefile
@@ -33,6 +33,14 @@ Table of contents
       	* [maze path](#maze-path)（迷宫求解）
       	* [evaluate expression](#evaluate-expression)（表达式求值）
       	* [hanoi tower](#hanoi-tower)（汉诺塔）
+   * [ch-05 array and generalized-table](#ch-05-array-and-generalized-table)
+      * [array adt](#array-adt)
+      * [symmetric matrix adt](#symmetric-matrix-adt )（对称矩阵）
+      * [triangular matrix adt](#triangular-matrix-adt)（三角矩阵）
+      * [sparse matrix adt](#sparse-matrix-adt)（稀疏矩阵）
+      	* [transpose one](#transpose-one)（稀疏矩阵的转置算法一）
+      	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
+      	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
 <!--te-->
 
 
@@ -81,7 +89,7 @@ base conversion
 ============
 ##### 算法描述（书）
 ![](https://github.com/Tim-xiaofan/Data_struct/blob/06a1118a4498ddfb7edd67e53bd5967f1ef06e4d/ch-03%20stack%20and%20queue/base-conversion/base_conversion.png) 
-##### [c++实现](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/base-conversion/base_conversion.h)
+##### [c++实现](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/base-conversion/base_conversion.h#L52)
 ```c++
 template <typename T>//must be  an integer
 std::string base_conversion<T>::
@@ -121,7 +129,7 @@ bracket matching
 ============
 ##### 算法描述(书)
 由此，在算法中设置一个栈，每读入一个括号，若是右括号，则或者使置于栈顶的最急迫的期待得以消解，或者是不合法的情况;若是左括号，则作为—个新的更急迫的期待压入栈中，自然使原有的在栈中的所有未消解的期待的急迫性都降了一级。另外，在算法的开始和结束时，栈都应该是空的。
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/bracket-matching/bracket_match.h)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/bracket-matching/bracket_match.h#L69)
 ```c++
 /** check if the brackets are matched*/
 bool bracket_match::
@@ -169,7 +177,7 @@ maze path
 >> 若栈不空 ，则重新测试新的栈顶位置，<br>
 >> 直至找到一个可通的相邻块或出栈至栈空;<br>
 > }while（栈不空）;<br>
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/maze-path/maze_path.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/maze-path/maze_path.cpp#L275)
 ```c++
 template<typename Maze>
 bool maze_path(Maze & maze)
@@ -261,7 +269,7 @@ evaluate expression
 ##### 算法描述（书）
 （1）首先置操作数栈为空栈，表达式起始符"#"为运算符栈的栈底元素;<br>
 （2）依次读入表达式中每个字符，若是操作数则进 OPND 栈，若是运算符则和 OPTR 栈的栈顶运算符比较优先权后作相应操作，直至整个表达式求值完毕（即 OPTR栈的栈顶元素和当前读入的字符均为"#"）。<br>
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/evaluate-expression/evaluate_expression.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/evaluate-expression/evaluate_expression.cpp#L179)
 ```c++
 template<typename Expression, typename Operand>
 bool evaluate_expression(const Expression & expr, Operand & result)
@@ -322,7 +330,7 @@ hanoi tower
 当 n=1 时，问题比较简单，只要将编号为1 的圆盘从塔座 X直接移至塔座 乙 上即可∶<br>
 当 n>1 时，需利用塔座 Y 作辅助塔座，若能设法将压在<br>
 编号为 n 的圆盘之上的n—1 个圆盘从塔座 X（依照上述法则）移至塔座 Y 上，则可先将编号为n 的圆盘从塔座X移至塔座Z上，然后再将塔座 Y 上的 n—1个圆盘（依照上述法则）移至塔座Z上。而如何将n—1个圆盘从一个塔座移至另一个塔座的问题是一个和原问题具有相同特征属性的问题，只是问题的规模小1，因此可以用同样的方法求解。<br>
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9520abde744f3efe3d2092c6007862a70689ccdc/ch-03%20stack%20and%20queue/hanio/hanoi.cpp)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/hanio/hanoi.cpp#L17)
 ```c++
 template <typename Tower>
 void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
@@ -351,5 +359,265 @@ void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
 		/** move the discs numbered from 1 to n-1 on y to z, and x as auxiliary tower*/
 		hanoi(n-1, y, x, z, mv_ct); 
 	}
+}
+```
+ch-05 array and generalized-table
+============
+array ADT
+===========
+#### [实现](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/array-adt/array.h#L12)
+```C++
+template<typename T, int dim = 1>
+class array
+{
+	private:
+		enum{MAX_DIM = 8};
+		T * _base;
+		int *_bounds, *_constant, _elemtot;
+	private:
+		bool construct(int b1 , va_list & ap);
+		bool locate(va_list & ap, int & off)const;
+	public:
+		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
+		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
+		static array * instance(int b1, ...);
+		bool value(T & t, ...) const;
+		bool set_value(const T & t, ...);
+		void show_constant(void)const;
+		void show_bounds(void)const;
+		int get_bound(int mdim)const;
+		array & set_values(T * ts, int n);
+};
+```
+symmetric-matrix ADT
+===========
+#### [实现](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/symmetric-matrix-adt/symmetric_matrix.h#L10)
+```C++
+template<typename Item>
+class symmetric_matrix
+{
+	private:
+		Item * _base;
+		int _size, _n;
+		static int map(int i, int j);
+	public:
+		~symmetric_matrix(){delete [] _base;}
+		symmetric_matrix(int n){_size = (n + 1) *n / 2; _base = new Item[_size];  _n = n;}
+		Item & at(int i, int j){return _base[map(i, j)]; }
+		const Item & at(int i, int j) const{return _base[map(i, j)];}
+		void set_values(const Item * is, int ct);
+		void show(void)const;
+};
+```
+triangular-matrix ADT
+===========
+#### [实现](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/triangular-matrix-adt/triangular_matrix.h#L10)
+```C++
+template<typename Item>
+class triangular_matrix
+{
+	private:
+		Item * _base, _c;
+		int _size, _n, _type;
+		int map(int i, int j) const;
+	public:
+		enum{UP = 0, DOWN = 1};
+		~triangular_matrix(){delete [] _base;}
+		triangular_matrix(int n, int type = DOWN, const Item & c = 0);
+		Item & at(int i, int j);
+		const Item & at(int i, int j) const;
+		void set_values(const Item * is, int ct);
+		void show(void)const;
+		int type(void)const{return type;}
+		bool type(int new_type);
+};
+```
+sparse-matrix ADT
+===========
+#### [实现一](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/sparse_matrix.h#L32)
+```C++
+template<typename T>/** value type*/
+class sparse_matrix : public SqList<triple<T>>
+{
+	private:
+		typedef SqList<triple<T>> base;
+	protected:
+		typedef triple<T> item;
+	private:
+		enum {MAX_SIZE = 12500};
+		int _m, _n, _tu;/** rows, cols and non-zero elements count*/
+	public:
+		sparse_matrix(const array<T, 2> & a2, int tu);
+		sparse_matrix(int m, int n, int tu)
+			:base(tu), _m(m), _n(n), _tu(tu){}
+		int tu(void)const{return _tu;}
+		static int count_tu(const array<T, 2> & a2);
+		void show(void)const;
+		/** matrix transpose algorithm*/
+		bool transpose(sparse_matrix & N)const;
+		bool transposex(sparse_matrix & N)const;
+		item & operator[](int pos){return base::operator[](pos);} 
+		const item & operator[](int pos)const{return base::operator[](pos);} 
+		/** get number of non-zero elements in each column*/
+		int get_num(int * num)const;
+		/** get postion first non-zero elements in each column*/
+		int get_cpot(int * cpot, const int * num)const;
+		int rows(void)const{return _m;}
+		int cols(void)const{return _n;}
+};
+```
+#### [实现二 行逻辑](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/rlsparse_matrix.h#L13)
+```C++
+template<typename T>/** value type*/
+class rlsparse_matrix : public sparse_matrix<T>
+{
+	private:
+		typedef sparse_matrix<T> base;
+		typedef typename base::item item;
+	public:
+		typedef T value_type;
+	private:
+		int * _rpos;
+	public:
+		~rlsparse_matrix(){delete [] _rpos;};
+		rlsparse_matrix(const array<T, 2> & a2, int tu);
+		/** FIXME: need to handle new exception*/
+		rlsparse_matrix(int m, int n, int tu):base(m, n, tu){_rpos = new int[m];}
+		void show_rpos(void)const;
+		int row_first(int row)const{return _rpos[row];}
+		int row_last(int row)const;
+};
+```
+transpose one
+===========
+##### 算法描述（书）
+按照 b.data中三元组的次序依次在 a.data 中找到相应的三元组进行转置。换句话说，按照矩阵 M 的列序来进行转置。为了找到 M 的每—列中所有的非零元素，需要对其三元组表 a.data 从第—行起整个扫描—遍，由于a.data是以M的行序为主序来存放每个非零元的，由此得到的恰是 b.data 应有的顺序。<br>
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/bcfcc4aea617872ce3e08018d65ee4d824dd2450/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/sparse_matrix.h#L115)
+```c++
+/** M(m x n) --> N(n x m)
+  * time:O(M.nu * tu)
+ **/
+template<typename T>
+bool sparse_matrix<T>:: 
+transpose(sparse_matrix & N)const
+{
+	/** TODO: to suport that target matrix is matrix self*/
+	if(N._m != _n || N._n != _m || N._tu < _tu || &N == this)
+	  return false;
+
+	/** get a col in M*/
+	int col, pos, pos1 = 0;
+	for(col = 0; col < _n; ++col)
+	  for(pos = 0; pos < _tu; ++pos)
+		if(base::operator[](pos).j == col)
+		{
+			N[pos1].i = base::operator[](pos).j;
+			N[pos1].j = base::operator[](pos).i;
+			N[pos1].e = base::operator[](pos).e;
+			++pos1;
+		}
+	return true;
+}
+```
+transpose two
+===========
+##### 算法描述（书）
+按照 a.data 中三元组的次序进行转置，并将转置后的三元组置入b中恰当的位置。如果能预先确定矩阵M中每一列（即T中每一行）的第一个非零元在b.data 中应有的位置，那么在对a.data中的三元组依次作转置时，便可直接放到 b.data 中恰当的位置上去。为了确定这些位置，在转置前，应先求得M的每一列中非零元的个数，进而求得每一列的第一个非零元在b.data中应有的位置。<br>
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/bcfcc4aea617872ce3e08018d65ee4d824dd2450/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/sparse_matrix.h#L140)
+```c++
+/** M(m x n) --> N(n x m)
+  * time:O(2 * n + tu)
+ **/
+template<typename T>
+bool sparse_matrix<T>:: 
+transposex(sparse_matrix & N)const
+{
+	/** TODO: to suport that target matrix is matrix self*/
+	if(N._m != _n || N._n != _m || N._tu < _tu || &N == this)
+	{
+		std::cerr << "invalid target matrix\n";
+		return false;
+	}
+
+	/** FIXME: need to catch the exception of new operator*/
+	int *num = new int[_n], *cpot = new int[_n];
+	if(get_num(num) == -1 || get_cpot(cpot, num) == -1)
+	{
+		std::cerr << "cannot get num or cpot\n";
+		return false;
+	}
+
+	int pos, pos1, col;
+	for(pos = 0; pos < _tu; ++pos)
+	{
+		col = base::operator[](pos).j;
+		pos1 = cpot[col];
+		N[pos1].i = base::operator[](pos).j; 
+		N[pos1].j = base::operator[](pos).i; 
+		N[pos1].e = base::operator[](pos).e;
+		cpot[col]+=1;
+	}
+	delete num;
+	delete cpot;
+	return true;
+}
+```
+multi-smatrix
+===========
+##### 算法描述（书）
+稀疏矩阵相乘的基本操作是∶对于M中每个元素 M.data[p]（p=1，2，…，M. tu），找到N中所有满足条件 M.data[p].j=N.data[q].i的元素 N.data[q]，求得M.data[p].v和N.data[q].v的乘积，而从式（5-6）得知，乘积矩阵Q中每个元素的值是个累计和，这个乘积M.data[p].v×N.data[q].v只是Q[i][j]中的一部分。为便于操作，应对每个元素设一累计和的变量，其初值为零，然后扫描数组M，求得相应元素的乘积并累加到适当的求累计和的变量上。
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/multi-smatrix/multi_smatrix.cpp#L83)
+```c++
+/** time: O(m1 * n2 + tu1 * tu2 / m2)*/
+template<typename SMatrix, typename Array>
+bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
+{
+	int m1, n1, m2, n2, tu = 0, mrow, nrow, *rpos, *ctemp;
+	m1 = M.rows();
+	n1 = M.cols();
+	m2 = N.rows();
+	n2 = N.cols();
+	rpos = new int[m1];
+
+	if(n1 != m2)
+	  return false;
+	if(M.tu() * N.tu() == 0)
+	  return true;
+
+	ctemp = new int[n2];
+	for(mrow = 0; mrow < m1; ++mrow)
+	{
+		int mfirst, mlast, nfirst, nlast, mpos, npos, ccol;
+
+		/** initialize */
+		for(ccol = 0; ccol < n2; ++ccol)
+		  ctemp[ccol] = 0;
+		rpos[mrow] = tu;
+		mfirst = M.row_first(mrow);
+		mlast = M.row_last(mrow);
+		std::cout << "-----------start-----------\n";
+		for(mpos = mfirst; mpos < mlast; ++mpos)
+		{
+			nrow = M[mpos].j;/** get row of coorresponding in N*/
+			nfirst = N.row_first(nrow);
+			nlast = N.row_last(nrow);
+			//std::cout << "N : [" << nfirst << ", "<< nlast << ")\n";
+			for(npos = nfirst; npos < nlast; ++npos)
+			{
+				std::cout << "{" << M[mpos] << " * " << N[npos] << "} "; 
+				ctemp[N[npos].j]+= M[mpos].e * N[npos].e;
+			}
+			std::cout << "\n";
+		}/** get non-zero elemets of Q's mrow-th row*/
+		for(ccol = 0; ccol < n2; ++ccol)
+		{
+			//std::cout << triple<int>(mrow, ccol, ctemp[ccol]) << " ";
+			a2.set_value(ctemp[ccol], mrow, ccol);
+		}
+		a2_show(a2);
+		std::cout << "\n-----------end-----------\n\n";
+	}
+	/** need a move constructor*/
+	return true;
 }
 ```
