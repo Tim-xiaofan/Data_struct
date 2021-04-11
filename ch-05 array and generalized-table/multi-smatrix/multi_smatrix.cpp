@@ -83,12 +83,11 @@ int main()
 template<typename SMatrix, typename Array>
 bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 {
-	int m1, n1, m2, n2, tu = 0, mrow, nrow, *rpos, *ctemp;
+	int m1, n1, m2, n2, mrow, nrow, *ctemp;
 	m1 = M.rows();
 	n1 = M.cols();
 	m2 = N.rows();
 	n2 = N.cols();
-	rpos = new int[m1];
 
 	if(n1 != m2)
 	  return false;
@@ -103,7 +102,6 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		/** initialize */
 		for(ccol = 0; ccol < n2; ++ccol)
 		  ctemp[ccol] = 0;
-		rpos[mrow] = tu;
 		mfirst = M.row_first(mrow);
 		mlast = M.row_last(mrow);
 		std::cout << "-----------start-----------\n";
@@ -128,7 +126,7 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		a2_show(a2);
 		std::cout << "\n-----------end-----------\n\n";
 	}
-	/** need a move constructor*/
+	delete [] ctemp;
 	return true;
 }
 
