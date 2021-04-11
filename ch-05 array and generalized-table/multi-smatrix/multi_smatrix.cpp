@@ -138,7 +138,8 @@ a2_show(const array<int, 2> & a2)
 	{
 		for(j = 0; j < a2.get_bound(2); ++j)
 		{
-			a2.value(k, i, j);
+			//a2.value(k, i, j);
+			k = a2.at(i, j);
 			std::cout << k << " ";
 		}
 		std::cout << "\n";

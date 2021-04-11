@@ -26,12 +26,12 @@ int main()
 	using std::cout;
 	using std::endl;
 	using std::cin;
-	int i, j, x, k;
+	int i, j, x;
 
 	for(i = 0; i < N; i++)
 	  a[i] = i;
 
-	a1 * a_1d = a1::instance(-1);
+	a1 * a_1d = a1::instance(3);
 	if(!a_1d) return 0;
 	a_1d->set_values(a, N);
 	SEPARATE();
@@ -39,8 +39,8 @@ int main()
 	cout << "1d :" << endl;
 	for(i = 0; i <3; ++i)
 	{
-		a_1d->value(k, i);
-		cout << k << " ";
+		//a_1d->value(k, i);
+		cout << a_1d->at(i) << " ";
 	}
 	cout << endl;
 
@@ -53,8 +53,8 @@ int main()
 	{
 		for(j = 0; j < 4; ++j) 
 		{
-			a_2d->value(k, i, j);
-			cout << std:: setw(2) << std::left << k << " ";
+			//a_2d->value(k, i, j);
+			cout << std:: setw(2) << std::left << a_2d->at(i, j) << " ";
 		}
 		cout << endl;
 	}
@@ -71,8 +71,8 @@ int main()
 	  {
 		  for(x = 0; x < 5; ++x) 
 		{
-			a_3d->value(k, i, j, x);
-			cout << std:: setw(2) << std::left << k << " ";
+			//a_3d->value(k, i, j, x);
+			cout << std:: setw(2) << std::left << a_3d->at(i, j, x) << " ";
 		}
 		  cout << endl;
 	  }
@@ -91,8 +91,8 @@ int main()
 	{
 		for(j = 0; j < 4; ++j) 
 		{
-			a_2d1->value(k, i, j);
-			cout << std:: setw(2) << std::left << k << " ";
+			//a_2d1->value(k, i, j);
+			cout << std:: setw(2) << std::left << a_2d1->at(i, j) << " ";
 		}
 		cout << endl;
 	}

@@ -8,6 +8,10 @@
 
 #include "sparse_matrix.h"
 #include "rlsparse_matrix.h"
+#include "crosslist_smatrix.h"
+
+
+#define SEPARATE(info) std::cout << "-----------" << info << "-----------\n"
 
 //#define N 100
 
@@ -98,5 +102,13 @@ int main()
 	M1.show();
 	cout << "rpos : ";
 	M1.show_rpos();
+
+	SEPARATE("test crosslist_smatrix");
+	crosslist<int> cl(3, 4);
+	crosslist<int> cl1(*a2);
+	//cout << "show_rlist: \n";
+	//cl1.show_rlist();
+	//cout << "show_right: \n";
+	//cl1.show_right();
 	return 0;
 }

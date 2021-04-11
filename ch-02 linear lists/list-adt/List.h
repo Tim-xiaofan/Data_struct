@@ -13,7 +13,7 @@ class List
     /** data*/
     private:
 		typedef Node<Item> node;
-		enum {DEFAULT_SIZE = 16};
+		enum {DEFAULT_SIZE = 1024};
         int _size, _length, _current;
         node *_head, *_tail, *_cursor;
 	
@@ -21,6 +21,7 @@ class List
 	public:
 		/** types*/
 		typedef iterator<node> input_iterator;
+		typedef iterator<node> const_iterator;
 		typedef forward_iterator<node> fwd_iterator;
 		typedef Item item_type;
 
@@ -58,6 +59,9 @@ class List
 		bool insert_n(int pos, const Item & i);
 		template <typename BinaryPredicate>
 		bool insert_sorted(const Item & i, const BinaryPredicate & pre);
+		/** insert sorted and return next item of the new one*/
+		template <typename BinaryPredicate>
+		bool insert_sorted(const Item & i, Item & next, const BinaryPredicate & pre);
 		bool append(const Item & i);
 		bool append_bulk(const Item *is, int n);
 		void show(void) const;
@@ -431,7 +435,6 @@ insert_sorted(const Item & i, const BinaryPredicate & pre)
 	{
 		_tail = tmp;
 		_head->_next = _tail;
-		//fprintf(stderr, "empty, insert %d at %d\n", tmp->_i, pos);
 	}
 	else
 	{/** n --> n + 1*/
@@ -439,18 +442,19 @@ insert_sorted(const Item & i, const BinaryPredicate & pre)
 		p = _head;
 		while(p)
 		{
-			if(p == _head && pre(i, p->_next->_i) <= 0)
+			if(p == _head )
 			{
-				tmp->_next = _head->_next;
-				_head->_next = tmp;
-				//fprintf(stderr, "0 insert %d at %d\n", tmp->_i, pos);
-				break;
+				if(pre(i, p->_next->_i) <= 0)
+				{
+					tmp->_next = _head->_next;
+					_head->_next = tmp;
+					break;
+				}
 			}
 			else if(p == _tail)
 			{
 				_tail->_next = tmp;
 				_tail = tmp;
-				//fprintf(stderr, "1 insert %d at %d\n", tmp->_i, pos);
 				break;
 			}
 			else
@@ -459,8 +463,6 @@ insert_sorted(const Item & i, const BinaryPredicate & pre)
 				{
 					tmp->_next = p->_next;
 					p->_next = tmp;
-					//fprintf(stderr, "insert at %d\n", pos);
-					//fprintf(stderr, "2 insert %d at %d\n", tmp->_i, pos);
 					break;
 				}
 			}
@@ -469,8 +471,6 @@ insert_sorted(const Item & i, const BinaryPredicate & pre)
 		}
 	}
 	_length++;
-	//std::cout << "after inserting : ";
-	//show();
 	return true;
 }
 

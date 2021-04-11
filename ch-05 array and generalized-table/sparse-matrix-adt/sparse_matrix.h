@@ -70,7 +70,7 @@ count_tu(const array<T, 2> & a2)
 	for(i = 0; i < m; ++i)
 	  for(j = 0; j < n; ++j)
 	  {
-		  a2.value(k, i, j);
+		  k = a2.at(i, j);
 		  if(k != 0) tu+=1;
 	  }
 	return tu;
@@ -90,7 +90,8 @@ sparse_matrix (const array<T, 2> & a2, int tu):base(tu)
 	for(i = 0; i < _m; ++i)
 	  for(j = 0; j < _n; ++j)
 	  {
-		  a2.value(k, i, j);
+		  //a2.value(k, i, j);
+		  k = a2.at(i, j);
 		  if(k != 0)
 			base::operator[](pos++) = item(i, j, k);
 	  }

@@ -18,11 +18,14 @@ class array
 	private:
 		bool construct(int b1 , va_list & ap);
 		bool locate(va_list & ap, int & off)const;
+		bool locate(int i, va_list & ap, int & off)const;
 	public:
 		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
 		static array * instance(int b1, ...);
+		[[deprecated("Replaced by 'const T at(i, ...)const', which has an improved interface")]]
 		bool value(T & t, ...) const;
+		const T at(int i, ...) const;
 		bool set_value(const T & t, ...);
 		void show_constant(void)const;
 		void show_bounds(void)const;
@@ -116,6 +119,23 @@ locate(va_list & ap, int & off)const
 
 template<typename T, int dim>
 bool array<T, dim>::
+locate(int i0, va_list & ap, int & off)const
+{
+	off = 0;
+	int ind, i;
+	off += i0 * _constant[0];
+	for(i = 1; i < dim; i++)
+	{
+		ind = va_arg(ap, int);
+		//std::cout << "ind = " << ind << std::endl;
+		if(ind < 0 || ind >= _bounds[i])return false;
+		off += ind * _constant[i];
+	}
+	return true;
+}
+
+template<typename T, int dim>
+bool array<T, dim>::
 value(T & t, ...) const
 {
 	bool ret = false;
@@ -127,6 +147,23 @@ value(T & t, ...) const
 	//std::cout << "off = " << off << std::endl;
 	va_end(ap);
 	return ret;
+}
+
+template<typename T, int dim>
+const T  array<T, dim>::
+at(int i, ...) const
+{
+	int off;
+	va_list ap;
+	va_start(ap, i);
+	if(locate(i, ap, off))
+	{
+		va_end(ap);
+		return _base[off];
+	}
+	//std::cout << "off = " << off << std::endl;
+	va_end(ap);
+	return -1;
 }
 
 template<typename T, int dim>
