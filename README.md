@@ -42,10 +42,6 @@ Table of contents
       	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
       	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
 <!--te-->
-
-
-Installation
-============
 # 遇到什么问题欢迎在[Issues](https://github.com/Tim-xiaofan/Data_struct/issues)中提出
 ch 03 stack and queue
 ============
