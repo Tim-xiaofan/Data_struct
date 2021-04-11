@@ -566,18 +566,17 @@ multi-smatrix
 ===========
 ##### 算法描述（书）
 稀疏矩阵相乘的基本操作是∶对于M中每个元素 M.data[p]（p=1，2，…，M. tu），找到N中所有满足条件 M.data[p].j=N.data[q].i的元素 N.data[q]，求得M.data[p].v和N.data[q].v的乘积，而从式（5-6）得知，乘积矩阵Q中每个元素的值是个累计和，这个乘积M.data[p].v×N.data[q].v只是Q[i][j]中的一部分。为便于操作，应对每个元素设一累计和的变量，其初值为零，然后扫描数组M，求得相应元素的乘积并累加到适当的求累计和的变量上。
-##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/multi-smatrix/multi_smatrix.cpp#L83)
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/820600a3289c6c146573da9cbd9caf0b17875d90/ch-05%20array%20and%20generalized-table/multi-smatrix/multi_smatrix.cpp#L84)
 ```c++
 /** time: O(m1 * n2 + tu1 * tu2 / m2)*/
 template<typename SMatrix, typename Array>
 bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 {
-	int m1, n1, m2, n2, tu = 0, mrow, nrow, *rpos, *ctemp;
+	int m1, n1, m2, n2, mrow, nrow, *ctemp;
 	m1 = M.rows();
 	n1 = M.cols();
 	m2 = N.rows();
 	n2 = N.cols();
-	rpos = new int[m1];
 
 	if(n1 != m2)
 	  return false;
@@ -592,7 +591,6 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		/** initialize */
 		for(ccol = 0; ccol < n2; ++ccol)
 		  ctemp[ccol] = 0;
-		rpos[mrow] = tu;
 		mfirst = M.row_first(mrow);
 		mlast = M.row_last(mrow);
 		std::cout << "-----------start-----------\n";
@@ -617,7 +615,7 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		a2_show(a2);
 		std::cout << "\n-----------end-----------\n\n";
 	}
-	/** need a move constructor*/
+	delete [] ctemp;
 	return true;
 }
 ```
