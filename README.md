@@ -38,6 +38,8 @@ Table of contents
       * [symmetric matrix adt](#symmetric-matrix-adt )（对称矩阵）
       * [triangular matrix adt](#triangular-matrix-adt)（三角矩阵）
       * [sparse matrix adt](#sparse-matrix-adt)（稀疏矩阵）
+      	* [transpose one](#transpose-one)（稀疏矩阵的转置算法一）
+      	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
       	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
 <!--te-->
 
@@ -485,6 +487,80 @@ class rlsparse_matrix : public sparse_matrix<T>
 		int row_first(int row)const{return _rpos[row];}
 		int row_last(int row)const;
 };
+```
+transpose one
+===========
+##### 算法描述（书）
+按照 b.data中三元组的次序依次在 a.data 中找到相应的三元组进行转置。换句话说，按照矩阵 M 的列序来进行转置。为了找到 M 的每—列中所有的非零元素，需要对其三元组表 a.data 从第—行起整个扫描—遍，由于a.data是以M的行序为主序来存放每个非零元的，由此得到的恰是 b.data 应有的顺序。<br>
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/bcfcc4aea617872ce3e08018d65ee4d824dd2450/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/sparse_matrix.h#L115)
+```c++
+/** M(m x n) --> N(n x m)
+  * time:O(M.nu * tu)
+ **/
+template<typename T>
+bool sparse_matrix<T>:: 
+transpose(sparse_matrix & N)const
+{
+	/** TODO: to suport that target matrix is matrix self*/
+	if(N._m != _n || N._n != _m || N._tu < _tu || &N == this)
+	  return false;
+
+	/** get a col in M*/
+	int col, pos, pos1 = 0;
+	for(col = 0; col < _n; ++col)
+	  for(pos = 0; pos < _tu; ++pos)
+		if(base::operator[](pos).j == col)
+		{
+			N[pos1].i = base::operator[](pos).j;
+			N[pos1].j = base::operator[](pos).i;
+			N[pos1].e = base::operator[](pos).e;
+			++pos1;
+		}
+	return true;
+}
+```
+transpose two
+===========
+##### 算法描述（书）
+按照 a.data 中三元组的次序进行转置，并将转置后的三元组置入b中恰当的位置。如果能预先确定矩阵M中每一列（即T中每一行）的第一个非零元在b.data 中应有的位置，那么在对a.data中的三元组依次作转置时，便可直接放到 b.data 中恰当的位置上去。为了确定这些位置，在转置前，应先求得M的每一列中非零元的个数，进而求得每一列的第一个非零元在b.data中应有的位置。<br>
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/bcfcc4aea617872ce3e08018d65ee4d824dd2450/ch-05%20array%20and%20generalized-table/sparse-matrix-adt/sparse_matrix.h#L140)
+```c++
+/** M(m x n) --> N(n x m)
+  * time:O(2 * n + tu)
+ **/
+template<typename T>
+bool sparse_matrix<T>:: 
+transposex(sparse_matrix & N)const
+{
+	/** TODO: to suport that target matrix is matrix self*/
+	if(N._m != _n || N._n != _m || N._tu < _tu || &N == this)
+	{
+		std::cerr << "invalid target matrix\n";
+		return false;
+	}
+
+	/** FIXME: need to catch the exception of new operator*/
+	int *num = new int[_n], *cpot = new int[_n];
+	if(get_num(num) == -1 || get_cpot(cpot, num) == -1)
+	{
+		std::cerr << "cannot get num or cpot\n";
+		return false;
+	}
+
+	int pos, pos1, col;
+	for(pos = 0; pos < _tu; ++pos)
+	{
+		col = base::operator[](pos).j;
+		pos1 = cpot[col];
+		N[pos1].i = base::operator[](pos).j; 
+		N[pos1].j = base::operator[](pos).i; 
+		N[pos1].e = base::operator[](pos).e;
+		cpot[col]+=1;
+	}
+	delete num;
+	delete cpot;
+	return true;
+}
 ```
 multi-smatrix
 ===========
