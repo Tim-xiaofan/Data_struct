@@ -38,7 +38,7 @@ Table of contents
       * [symmetric matrix adt](#symmetric-matrix-adt )（对称矩阵）
       * [triangular matrix adt](#triangular-matrix-adt)（三角矩阵）
       * [sparse matrix adt](#sparse-matrix-adt)（稀疏矩阵）
-      	* [multi smatrix](#evaluate-expression)（稀疏矩阵的乘法）
+      	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
 <!--te-->
 
 
