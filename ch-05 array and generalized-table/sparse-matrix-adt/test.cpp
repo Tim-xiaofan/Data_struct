@@ -104,11 +104,11 @@ int main()
 	M1.show_rpos();
 
 	SEPARATE("test crosslist_smatrix");
-	crosslist<int> cl(3, 4);
-	crosslist<int> cl1(*a2);
-	//cout << "show_rlist: \n";
-	//cl1.show_rlist();
-	//cout << "show_right: \n";
-	//cl1.show_right();
+	crosslist_matrix<int> cl(3, 4);
+	crosslist_matrix<int> cl1(*a2);
+	cout << "show_rlists: \n";
+	cl1.show_rlists();
+	cout << "show_clists: \n";
+	cl1.show_clists();
 	return 0;
 }

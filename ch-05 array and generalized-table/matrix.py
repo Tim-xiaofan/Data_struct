@@ -13,5 +13,6 @@ N = np.mat([[1,2],
 print("N = \n", N)
 print("matrix: M * N = \n", M * N)
 print("matrix: 2 * N = \n", 2 * N)
+print("matrix: M + M = \n", M + M)
 print("matrix: N.T = \n", N.T)
 print("matrix: N.I = \n", N.I)
