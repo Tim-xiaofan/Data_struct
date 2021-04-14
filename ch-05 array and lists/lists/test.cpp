@@ -19,9 +19,9 @@ struct arg{
 };
 
 static const char * inputs[4] = {
-	"",
+	"()",
 	"e",
-	"(a,(b,c,d))",
+	"a,(b,c,d)",
 	"((),(e),(a,(b,c,d)))"
 };
 
@@ -35,19 +35,23 @@ int main()
 	cout << a1.val << endl;
 	//cout << a1.vals << endl;
 
-	htlists<char> htl(inputs[3]);
-	cout << "thl's depth : " << htl.depth() << endl;
+	SEP("htlist test0 start");
+	htlists<char> htl(inputs[2]);
+	//cout << "thl's depth : " << htl.depth() << endl;
+	SEP("htlist test0 end");
+	cout << endl;
 
 	int i;
-	char head[512], tail[512];
+	char head[512];
 	for(i = 0; i < 4; ++i)
 	{
+		SEP(i);
 		cout << "input " << inputs[i] << " : ";
 		istr is(inputs[i]);
-		is.get_ht(head, tail);
-		cout << "head = " << head << ", tail = " << tail << endl;
+		is.de_head(head);
+		cout << "head = " << head << "\tremain = " << is.str << endl;
 		istr::remove_lr(head);
-		istr::remove_lr(tail);
-		cout << "head = " << head << ", tail = " << tail << endl;
+		cout << "head = " << head << "\tremain = " << is.str << endl;
+		SEP(i);
 	}
 }

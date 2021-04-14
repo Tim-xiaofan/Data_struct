@@ -2,6 +2,11 @@
 #ifndef LISTS_H
 #define LISTS_H
 #include <cstring>
+#include <iostream>
+using std::cout;
+using std::endl;
+
+#define SEP(info) cout <<"-------------" << info << "-------------" <<endl
 
 /** input str of htlists*/
 struct istr
@@ -11,7 +16,7 @@ struct istr
 	static const char * empty;
 	istr(const char * mstr = nullptr):str(mstr){}
 	/** get head "()" and tail"(e),(a,(b,c,d)"*/
-	void get_ht(char *head, char *tail);
+	void de_head(char *head);
     static bool is_empty(const char *s){return strcmp(empty, s) == 0;}
 	/** is atom ?*/
 	static bool is_atom(const char * s);
@@ -21,43 +26,36 @@ struct istr
 
 const char * istr:: empty = "()";
 
+/** get and rm head*/
 inline void istr::
-get_ht(char *head, char *tail)
+de_head(char *head)
 {
-	int left = 0, right = 0, len, i, pos;
+	int left = 0, right = 0, len, i;
 	len = strlen(str);
 	if(len == 0)
 	{
 		strcpy(head, empty);
-		strcpy(tail, empty);
 		return;
 	}
 	
 	/** get head*/
-	for(i = 0, pos = 0; i < len; ++i)
+	for(i = 0; i < len; ++i)
 	{
 	  switch(str[i])
 	  {
 		  case '(':left++; break;
 		  case ')':right++; break;
 	  }
-	  head[pos++] = str[i];
-	  if(left * right != 0 && left == right)
-		break;
+	  head[i] = str[i];
+	  if(left == right)
+	  {
+		  ++i;
+		  break;
+	  }
 	}
-	head[pos] = '\0';
-
-	/** get tail*/
-	if(pos >= len)
-	{/** empty*/
-		strcpy(tail, empty);
-	}
-	else
-	{
-		for(i = pos + 1, pos = 0; i < len; ++i)
-		  tail[pos++] = str[i];
-		tail[pos] = '\0';
-	}
+	head[i] = '\0';
+	if(str[i] == ',') ++i;
+	str += i;
 }
 
 
@@ -73,8 +71,9 @@ is_atom(const char * s)
 	return true;
 }
 
+/** O(1) */
 inline void istr::
-remove_lr(char * s)
+remove_lr(char *  s)
 {
 	int i, len = strlen(s);
 	if(s[0] != '(' || s[len-1] !=')')
@@ -82,6 +81,8 @@ remove_lr(char * s)
 	for(i = 1; i < len - 1; ++i)
 	  s[i-1] = s[i];
 	s[len - 2] = '\0';
+	//s+=1;
+	//s[len - 2] = '\0';
 }
 
 template <typename Atom>
@@ -106,7 +107,7 @@ class htlists
 	private:
 		int depth(node * lists) const;
 		/** create lists*/
-		void create(node * & lists, char * str);   
+		void create(int n, node * & lists, char * str);   
 	public:
 		typedef node htnode;
 		typedef node* phtnode;
@@ -165,11 +166,11 @@ template<typename Atom>
 htlists<Atom>::
 htlists(const char * str)
 {
-	char head[512], tail[512];
-	istr is(str);
-	is.get_ht(head, tail);
-	istr::remove_lr(head);
-	create(_lists, head);
+	if(strlen(str) == 0)
+	  return;
+	char input[1024];
+	strcpy(input, str);
+	create(0, _lists, input);
 }
 
 template<typename Atom>
@@ -191,10 +192,16 @@ depth(node * lists) const
 
 template<typename Atom>
 void htlists<Atom>::
-create(node * & ls, char *str)
+create(int n, node * & ls, char *str)
 {
+	SEP(n << " enter");
+	cout << "with str = " << str << endl;
+	if(n >= 20) return;
+	//cout << str << " is empty : " << std::boolalpha << istr::is_empty(str) << endl;
 	if(istr::is_empty(str))/** create an empty list*/
-	  ls = nullptr;
+	{
+		ls = nullptr;
+	}
 	else
 	{
 		ls = new htnode();
@@ -206,26 +213,30 @@ create(node * & ls, char *str)
 		}
 		else
 		{/**sub list*/
-			char head[512], tail[512];
+			char head[512];
 			istr::remove_lr(str);
+			cout << "after rm str:" << str << endl;
+			istr is(str);
 			ls->tag = htnode::LIST;
 			node * p = ls, *tmp = nullptr;
 			do
 			{
-				istr is(str);
-				is.get_ht(head, tail);
+				is.de_head(head);
+				cout << "head : " << head << endl;
+				cout << "remain : " << is.str << endl;
 				/** creat head*/
-				create(p->ptr.hp, head);
+				create(n + 1, p->ptr.hp, head);
 				tmp = p;
-				if(!istr::is_empty(tail))
+				if(strlen(is.str))
 				{
 					p = new node;
 					p->tag = node::LIST;
 					tmp->ptr.tp = p;
 				}
-			}while(!istr::is_empty(tail));
+			}while(strlen(is.str));
 			tmp->ptr.tp = nullptr;
 		}
 	}
+	SEP(n << " leave");
 }
 #endif
