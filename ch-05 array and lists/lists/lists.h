@@ -110,6 +110,7 @@ class htlists
 		/** create lists*/
 		void create(int n, node * &lists, char * str);   
 		void show(const node * lists, bool)const;
+		void str2atom(const char *str, Atom &atom)const;
 	public:
 		typedef node htnode;
 		typedef node* phtnode;
@@ -261,6 +262,8 @@ show(void)const
 	cout << endl;
 }
 
+/**
+  @param	tail if need a ','*/
 template<typename Atom>
 void htlists<Atom>::
 show(const node * lists, bool tail)const
@@ -280,14 +283,13 @@ show(const node * lists, bool tail)const
 		else if(lists->tag == node::LIST)
 		{
 			dep = depth(lists->ptr.hp);
-			if(dep > 1) --dep;
+			dep = (dep > 0)? 1:0;
 			for(i = 0; i < dep; ++i)
 			  cout << "(";
 			show(lists->ptr.hp, lists->ptr.tp);
 			for(i = 0; i < dep; ++i)
 			  cout << ")";
 			if(i > 0 && tail)cout << ",";
-
 			/** tail*/
 			if(lists->ptr.tp)
 			{
@@ -296,4 +298,10 @@ show(const node * lists, bool tail)const
 		}
 	}
 }
+
+//template <typename Atom>
+//void htlists<Atom>::
+//str2atom(const char *str, Atom &atom)const
+//{
+//}
 #endif

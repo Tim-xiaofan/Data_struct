@@ -5,6 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <typeinfo>
 #include "lists.h"
 
 using std::cout;
@@ -18,7 +19,7 @@ struct arg{
 	};
 };
 
-#define N 8
+#define N 9
 
 static const char * inputs[N] = {
 	"", /** invalid*/
@@ -29,10 +30,12 @@ static const char * inputs[N] = {
 	"(a,(b,c,d))",
 	"((),(e),(a,(b,c,d)))",
 	"((),(e),(a,(b,c,d,(h,i,(j)))),f,g,())",
+	"((),(e),(a,(b,c,d,(h,i,(j,((k)))))),f,g,())"
 };
 
 int main()
 {
+	using std::type_info;
 	arg a1;
 	a1.ct = 0;
 	a1.vals = (char *)"string";
@@ -40,6 +43,11 @@ int main()
 	a1.val = 'c';
 	cout << a1.val << endl;
 	//cout << a1.vals << endl;
+    cout<<typeid(int).name() <<" | " <<typeid(int).hash_code() <<endl;
+    cout<<typeid(char).name() <<" | " <<typeid(char).hash_code() <<endl;
+	int j;
+	if(typeid(j) == typeid(int))
+	  cout << "j is an integer\n";
 
 	SEP("htlist test0 start");
 	int i;
