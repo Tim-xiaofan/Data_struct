@@ -2,6 +2,7 @@
 *.i
 *.s
 *.exe
+*.txt
 *tags
 *core*
 ch-02 Lists/List ADT/list

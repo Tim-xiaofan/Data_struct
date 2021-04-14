@@ -18,11 +18,17 @@ struct arg{
 	};
 };
 
-static const char * inputs[4] = {
+#define N 8
+
+static const char * inputs[N] = {
+	"", /** invalid*/
+	"x",/** invalid*/
 	"()",
-	"e",
-	"a,(b,c,d)",
-	"((),(e),(a,(b,c,d)))"
+	"(e)",
+	"(a,b,c,d,e)",
+	"(a,(b,c,d))",
+	"((),(e),(a,(b,c,d)))",
+	"((),(e),(a,(b,c,d,(h,i,(j)))),f,g,())",
 };
 
 int main()
@@ -36,22 +42,27 @@ int main()
 	//cout << a1.vals << endl;
 
 	SEP("htlist test0 start");
-	htlists<char> htl(inputs[2]);
-	//cout << "thl's depth : " << htl.depth() << endl;
+	int i;
+	for(i = 0; i < N; i++)
+	{
+		htlists<char> htl(inputs[i]);
+		cout <<"\"" <<inputs[i] <<"\"'s depth : " << htl.depth() << ", lists = ";
+		htl.show();
+	}
 	SEP("htlist test0 end");
 	cout << endl;
 
-	int i;
-	char head[512];
-	for(i = 0; i < 4; ++i)
-	{
-		SEP(i);
-		cout << "input " << inputs[i] << " : ";
-		istr is(inputs[i]);
-		is.de_head(head);
-		cout << "head = " << head << "\tremain = " << is.str << endl;
-		istr::remove_lr(head);
-		cout << "head = " << head << "\tremain = " << is.str << endl;
-		SEP(i);
-	}
+	//int i;
+	//char head[512];
+	//for(i = 0; i < 4; ++i)
+	//{
+	//	SEP(i);
+	//	cout << "input " << inputs[i] << " : ";
+	//	istr is(inputs[i]);
+	//	is.de_head(head);
+	//	cout << "head = " << head << "\tremain = " << is.str << endl;
+	//	istr::remove_lr(head);
+	//	cout << "head = " << head << "\tremain = " << is.str << endl;
+	//	SEP(i);
+	//}
 }

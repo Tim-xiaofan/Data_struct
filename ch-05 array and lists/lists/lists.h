@@ -92,13 +92,14 @@ class htlists
 		template<typename Atom1>
 			struct Node
 			{
-				typedef enum{ATOM = 0, LIST = 0} elem_type;
+				typedef enum{UNKNOW = -1, ATOM = 0, LIST = 1} elem_type;
 				elem_type tag;
 				union 
 				{
 					Atom1 atom;
 					struct {Node *hp, *tp;} ptr;
 				};
+				Node():tag(UNKNOW){}
 			};
 		typedef Node<Atom> node;
 	private:
@@ -107,7 +108,8 @@ class htlists
 	private:
 		int depth(node * lists) const;
 		/** create lists*/
-		void create(int n, node * & lists, char * str);   
+		void create(int n, node * &lists, char * str);   
+		void show(const node * lists, bool)const;
 	public:
 		typedef node htnode;
 		typedef node* phtnode;
@@ -117,6 +119,7 @@ class htlists
 		int depth(void) const{return depth(_lists);}
 		const phtnode & get_head(void) const {return _lists;};
 		phtnode & get_head(void){return _lists;};
+		void show(void)const;
 };
 
 template <typename Atom>
@@ -166,10 +169,14 @@ template<typename Atom>
 htlists<Atom>::
 htlists(const char * str)
 {
-	if(strlen(str) == 0)
-	  return;
 	char input[1024];
-	strcpy(input, str);
+	if(strlen(str) == 0 || str[0] != '(')
+	{
+		input[0] = '(';
+		input[1] = ')';
+		input[2] = '\0';
+	}
+	else strcpy(input, str);
 	create(0, _lists, input);
 }
 
@@ -194,8 +201,8 @@ template<typename Atom>
 void htlists<Atom>::
 create(int n, node * & ls, char *str)
 {
-	SEP(n << " enter");
-	cout << "with str = " << str << endl;
+	//SEP(n << " enter");
+	//cout << "with str = " << str  << ", &ls = " << (void *)&ls << endl;
 	if(n >= 20) return;
 	//cout << str << " is empty : " << std::boolalpha << istr::is_empty(str) << endl;
 	if(istr::is_empty(str))/** create an empty list*/
@@ -210,20 +217,23 @@ create(int n, node * & ls, char *str)
 			ls->tag = htnode::ATOM;
 			/**FIXME: atom may be int, long, float types*/
 			ls->atom = str[0]; 
+			//cout << "creat atom : " << ls->atom << ", " << (void*)&ls->atom << endl;
+			//cout << "list:";
+			//show();
 		}
 		else
 		{/**sub list*/
 			char head[512];
 			istr::remove_lr(str);
-			cout << "after rm str:" << str << endl;
+			//cout << "after rm str:" << str << endl;
 			istr is(str);
 			ls->tag = htnode::LIST;
 			node * p = ls, *tmp = nullptr;
 			do
 			{
 				is.de_head(head);
-				cout << "head : " << head << endl;
-				cout << "remain : " << is.str << endl;
+				//cout << "head : " << head << endl;
+				//cout << "remain : " << is.str << endl;
 				/** creat head*/
 				create(n + 1, p->ptr.hp, head);
 				tmp = p;
@@ -233,10 +243,57 @@ create(int n, node * & ls, char *str)
 					p->tag = node::LIST;
 					tmp->ptr.tp = p;
 				}
+				//cout << "list:";
+				//show();
 			}while(strlen(is.str));
 			tmp->ptr.tp = nullptr;
 		}
 	}
-	SEP(n << " leave");
+	//SEP(n << " leave");
+}
+template<typename Atom>
+void htlists<Atom>::
+show(void)const
+{
+	cout << "(";
+	show(_lists, (_lists && _lists->tag == node::LIST)&&(_lists->ptr.tp));
+	cout << ")";
+	cout << endl;
+}
+
+template<typename Atom>
+void htlists<Atom>::
+show(const node * lists, bool tail)const
+{
+	int dep, i;
+	if(lists == nullptr)
+	{
+		cout << "";
+	}
+	else
+	{
+		if(lists->tag == node::ATOM)
+		{
+			cout << lists->atom;
+			if(tail) cout << ",";
+		}
+		else if(lists->tag == node::LIST)
+		{
+			dep = depth(lists->ptr.hp);
+			if(dep > 1) --dep;
+			for(i = 0; i < dep; ++i)
+			  cout << "(";
+			show(lists->ptr.hp, lists->ptr.tp);
+			for(i = 0; i < dep; ++i)
+			  cout << ")";
+			if(i > 0 && tail)cout << ",";
+
+			/** tail*/
+			if(lists->ptr.tp)
+			{
+				show(lists->ptr.tp, (lists->ptr.tp->tag == node::LIST) && (lists->ptr.tp->ptr.tp));
+			}
+		}
+	}
 }
 #endif
