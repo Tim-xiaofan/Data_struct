@@ -41,6 +41,11 @@ Table of contents
       	* [transpose one](#transpose-one)（稀疏矩阵的转置算法一）
       	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
       	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
+    * [ch-06 tree and binary-tree](#ch-06-tree-and-binary-tree)
+      * [bit tree](#bit-tree)
+      	* [preinorder construct](#preinorder-construct)（先序-中序构造二叉树）
+      	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
+      	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
 <!--te-->
 # 遇到什么问题欢迎在[Issues](https://github.com/Tim-xiaofan/Data_struct/issues)中提出
 ch 03 stack and queue
@@ -623,6 +628,47 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		std::cout << "\n-----------end-----------\n\n";
 	}
 	delete [] ctemp;
+	return true;
+}
+```
+ch-06 tree and binary-tree
+============
+preinorder construct （先序-中序构造二叉树）
+===========
+##### 算法描述（网络）
+[构造二叉树](https://lucifer.ren/blog/2020/02/08/%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91%E4%B8%93%E9%A2%98/)
+##### [c++实现（未OJ）]()
+```c++
+template<typename Data>
+bool bitree<Data>:: 
+preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
+{
+	if(pre == nullptr || in == nullptr || ct <= 0)
+	  return true;
+
+	//cout << "pre:";
+	//show_ds(pre, ct);
+	//cout << "in:";
+	//show_ds(in, ct);
+	/** create root*/
+	if(root == nullptr) root = new node;
+	root->data = pre[0]; 
+	//cout << "root data = " << root->data << endl;
+
+	/** look left and right in inorder*/
+	int lct = 0, rct = 0, root_pos;
+	for(root_pos = 0; root_pos < ct; ++root_pos)
+	  if(in[root_pos] == root->data)
+		break;
+	lct = root_pos;
+	rct = ct - lct - 1;
+	//cout << "lct = " << lct << endl;
+	//cout << "rct = " << rct << endl;
+
+	/** create lchild*/
+	preinorder_construct(root->lchild, &pre[1], in, lct);
+	/** create rchild*/
+	preinorder_construct(root->rchild, &pre[1 + lct], &in[lct + 1], rct);
 	return true;
 }
 ```
