@@ -41,7 +41,7 @@ Table of contents
       	* [transpose one](#transpose-one)（稀疏矩阵的转置算法一）
       	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
       	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
-    * [ch-06 tree and binary-tree](#ch-06-tree-and-binary-tree)
+   * [ch-06 tree and binary-tree](#ch-06-tree-and-binary-tree)
       * [bit tree](#bit-tree)
       	* [preinorder construct](#preinorder-construct)（先序-中序构造二叉树）
       	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
@@ -633,11 +633,13 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 ```
 ch-06 tree and binary-tree
 ============
-preinorder construct （先序-中序构造二叉树）
+bit tree
+===========
+preinorder construct
 ===========
 ##### 算法描述（网络）
 [构造二叉树](https://lucifer.ren/blog/2020/02/08/%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91%E4%B8%93%E9%A2%98/)
-##### [c++实现（未OJ）]()
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/6f40d2758ab7a0647d3de67c238eed47be453633/ch-06%20tree%20and%20binary-tree/bitree/bitree.h#L141)
 ```c++
 template<typename Data>
 bool bitree<Data>:: 
