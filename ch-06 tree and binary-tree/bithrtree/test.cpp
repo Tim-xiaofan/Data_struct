@@ -1,9 +1,9 @@
-/** 20210415 12:52, zyj, GuangDong*/
-//test.c -- test bitree.h
+/** 20210515 12:54, zyj, GuangDong*/
+//test.c -- test bithrtree.h
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "bitree.h"
+#include "bithrtree.h"
 
 using std::cout;
 using std::endl;
@@ -25,7 +25,7 @@ char inorder1[12] = "a+b*c-d-e/f";
 int main()
 {
 	SEP("int");
-	bitree<int> tree;
+	bithrtree<int> tree;
 	tree.preinorder_construct(preorder, inorder, 5);
 	cout << "preorder show : ";
 	tree.preorder_traverse(show<int>());
@@ -34,14 +34,5 @@ int main()
 	cout << "inorderx show : ";
 	tree.inorder_traversex(show<int>());
 
-	SEP("char:cannot work with repeated data");
-	bitree<char> tree1;
-	tree1.preinorder_construct(preorder1, inorder1, 12);
-	cout << "preorder show(bad) : ";
-	tree1.preorder_traverse();
-	cout << "inorder show(bad) : ";
-	tree1.inorder_traverse();
-	cout << "inorderx show : ";
-	tree1.inorder_traversex();
 	return 0;
 }
