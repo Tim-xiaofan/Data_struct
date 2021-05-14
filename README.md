@@ -45,6 +45,10 @@ Table of contents
       * [bit tree](#bit-tree)
       	* [preinorder construct](#preinorder-construct)（先序-中序构造二叉树）
       	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
+      	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）h
+      * [bit thread tree](#bit-thread-tree)
+      	* [in threading](#in-threading)（中序-线索化二叉树）
+      	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
       	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
 <!--te-->
 # 遇到什么问题欢迎在[Issues](https://github.com/Tim-xiaofan/Data_struct/issues)中提出
@@ -674,3 +678,14 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 	return true;
 }
 ```
+bit thread tree
+===========
+in threading
+===========
+##### 算法描述（书）
+根据中序遍历的规律可知，结点的后继应是遍历其右子树时访问的第一个结点，即右子树中最左下的结点<br>
+那么，又如何进行二叉树的线索化呢?由于线索化的实质是将二叉链表中的空指针<br>
+改为指向前驱或后继的线索.而前驱或后维的信息只有在遍历时才能得到，因此线索化的<br>
+过程即为在遍历的过程中修改空指针的过程。为了记下遍历过程中访向结点的先后关<br>
+系，附设一个指针 pre 始终指向刚刚访问过的结点，若指针 p指向当前访问的结点，则 pre<br>
+指向它的前驱.<br>
