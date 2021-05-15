@@ -3,6 +3,7 @@
 *.s
 *.exe
 *.txt
+*.log
 *tags
 *core*
 ch-02 Lists/List ADT/list
@@ -60,3 +61,4 @@ ch-06 tree and binary-tree/bitree/test
 ch-06 tree and binary-tree/bitree/core
 ch-05 array and lists/lists/core
 ch-06 tree and binary-tree/bithrtree/test
+ch-06 tree and binary-tree/bithrtree/core

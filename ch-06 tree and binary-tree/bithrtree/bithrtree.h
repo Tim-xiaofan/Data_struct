@@ -4,6 +4,9 @@
 #define BITHRTREE_H
 #include <iostream>
 #include "sqstack.h"
+
+//#define DEBUG 1
+
 using std::cout;
 using std::endl;
 
@@ -22,11 +25,21 @@ class bithrtree
 			Node *lchild, *rchild;
 			pointer_tag ltag, rtag;
 			Node():lchild(nullptr),rchild(nullptr),ltag(LINK),rtag(LINK){}
+			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
+			{
+				os << "data = " << nd.data
+					<< ", lchild = " << nd.lchild
+					<< ", ltag = " << nd.ltag
+					<< ", rchild = " << nd.rchild
+					<< ", rtag = " << nd.rtag;
+				return os;
+			}
 		};
 	public:
 		typedef Node<Data> node;
 	private:
 		node *_root;
+		node *_thrt;/** head bode of thread link*/
 		int _ct;
 	private:
 		template<typename UnaryOperator>
@@ -40,8 +53,10 @@ class bithrtree
 		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op);
+		/** inorder threading*/
+		void in_threading(node * & pre, node * p);
 	public:
-		bithrtree():_root(nullptr), _ct(0){}
+		bithrtree():_root(nullptr), _thrt(nullptr), _ct(0){}
 		//template<typename UnaryOperator>
 		//void test(const UnaryOperator & op);
 		/** root fisrt*/
@@ -58,6 +73,11 @@ class bithrtree
 		/** root second, not recursion*/
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void inorder_traversex(const UnaryOperator & op = show){inorder_traversex(_root, op); cout << endl;}
+		/** inorder threading*/
+		void inorder_threading(void);
+		/** inorder_threading traverse*/
+		template<typename UnaryOperator = void(*)(const Data &)>
+		void inorder_thrtraverse(const UnaryOperator & op = show);
 };
 
 /** root first*/
@@ -86,20 +106,16 @@ inorder_traverse(node *root, const UnaryOperator & op)
 	{
 		/** traverse left child*/
 		inorder_traverse(root->lchild, op);
+#ifdef DEBUG
+		//cout << root <<": ( "<< *root << "), ";
+#else
 		op(root->data);
+#endif
 		/** traverse right child*/
 		inorder_traverse(root->rchild, op);
 	}
 }
 
-//template<typename Data>
-//template<typename UnaryOperator>
-//void bithrtree<Data>::
-//test(const UnaryOperator & op) 
-//{
-//	char a = 'a';
-//	op(a);
-//}
 
 template<typename Data>
 template<typename Cmp>
@@ -111,9 +127,6 @@ cmp_construct(const Data * ds, int ct, const Cmp & cmp)
 	for(i = 0; i < ct; i++)
 	{
 		cmp_insert(_root, ds[i], cmp);
-		//cout << "after inster " << ds[i] << ":";
-		//preorder_traverse();
-		//cout << endl;
 	}
 
 	return true;
@@ -187,7 +200,7 @@ template<typename UnaryOperator>
 void bithrtree<Data>::
 inorder_traversex(node *root, const UnaryOperator & op)
 {
-	sqstack<node *> stack(32);
+	sqstack<node *> stack(215);
 	node * pn = root;
 	while(!stack.is_empty() || pn)
 	{
@@ -203,5 +216,136 @@ inorder_traversex(node *root, const UnaryOperator & op)
 			pn = pn->rchild;
 		}
 	}
+}
+
+void indent(int ct)
+{
+	int i;
+	for(i = 0; i < ct - 1; i++)
+	  cout << "\t";
+}
+
+template<typename Data>
+void bithrtree<Data>::in_threading(node * & pre, node * p)
+{
+	static int level = 0;
+	++level;
+#ifdef DEBUG
+	indent(level);
+	cout << "enter level-" << level;
+	if(pre) cout << " : pre = " << pre->data;
+	else cout << " : pre = " << "NULL";
+	if(p)cout << ", p = " << p->data << "(" << p << ")" <<", p->lchild : " << p->lchild << ", p->rchild : " << p->rchild << endl;
+	else cout << ", p = " << "NULL" << endl;
+#endif
+
+	if(p)
+	{
+#ifdef DEBUG
+		indent(level);
+		cout << "#1 level-" << level << " : pre = " << pre->data <<"(" << pre <<")" << ", p = " << p->data << "(lchild: " << p->lchild <<")" << endl;
+#endif
+		in_threading(pre, p->lchild);/** threading left child*/
+
+		/** set empty pointer*/
+		if(!p->lchild)
+		{
+			p->ltag = THREAD;
+#ifdef DEBUG
+			cout << "# level-" << level << " : ";
+			cout << p << " : "<< pre << "<--" << p->lchild <<endl;
+#endif
+			p->lchild = pre; /** precursor:last node in left child*/
+#ifdef DEBUG
+			indent(level);
+			cout << "# level-" << level << " : " << p->data << "'s precursor is " << pre->data << endl;
+			
+#endif
+		}
+		if(!pre->rchild)
+		{
+			pre->rtag = THREAD;
+#ifdef DEBUG
+			cout << "# level-" << level << " : ";
+			cout << pre << ":" << pre->rchild << "-->" << p <<endl;
+#endif
+			pre->rchild = p;/** successor*/
+#ifdef DEBUG
+			indent(level);
+			cout << "# level-" << level << " : " << pre->data << "'s successor is " << p->data << endl;
+#endif
+		}
+
+		/** update pre*/
+		pre = p;
+#ifdef DEBUG
+		indent(level);
+		cout << "#2 level-" << level << " : pre = " << pre->data << "(" << pre <<")" << ", p = " << p->data << "(" << p << ")" << "(rchild : " << p->rchild <<")" << endl;
+#endif
+		in_threading(pre, p->rchild);/** threading right child*/
+	}
+#ifdef DEBUG
+	indent(level);
+	cout << "leave level-" << level;
+	if(pre) cout << " : pre = " << pre->data;
+	else cout << " : pre = " << "NULL";
+	if(p)cout << ", p = " << p->data << ", p->lchild : " << p->lchild << ", p->rchild : " << p->rchild << endl;
+	else cout << ", p = " << "NULL" << endl;
+#endif
+	level--;
+}
+
+template<typename Data>
+void bithrtree<Data>::inorder_threading(void)
+{
+	if(_thrt != nullptr) return; /** avoid double threading*/
+	/** TODO:need to catch exception*/
+	_thrt = new node();
+	/** create head node*/
+	_thrt->ltag = LINK;
+	_thrt->rtag = THREAD;
+	_thrt->rchild = _thrt;
+	if(!_root) _thrt->lchild = _thrt;/** pointer back*/
+	else
+	{
+		node * pre = nullptr;
+		_thrt->lchild = _root;
+		pre = _thrt;
+		in_threading(pre, _root);
+		/** threading last node*/
+		pre->ltag = THREAD;
+		pre->rchild = _thrt;
+		_thrt->rchild = pre;
+	}
+}
+
+
+template <typename Data>
+template<typename UnaryOperator>
+void bithrtree<Data>::
+inorder_thrtraverse(const UnaryOperator & op)
+{
+	node * p = _thrt->lchild;//pointer to root node
+	while(p != _thrt)
+	{
+		while(p->ltag == LINK)
+		{
+#ifdef DEBUG
+			cout << "(" << p << " : " << *p << ")";
+#endif
+			p = p->lchild;
+		}
+		op(p->data);
+		while(p->rtag == THREAD && p->rchild != _thrt)
+		{
+#ifdef DEBUG
+			cout << "(" << p << " : " << *p << ")";
+#endif
+			p = p->rchild;
+			op(p->data);
+		}
+		p = p->rchild;
+	}
+	cout << endl;
 }
 #endif

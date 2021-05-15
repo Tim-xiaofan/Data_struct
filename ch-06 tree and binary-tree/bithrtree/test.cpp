@@ -33,6 +33,10 @@ int main()
 	tree.inorder_traverse(show<int>());
 	cout << "inorderx show : ";
 	tree.inorder_traversex(show<int>());
-
+	
+	SEP("threading");
+	tree.inorder_threading();
+	cout << "inorder threading traverse : ";
+	tree.inorder_thrtraverse();
 	return 0;
 }
