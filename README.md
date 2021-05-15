@@ -44,12 +44,10 @@ Table of contents
    * [ch-06 tree and binary-tree](#ch-06-tree-and-binary-tree)
       * [bit tree](#bit-tree)
       	* [preinorder construct](#preinorder-construct)（先序-中序构造二叉树）
-      	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
-      	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）h
+      	* [inorder traversex](#inorder-traversex)(中序-非递归遍历二叉树)
       * [bit thread tree](#bit-thread-tree)
       	* [in threading](#in-threading)（中序-线索化二叉树）
-      	* [transpose two](#transpose-two)（稀疏矩阵的转置算法二）
-      	* [multi smatrix](#multi-smatrix)（稀疏矩阵的乘法）
+      	* [inorder thrtraverse](#inorder-thrtraverse)（中序-遍历线索二叉树）
 <!--te-->
 # 遇到什么问题欢迎在[Issues](https://github.com/Tim-xiaofan/Data_struct/issues)中提出
 ch 03 stack and queue
@@ -642,6 +640,7 @@ bit tree
 preinorder construct
 ===========
 ##### 算法描述（网络）
+先序-中序构造二叉树：<br>
 [构造二叉树](https://lucifer.ren/blog/2020/02/08/%E6%9E%84%E9%80%A0%E4%BA%8C%E5%8F%89%E6%A0%91%E4%B8%93%E9%A2%98/)
 ##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/6f40d2758ab7a0647d3de67c238eed47be453633/ch-06%20tree%20and%20binary-tree/bitree/bitree.h#L141)
 ```c++
@@ -678,11 +677,45 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 	return true;
 }
 ```
+inorder traversex
+===========
+##### 算法描述(书）
+中序-非递归遍历二叉树：<br>
+1)当前节点非空，入栈，并更新当前节点为其左子树（根节点）。<br>
+2)当前节点为空，出栈并访问。<br>
+3)重复（1）（2）直到P为NULL并且栈为空, 则遍历结束。<br>
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/3f7bd1d03ec2b59dfda17c85b53f7f649fb32117/ch-06%20tree%20and%20binary-tree/bitree/bitree.h#L184)
+```c++
+/** root second, not recursion*/
+template<typename Data>
+template<typename UnaryOperator>
+void bitree<Data>::
+inorder_traversex(node *root, const UnaryOperator & op)
+{
+	sqstack<node *> stack(32);
+	node * pn = root;
+	while(!stack.is_empty() || pn)
+	{
+		if(pn)
+		{
+			stack.push(pn);
+			pn = pn->lchild;
+		}
+		else
+		{
+			stack.pop(pn);
+			op(pn->data);
+			pn = pn->rchild;
+		}
+	}
+}
+```
 bit thread tree
 ===========
 in threading
 ===========
 ##### 算法描述（书）
+线索换二叉树（二叉树已建立）：<br>
 （1）根据中序遍历的规律可知，结点的后继应是遍历其右子树时访问的第一个结点，即右子树中最左下的结点。<br>
 （2）那么，又如何进行二叉树的线索化呢?由于线索化的实质是将二叉链表中的空指针改为指向前驱或后继的线索.而前驱或后维的信息只有在遍历时才能得到，因此线索化的过程即为在遍历的过程中修改空指针的过程。<br>
  (3)为了记下遍历过程中访向结点的先后关系，附设一个指针pre始终指向刚刚访问过的结点，若指针p指向当前访问的结点，则指向它的前驱.<br>
@@ -694,3 +727,65 @@ in threading
 
 ltag ：0--lchild域指示结点的左孩子； 1--lchild-域指示结点的前驱<br>
 rtag ：0--rchild域指示结点的右孩子； 1--rchild-域指示结点的后继<br>
+#### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/3f7bd1d03ec2b59dfda17c85b53f7f649fb32117/ch-06%20tree%20and%20binary-tree/bithrtree/bithrtree.h#L228)
+```c++
+template<typename Data>
+void bithrtree<Data>::in_threading(node * & pre, node * p)
+{
+	if(p)
+	{
+		in_threading(pre, p->lchild);/** threading left child*/
+
+		/** set empty pointer*/
+		if(!p->lchild)
+		{
+			p->ltag = THREAD;
+			p->lchild = pre; /** precursor:last node in left child*/
+		}
+		if(!pre->rchild)
+		{
+			pre->rtag = THREAD;
+			pre->rchild = p;/** successor*/
+		}
+
+		/** update pre*/
+		pre = p;
+		in_threading(pre, p->rchild);/** threading right child*/
+	}
+}
+```
+inorder thrtraverse
+===========
+##### 算法描述（书）
+
+##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/3f7bd1d03ec2b59dfda17c85b53f7f649fb32117/ch-06%20tree%20and%20binary-tree/bithrtree/bithrtree.h#L323)
+```c++
+template <typename Data>
+template<typename UnaryOperator>
+void bithrtree<Data>::
+inorder_thrtraverse(const UnaryOperator & op)
+{
+	node * p = _thrt->lchild;//pointer to root node
+	while(p != _thrt)
+	{
+		while(p->ltag == LINK)
+		{
+#ifdef DEBUG
+			cout << "(" << p << " : " << *p << ")";
+#endif
+			p = p->lchild;
+		}
+		op(p->data);
+		while(p->rtag == THREAD && p->rchild != _thrt)
+		{
+#ifdef DEBUG
+			cout << "(" << p << " : " << *p << ")";
+#endif
+			p = p->rchild;
+			op(p->data);
+		}
+		p = p->rchild;
+	}
+	cout << endl;
+}
+```
