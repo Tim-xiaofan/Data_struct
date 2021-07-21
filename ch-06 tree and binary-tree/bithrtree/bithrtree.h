@@ -5,7 +5,7 @@
 #include <iostream>
 #include "sqstack.h"
 
-//#define DEBUG 1
+//#define DEBUG 1 //TODO:need a logsystem
 
 using std::cout;
 using std::endl;
