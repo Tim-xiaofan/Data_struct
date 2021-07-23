@@ -6,6 +6,7 @@
 #include <cstring>
 
 using std::cout;
+using std::cerr;
 using std::endl;
 
 template <typename Data>
@@ -28,6 +29,7 @@ class huffman_tree
 		};
 	public:
 		typedef Node<Data> node;
+		enum {OK, INVALAV, INVALCD};
 	private:
 		node *_nds;//node array
 		int _ct;//node count : 2n - 1
@@ -38,6 +40,7 @@ class huffman_tree
 		huffman_tree() : _nds(nullptr), _ct(0), _n(0), _codes(nullptr), _chars(nullptr){}
 		~huffman_tree();
 		huffman_tree(Data * codes, float * weigths, int n);
+		int decode(const char *code, int ilen,  char *decode, int & olen);
 		void print_codes() const ;
 		void print_nds(void) const;
 	private:
@@ -175,6 +178,32 @@ select_2s(int high, int & s1, int & s2)
 			}
 		}
 	}
+}
+
+template <typename Data>
+int huffman_tree<Data>::
+decode(const char *code, int ilen,  char *decode, int & olen)
+{
+	int current, process = 0;
+	if(olen == 0 || decode == nullptr)
+	{
+		cerr << "Invalid argument\n";
+		return INVALAV;
+	}
+	olen = 0;
+	current = _ct;//root
+	do
+	{
+		if(_nds[current].lchild == 0)
+		{//leaves
+			decode[olen++] = _chars[current - 1];
+			current = _ct;//root
+			continue;
+		}
+		if(code[process++] == '0') current=_nds[current].lchild;
+		else current = _nds[current].rchild;
+	}while(process < ilen);
+	return OK;
 }
 
 
