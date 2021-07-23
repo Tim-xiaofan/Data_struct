@@ -194,15 +194,17 @@ decode(const char *code, int ilen,  char *decode, int & olen)
 	current = _ct;//root
 	do
 	{
+		if(code[process++] == '0') current=_nds[current].lchild;
+		else current = _nds[current].rchild;
 		if(_nds[current].lchild == 0)
 		{//leaves
 			decode[olen++] = _chars[current - 1];
 			current = _ct;//root
 			continue;
 		}
-		if(code[process++] == '0') current=_nds[current].lchild;
-		else current = _nds[current].rchild;
 	}while(process < ilen);
+	//cout << "ilen " << ilen << endl;
+	//cout << "process " << process << ", current " << current << endl;
 	return OK;
 }
 
