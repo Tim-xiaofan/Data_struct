@@ -350,6 +350,7 @@ del_n(int pos, Item &i)
 		  p = p->_next;
 
 		/** = operator*/
+		//std::cout << "j = " << j << std::endl;
 		tmp = p->_next;
 		i = tmp->_i;
 		//fprintf(stdout, "rm item : ");
@@ -358,6 +359,8 @@ del_n(int pos, Item &i)
 
 		/** adjust and free node*/
 		p->_next = tmp->_next;
+		if(_tail == tmp)//if rm tail, upate tail
+		  _tail = p;
 		delete tmp;
 	}
 
