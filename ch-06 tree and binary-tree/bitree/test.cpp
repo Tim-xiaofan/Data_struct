@@ -6,6 +6,7 @@
 #include "bitree.h"
 
 using std::cout;
+using std::cin;
 using std::endl;
 
 template <typename Data>
@@ -43,5 +44,12 @@ int main()
 	tree1.inorder_traverse();
 	cout << "inorderx show : ";
 	tree1.inorder_traversex();
+
+	int n;
+	cout << "n : ";
+	cin >> n;
+	cout << "count : " << bitree<int>::count(n) << endl;
+	unsigned int max = 0xffffffff;
+	cout << "max = " << max << endl;
 	return 0;
 }

@@ -6,6 +6,8 @@
 *.log
 *tags
 *core*
+*.data
+*.old
 ch-02 Lists/List ADT/list
 ch-02 Lists/List ADT/core
 ch-02 Lists/list-union/list_union

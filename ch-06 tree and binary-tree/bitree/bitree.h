@@ -11,6 +11,14 @@ using std::endl;
 template<typename Data>
 void show_ds(const Data * ds, int ct);
 
+static inline int fact(int n)
+{
+	int i, ret = 1;
+	for(i = 1; i <= n; ++i)
+	  ret *= i;
+	return ret;
+}
+
 template <typename Data>
 class bitree
 {
@@ -57,6 +65,7 @@ class bitree
 		/** root second, not recursion*/
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void inorder_traversex(const UnaryOperator & op = show){inorder_traversex(_root, op); cout << endl;}
+		static int count(int n) {return fact(2 * n) / fact(n) /fact(n + 1);}
 };
 
 /** root first*/
