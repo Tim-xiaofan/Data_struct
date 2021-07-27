@@ -30,7 +30,8 @@ class sqstack : private SqList<Item>
 		int length(void)const{return base::length();}
 		int size(void)const{return base::size();}
 		/** random access*/
-		const Item & operator[](int i){return base::operator[](i);}
+		Item & operator[](int i){return base::operator[](i);}
+		const Item & operator[](int i)const{return base::operator[](i);}
 };
 template<typename Item>
 bool sqstack<Item>::
