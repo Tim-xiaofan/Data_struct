@@ -11,5 +11,6 @@ CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/array-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/sparse-matrix-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/lists/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-06\ tree\ and\ binary-tree/huffman-tree/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/array-adt/
 export CPLUS_INCLUDE_PATH
 echo ${CPLUS_INCLUDE_PATH}

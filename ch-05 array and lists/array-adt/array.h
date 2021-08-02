@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <cstdarg>
 #include <new>
+#include <cstring>
 
 #define MIN(x,y) (((x)<=(y))?(x):(y))
 
@@ -23,6 +24,7 @@ class array
 		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
 		static array * instance(int b1, ...);
+		static array * instance(const array & a);
 		[[deprecated("Replaced by 'const T at(i, ...)const', which has an improved interface")]]
 		bool value(T & t, ...) const;
 		const T at(int i, ...) const;
@@ -195,6 +197,22 @@ instance(int d1, ...)
 	}
 	va_end(ap);/** free memory source*/
 	return ret;
+}
+
+template<typename T, int dim>
+array<T, dim>* array<T, dim>::
+instance(const array & a)
+{
+	array * tmp =  new array;
+	/** TODO : catch exception*/
+	tmp->_base = new T[a._elemtot];
+	memcpy(tmp->_base, a._base, a._elemtot * sizeof(T));
+	tmp->_bounds = new int[dim];
+	memcpy(tmp->_bounds, a._bounds, sizeof(int) * dim);
+	tmp->_constant = new int[dim];
+	memcpy(tmp->_constant, a._constant, dim * sizeof(int));
+	tmp->_elemtot = a._elemtot;
+	return tmp;
 }
 
 template<typename T, int dim>

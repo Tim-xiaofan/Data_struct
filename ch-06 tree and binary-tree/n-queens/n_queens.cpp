@@ -41,7 +41,7 @@ int n_queens(int n)
 static void 
 n_queens(int n, int i, sqstack<position> & s, int & ct)
 {
-	static int index = 0;
+	//static int index = 0;
 	int j;
 	position pos, tmp;
 	if(i >= n) 

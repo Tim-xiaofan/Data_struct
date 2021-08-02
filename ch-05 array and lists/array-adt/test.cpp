@@ -43,6 +43,14 @@ int main()
 		cout << a_1d->at(i) << " ";
 	}
 	cout << endl;
+	cout << "1d-cpy :" << endl;
+	a1 * a_1d_cpy = a1::instance(*a_1d);
+	for(i = 0; i <3; ++i)
+	{
+		//a_1d->value(k, i);
+		cout << a_1d_cpy->at(i) << " ";
+	}
+	cout << endl;
 
 	a2 * a_2d = a2::instance(3, 4);
 	if(!a_2d) return 0;
@@ -55,6 +63,17 @@ int main()
 		{
 			//a_2d->value(k, i, j);
 			cout << std:: setw(2) << std::left << a_2d->at(i, j) << " ";
+		}
+		cout << endl;
+	}
+	cout << "2d-cpy :" << endl;
+	a2 * a_2d_cpy = a2::instance(*a_2d);
+	for(i = 0; i <3; ++i)
+	{
+		for(j = 0; j < 4; ++j) 
+		{
+			//a_2d->value(k, i, j);
+			cout << std:: setw(2) << std::left << a_2d_cpy->at(i, j) << " ";
 		}
 		cout << endl;
 	}
