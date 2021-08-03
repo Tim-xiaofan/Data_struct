@@ -37,11 +37,9 @@ int main()
 	SEPARATE();
 	//a_1d->show_constant();
 	cout << "1d :" << endl;
-	for(i = 0; i <3; ++i)
-	{
-		//a_1d->value(k, i);
-		cout << a_1d->at(i) << " ";
-	}
+	cout << "constant : \n" ;
+	a_1d->show_constant();
+	
 	cout << endl;
 	cout << "1d-cpy :" << endl;
 	a1 * a_1d_cpy = a1::instance(*a_1d);
@@ -57,6 +55,8 @@ int main()
 	a_2d->set_values(a, N);
 	SEPARATE();
 	cout << "2d :" << endl;
+	cout << "constant : \n";
+	a_2d->show_constant();
 	for(i = 0; i <3; ++i)
 	{
 		for(j = 0; j < 4; ++j) 
@@ -84,6 +84,8 @@ int main()
 	a_3d->set_values(a, N);
 	SEPARATE();
 	cout << "3d :" << endl;
+	cout << "constant : \n";
+	a_3d->show_constant();
 	for(i = 0; i <3; ++i)
 	{
 	  for(j = 0; j < 4; ++j) 

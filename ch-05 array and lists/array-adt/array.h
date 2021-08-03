@@ -8,6 +8,8 @@
 #include <cstring>
 
 #define MIN(x,y) (((x)<=(y))?(x):(y))
+using std::endl;
+using std::cout;
 
 template<typename T, int dim = 1>
 class array
@@ -20,6 +22,7 @@ class array
 		bool construct(int b1 , va_list & ap);
 		bool locate(va_list & ap, int & off)const;
 		bool locate(int i, va_list & ap, int & off)const;
+		void show(int level) const;
 	public:
 		array():_base(nullptr),_bounds(nullptr),_constant(nullptr),_elemtot(0){}
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
@@ -269,4 +272,5 @@ get_bound(int mdim)const
 		ret = _bounds[mdim - 1];
 	return ret;
 }
+
 #endif
