@@ -4,7 +4,10 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdarg>
+#include <climits>
+#include <cfloat>
 #include <new>
+#include <typeinfo>
 #include "array.h"
 using std::endl;
 using std::cout;
@@ -30,9 +33,12 @@ class graph_array
 		static void show_array(const array<V, dim> & a);
 		const char * kind_str(void) const;
 		graph_kind kind(void) const {return _kind;}
+		int get_degree(int v) const;
+		void show_degree(void) const;
+		int get_odegree(int v) const;
+		int get_idegree(int v) const;
 	private:
-		void UDG_create(const a2 & arcs);
-		void UDN_create(const a2 & arcs);
+		void create(const a2 & arcs);
 };
 
 template<typename T, typename U>
@@ -45,46 +51,18 @@ graph_array(const a1 & vexs, const a2 & arcs, graph_kind kind)
 	cout << "_vexs :\n";
 	show_array(*_vexs);
 	_kind = kind;
-	switch(kind)
-	{
-		case DG:
-			break;
-		case DN:
-			break;
-		case UDG:
-			UDG_create(arcs);
-			break;
-		case UDN:
-			UDN_create(arcs);
-			break;
-		default:;
-	}
+	create(arcs);
 }
 
 template<typename T, typename U>
 void graph_array<T, U>::
-UDG_create(const a2 & arcs)
+create(const a2 & arcs)
 {
 	int i, j;
 	_nb_arc = 0;
 	for(i = 0; i < _nb_vex; ++i)
 	  for(j = 0; j < _nb_vex; ++j)
-		if(arcs.at(i, j) == 1) _nb_arc++;
-	cout << "_nb_arc = " << _nb_arc << endl;
-	_arcs = a2::instance(arcs);
-	cout << "_arcs :\n";
-	show_array(*_arcs);
-}
-
-template<typename T, typename U>
-void graph_array<T, U>::
-UDN_create(const a2 & arcs)
-{
-	int i, j;
-	_nb_arc = 0;
-	for(i = 0; i < _nb_vex; ++i)
-	  for(j = 0; j < _nb_vex; ++j)
-		if(arcs.at(i, j) == 1) _nb_arc++;
+		if(arcs.at(i, j) != 0) _nb_arc++;
 	cout << "_nb_arc = " << _nb_arc << endl;
 	_arcs = a2::instance(arcs);
 	cout << "_arcs :\n";
@@ -100,7 +78,7 @@ show_array(const array<V, dim> & a)
 	if(dim == 1)
 	{
 		for(i = 0; i < a.get_bound(1); ++i)
-		  cout << a.at(i) << " ";
+		  cout << std::setw(2) << a.at(i) << " ";
 		cout << endl;
 	}
 	else
@@ -108,7 +86,7 @@ show_array(const array<V, dim> & a)
 		for(i = 0; i < a.get_bound(1); ++i)
 		{
 			for(j = 0; j < a.get_bound(2); ++j)
-			  cout << a.at(i, j) << " ";
+			  cout << std::setw(2)<< a.at(i, j) << " ";
 			cout << endl;
 		}
 	}
@@ -125,6 +103,53 @@ kind_str(void) const
 		case UDG: return "UDG";
 		case UDN: return "UDN";
 		default: return "UNKOWN";
+	}
+}
+
+template<typename T, typename U>
+int graph_array<T, U>::
+get_degree(int v) const
+{
+	int j, d = 0;
+	if(_kind != UDN && _kind != UDG) return -1;
+	for(j = 0; j < _nb_vex; ++j)
+	  if(_arcs->at(v, j) != 0) d++;
+	return d;
+}
+
+template<typename T, typename U>
+int graph_array<T, U>::
+get_odegree(int v) const
+{
+	int j, d = 0;
+	if(_kind != DN && _kind != DG) return -1;
+	for(j = 0; j < _nb_vex; ++j)
+	  if(_arcs->at(v, j) != 0) d++;
+	return d;
+}
+
+template<typename T, typename U>
+int graph_array<T, U>::
+get_idegree(int v) const
+{
+	int j, d = 0;
+	if(_kind != DN && _kind != DG) return -1;
+	for(j = 0; j < _nb_vex; ++j)
+	  if(_arcs->at(j, v) != 0) d++;
+	return d;
+}
+
+template<typename T, typename U>
+
+template<typename T, typename U>
+void graph_array<T, U>::
+show_degree(void) const
+{
+	int i;
+	for(i = 0; i < _nb_vex; ++i)
+	{
+		cout << _vexs->at(i) << " : ";
+		cout << get_degree(i) << endl;
 	}
 }
 #endif

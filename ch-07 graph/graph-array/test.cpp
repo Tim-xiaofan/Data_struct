@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
+#include <cfloat>
 #include "graph_array.h"
 
 using std::cout;
@@ -19,11 +20,20 @@ static int a[]={
 	1,0,0,0
 };
 
+static float c[]={
+	0,5,0,7,0,0,
+	0,0,4,0,0,0,
+	8,0,0,0,0,9,
+	0,0,5,0,0,6,
+	0,0,0,5,0,0,
+	3,0,0,0,1,0
+};
+
 static char b[] = {'A', 'B', 'C', 'D'};
+static char d[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 
 int main(int ac, char * av[])
 {
-	int i, j;
 	a1 * vexs = a1::instance(4);
 	if(!vexs) 
 	{
@@ -31,11 +41,6 @@ int main(int ac, char * av[])
 		exit(EXIT_FAILURE);
 	}
 	vexs->set_values(b, 4);
-	for(i = 0; i < 4; ++i)
-	{
-		cout << vexs->at(i) << " ";
-	}
-	cout << endl;
 	a2 * arcs = a2::instance(4, 4);
 	if(!arcs) 
 	{
@@ -43,17 +48,33 @@ int main(int ac, char * av[])
 		exit(EXIT_FAILURE);
 	}
 	arcs->set_values(a, 16);
-	cout << "arcs :" << endl;
-	for(i = 0; i <4; ++i)
-	{
-		for(j = 0; j < 4; ++j)
-		{
-			cout << std:: setw(2) << std::left << arcs->at(i, j) << " ";
-		}
-		cout << endl;
-	}
 
 	graph_array<char, int> ga(*vexs, *arcs, graph_array<char, int>::UDG);
 	cout << ga.kind_str() << endl;
+
+	array<char, 1> * vexs1 = array<char, 1>::instance(6);
+	if(!vexs1) 
+	{
+		cerr << "vexs1 create error\n";
+		exit(EXIT_FAILURE);
+	}
+	vexs1->set_values(d, 6);
+	array<float, 2> * arcs1 = array<float, 2>::instance(6, 6);
+	if(!arcs1) 
+	{
+		cerr << "arcs1 create error\n";
+		exit(EXIT_FAILURE);
+	}
+	arcs1->set_values(c, 36);
+	graph_array<char, float> ga1(*vexs1, *arcs1, graph_array<char, float>::UDN);
+	cout << ga1.kind_str() << endl;
+
+	graph_array<char, float> ga2(*vexs1, *arcs1, graph_array<char, float>::DG);
+	cout << ga2.kind_str() << endl;
+	ga.show_degree();
+	cout << "----------\n";
+	ga1.show_degree();
+	cout << "----------\n";
+	ga2.show_degree();
 	return 0;
 }
