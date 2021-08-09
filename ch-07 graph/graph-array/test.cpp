@@ -76,5 +76,8 @@ int main(int ac, char * av[])
 	ga1.show_degree();
 	cout << "----------\n";
 	ga2.show_degree();
+
+	cout << "ga2 iodgress : \n";
+	ga2.show_iodegree();
 	return 0;
 }

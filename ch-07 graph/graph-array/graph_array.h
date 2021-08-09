@@ -11,6 +11,7 @@
 #include "array.h"
 using std::endl;
 using std::cout;
+using std::cerr;
 
 /** maybe weigth is typename*/
 template<typename T, typename U = int>
@@ -35,6 +36,7 @@ class graph_array
 		graph_kind kind(void) const {return _kind;}
 		int get_degree(int v) const;
 		void show_degree(void) const;
+		void show_iodegree(void) const;
 		int get_odegree(int v) const;
 		int get_idegree(int v) const;
 	private:
@@ -122,7 +124,11 @@ int graph_array<T, U>::
 get_odegree(int v) const
 {
 	int j, d = 0;
-	if(_kind != DN && _kind != DG) return -1;
+	if(_kind != DN && _kind != DG) 
+	{
+		cerr << "Not direct\n";
+		return -1;
+	}
 	for(j = 0; j < _nb_vex; ++j)
 	  if(_arcs->at(v, j) != 0) d++;
 	return d;
@@ -133,13 +139,15 @@ int graph_array<T, U>::
 get_idegree(int v) const
 {
 	int j, d = 0;
-	if(_kind != DN && _kind != DG) return -1;
+	if(_kind != DN && _kind != DG) 
+	{
+		cerr << "Not direct\n";
+		return -1;
+	}
 	for(j = 0; j < _nb_vex; ++j)
 	  if(_arcs->at(j, v) != 0) d++;
 	return d;
 }
-
-template<typename T, typename U>
 
 template<typename T, typename U>
 void graph_array<T, U>::
@@ -150,6 +158,19 @@ show_degree(void) const
 	{
 		cout << _vexs->at(i) << " : ";
 		cout << get_degree(i) << endl;
+	}
+}
+
+template<typename T, typename U>
+void graph_array<T, U>::
+show_iodegree(void) const
+{
+	int i;
+	for(i = 0; i < _nb_vex; ++i)
+	{
+		cout << _vexs->at(i) << " : ";
+		cout << "idgress = "<< get_idegree(i) 
+			<< ", odgress = "<< get_odegree(i) << endl;
 	}
 }
 #endif
