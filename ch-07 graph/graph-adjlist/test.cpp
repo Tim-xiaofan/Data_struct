@@ -20,17 +20,16 @@ static int a[]={
 	1,0,0,0
 };
 
-static float c[]={
-	0,5,0,7,0,0,
-	0,0,4,0,0,0,
-	8,0,0,0,0,9,
-	0,0,5,0,0,6,
-	0,0,0,5,0,0,
-	3,0,0,0,1,0
+static int c[]={
+	0,1,0,1,0,
+	1,0,1,0,1,
+	0,1,0,1,1,
+	1,0,1,0,0,
+	0,1,1,0,0
 };
 
 static char b[] = {'A', 'B', 'C', 'D'};
-static char d[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+static char d[] = {'A', 'B', 'C', 'D', 'E'};
 
 int main(int ac, char * av[])
 {
@@ -48,6 +47,22 @@ int main(int ac, char * av[])
 		exit(EXIT_FAILURE);
 	}
 	arcs->set_values(a, 16);
+
+	graph_adjlist<char, int> gl(*vexs, *arcs, graph_adjlist<char, int>::DG);
+	cout << "kind : " << gl.kind_str() << endl;
+	gl.show_adjlists();
+	gl.show_iodegrees();
+
+	delete vexs;
+	delete arcs;
+	vexs = a1::instance(5);
+	vexs->set_values(d, 5);
+	arcs = a2::instance(5, 5);
+	arcs->set_values(c, 25);
+	graph_adjlist<char, int> gl1(*vexs, *arcs, graph_adjlist<char, int>::UDG);
+	cout << "kind : " << gl1.kind_str() << endl;
+	gl1.show_adjlists();
+	gl1.show_degrees();
 	return 0;
 }
 
