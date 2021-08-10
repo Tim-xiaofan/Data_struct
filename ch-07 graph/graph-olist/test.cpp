@@ -47,6 +47,10 @@ int main(int ac, char * av[])
 		exit(EXIT_FAILURE);
 	}
 	arcs->set_values(a, 16);
+	//to do
+	graph_olist<char, int> go(*vexs,  *arcs, graph_olist<char, int>::DG);
+	go.show_olist();
+	go.show_iodegree();
 
 	delete vexs;
 	delete arcs;
@@ -54,6 +58,7 @@ int main(int ac, char * av[])
 	vexs->set_values(d, 5);
 	arcs = a2::instance(5, 5);
 	arcs->set_values(c, 25);
+	// to do
 	return 0;
 }
 
