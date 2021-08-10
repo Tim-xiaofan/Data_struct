@@ -50,7 +50,11 @@ int main(int ac, char * av[])
 
 	graph_adjlist<char, int> gl(*vexs, *arcs, graph_adjlist<char, int>::DG);
 	cout << "kind : " << gl.kind_str() << endl;
+	cout << "adjlist : " << endl;
 	gl.show_adjlists();
+	cout << "radjlist : " << endl;
+	gl.create_radjlists();
+	gl.show_radjlists();
 	gl.show_iodegrees();
 
 	delete vexs;

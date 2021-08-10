@@ -50,9 +50,10 @@ class graph_adjlist
 		graph_kind _kind;
 		a1* _vexs;
 		vnode *_adjlists;
+		vnode *_radjlists;
 	public:
-		~graph_adjlist(){delete _vexs, delete [] _adjlists;}
-		graph_adjlist():_nb_vex(0), _nb_arc(0), _kind(DG), _vexs(nullptr), _adjlists(nullptr){}
+		~graph_adjlist(){delete _vexs; delete [] _adjlists; delete [] _radjlists;}
+		graph_adjlist():_nb_vex(0), _nb_arc(0), _kind(DG), _vexs(nullptr), _adjlists(nullptr), _radjlists(nullptr){}
 		graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind);
 		void show_adjlists(void)const;
 		/** O(1)*/
@@ -62,11 +63,13 @@ class graph_adjlist
 		/** O(1)*/
 		int get_odegree(int i) const {return (_kind == DN || _kind == DG) ?
 			_adjlists[i].adjlist.length() : -1;}
-		/** O(2 * e)*/
+		/** O(2 * e) or O(1)*/
 		int get_idegree(int i) const;
 		void show_iodegrees(void) const;
 		const char * kind_str(void) const;
 		bool is_adj(int i, int j) const;
+		void create_radjlists(void);
+		void show_radjlists(void)const;
 };
 
 /** O(n*n)*/
@@ -80,15 +83,20 @@ graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 	_nb_vex = vexs.get_bound(1);
 	_vexs = a1::instance(vexs);// O(n)
 	_nb_arc = 0;
-	_adjlists = new vnode[_nb_vex];//O(n * n)
-	for(i = 0; i < _nb_vex; ++i)
-	  for(j = 0; j < _nb_vex; ++j)
+	_adjlists = new vnode[_nb_vex];
+	/** O(n * n) */
+	for(i = 0; i < _nb_vex; ++i) 
+	{
+		_adjlists[i].data = _vexs->at(i);
+		for(j = 0; j < _nb_vex; ++j)
 		if((current = arcs.at(i, j)) != 0)
 		{
 			_adjlists[i].adjlist.append(anode(j, current));
 			_nb_arc++;
 		}
+	}
 	_kind = kind;
+	_radjlists = nullptr;
 }
 
 template <typename T, typename U>
@@ -136,6 +144,9 @@ get_idegree(int i) const
 {
 	int k, d = 0;
 	typename List<anode>::const_iterator it;
+
+	if(_radjlists) return _radjlists[i].adjlist.length();
+
 	for(k = 0; k < _nb_vex; ++k)
 	  for(it = _adjlists[k].adjlist.begin();
 				  it !=  _adjlists[k].adjlist.end(); ++it)
@@ -166,5 +177,36 @@ is_adj(int i, int j) const
 				it !=  _adjlists[i].adjlist.end(); ++it)
 	  if((*it).adjvex == j) return true;
 	return false;
+}
+
+/** O(2 * e)*/
+template<typename T, typename U>
+void  graph_adjlist<T, U>::
+create_radjlists(void)
+{
+	int k;
+	typename List<anode>::const_iterator it;
+	
+	if(_radjlists) return;//avoid repeating
+	_radjlists = new vnode[_nb_vex];
+	for(k = 0; k <_nb_vex; ++k)//traverse all adjlist
+	{
+		for(it = _adjlists[k].adjlist.begin();
+					it !=  _adjlists[k].adjlist.end(); ++it)
+		  _radjlists[(*it).adjvex].adjlist.append(anode(k, (*it).weigth));
+	}
+}
+
+template <typename T, typename U>
+void graph_adjlist<T, U>::
+show_radjlists(void)const
+{
+	int i;
+
+	for(i = 0; i <_nb_vex; ++i)
+	{
+		cout << _vexs->at(i) << " : ";
+		_radjlists[i].adjlist.show();
+	}
 }
 #endif
