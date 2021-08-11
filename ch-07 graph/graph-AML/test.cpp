@@ -1,11 +1,11 @@
-/** 20210810 12:35, zyj, GuangDong*/
-//test.c -- test graph_array.h
+/** 20210811 09:20, zyj, GuangDong*/
+//test.c -- test graph_AML.h
 #include <iostream>
 #include <iomanip>
 #include <string>
 #include <cstdlib>
 #include <cfloat>
-#include "graph_olist.h"
+#include "graph_AML.h"
 
 using std::cout;
 using std::endl;
@@ -48,11 +48,6 @@ int main(int ac, char * av[])
 	}
 	arcs->set_values(a, 16);
 	//to do
-	graph_olist<char, int> go(*vexs,  *arcs, graph_olist<char, int>::DG);
-	go.show_olist();
-	go.show_iodegree();
-	cout << "vexnum = " << go.vexnum() << endl;
-	cout << "arcnum = " << go.arcnum() << endl;
 
 	delete vexs;
 	delete arcs;
@@ -60,7 +55,8 @@ int main(int ac, char * av[])
 	vexs->set_values(d, 5);
 	arcs = a2::instance(5, 5);
 	arcs->set_values(c, 25);
+	graph_AML<char, int> go(*vexs,  *arcs, graph_AML<char, int>::UDG);
+	go.show_AML();
 	// to do
 	return 0;
 }
-

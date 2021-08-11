@@ -60,6 +60,8 @@ class graph_olist
 		int get_idegree(int v)const{return _vexs[v].innum;}
 		int get_odegree(int v)const{return _vexs[v].outnum;}
 		void show_iodegree(void) const;
+		int vexnum(void) const{return _vexnum;}
+		int arcnum(void) const{return _arcnum;}
 };
 
 /** O(n + n * n)*/
