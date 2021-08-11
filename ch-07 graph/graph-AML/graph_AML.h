@@ -60,6 +60,8 @@ class graph_AML
 		void show_AML(void) const;
 		int get_degree(int v)const{return _vexs[v].degree;}
 		void show_degree(void) const;
+		int vexnum(void)const{return _vexnum;}
+		int arcnum(void)const{return _arcnum;}
 };
 
 template <typename T, typename U>
@@ -68,7 +70,7 @@ graph_AML(const a1 & vexs, const a2 & arcs, graph_kind kind)
 {
 	int i, j;
 	U w;
-	anode * p;
+	anode * p, *cur, *test;
 
 	_vexnum = vexs.get_bound(1);
 	_arcnum = 0;
@@ -77,19 +79,55 @@ graph_AML(const a1 & vexs, const a2 & arcs, graph_kind kind)
 	  _vexs[i].data = vexs.at(i);
 	for(i = 0; i <_vexnum; ++i)
 	{
-		for(j = 0 + i; j < _vexnum; ++j)
+		for(j = i; j < _vexnum; ++j)
 		{
 			if((w = arcs.at(i, j)) != 0)
 			{
 				/** insert into two list */
-				p = new anode(i, j, _vexs[i].firstarc, _vexs[j].firstarc, w);
-				_vexs[i].firstarc = p;
-				_vexs[j].firstarc = p;
+				p = new anode(i, j, nullptr, nullptr, w);
+
+				/** adjacency with i*/
+				if(!_vexs[i].firstarc)
+				{
+					_vexs[i].firstarc = p;
+				}
+				else
+				{//not empty
+					cur = _vexs[i].firstarc;
+					do{
+						if(i == cur->ivex)
+						  test = cur->ilink;
+						else
+						  test = cur->jlink;
+						if(test) cur = test;
+					}while(test);
+					if(i == cur->ivex) cur->ilink = p;
+					else cur->jlink = p;
+				}
+
+				/** adjacency with j*/
+				if(!_vexs[j].firstarc)
+				{
+					_vexs[j].firstarc = p;
+				}
+				else
+				{//not empty
+					cur = _vexs[j].firstarc;
+					do{
+						if(j == cur->ivex)
+						  test = cur->ilink;
+						else
+						  test = cur->jlink;
+						if(test) cur = test;
+					}while(test);
+					if(j == cur->ivex) cur->ilink = p;
+					else cur->jlink = p;
+				}
 				_vexs[i].degree++;
 				_vexs[j].degree++;
 				_arcnum++;
-				cout << "after new : " << *p << endl;
-				show_AML();
+				//cout << "after new : " << *p << endl;
+				//show_AML();
 			}
 		}
 	}
@@ -100,27 +138,27 @@ void graph_AML<T, U>::
 show_AML(void) const
 {
 	int i;
-	anode *p;
+	anode *cur;
 
 	for(i = 0; i < _vexnum; ++i)
 	{
-		cout << "#" << i << " "<< _vexs[i].data << ":\n";
+		cout << "#" << i << " "<< _vexs[i].data << ":";
 		cout << "\ti("<< _vexs[i].degree<<"):";
-		p = _vexs[i].firstarc;
-		while(p)
+		cur = _vexs[i].firstarc;
+		while(cur)
 		{
-			cout << *p << " ";
-			p = p->ilink;
-		}
+			if(i == cur->ivex)
+			{
+				cout << *cur << "ilink ";
+				cur = cur->ilink;
+			}
+			else
+			{
+				cout << *cur << "jlink ";
+				cur = cur->jlink;
+			}
+		};
 		cout << endl;
-		//cout << "\tj("<< _vexs[i].degree<<"):";
-		//p = _vexs[i].firstarc;
-		//while(p)
-		//{
-		//	cout << *p << " ";
-		//	p = p->jlink;
-		//}
-		//cout << endl;
 	}
 }
 

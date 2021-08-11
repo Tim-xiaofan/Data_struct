@@ -55,8 +55,10 @@ int main(int ac, char * av[])
 	vexs->set_values(d, 5);
 	arcs = a2::instance(5, 5);
 	arcs->set_values(c, 25);
-	graph_AML<char, int> go(*vexs,  *arcs, graph_AML<char, int>::UDG);
-	go.show_AML();
+	graph_AML<char, int> gaml(*vexs,  *arcs, graph_AML<char, int>::UDG);
+	gaml.show_AML();
+	cout << "numvex = " << gaml.vexnum() << endl;
+	cout << "numarc = " << gaml.arcnum() << endl;
 	// to do
 	return 0;
 }
