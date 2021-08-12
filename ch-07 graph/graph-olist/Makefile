@@ -2,7 +2,8 @@
 # Copyright(c) 2010-2014 Intel Corporation
 
 # binary name
-APP = test
+APP=test
+CXX=g++
 
 # all source are stored in SRCS-y
 SRCS-y := test.cpp graph_olist.h
@@ -21,7 +22,7 @@ endif
 endif
 
 # Add flag 
-CPPFLAGS += -g -Wall -I./
+CPPFLAGS += -g -Wall -I./ -std=c++11
 
 $(APP): $(SRCS-y) Makefile 
 	$(CXX) $(CPPFLAGS) $(SRCS-y) -o $@

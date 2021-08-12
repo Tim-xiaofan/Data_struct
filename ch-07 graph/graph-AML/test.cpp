@@ -60,5 +60,14 @@ int main(int ac, char * av[])
 	cout << "numvex = " << gaml.vexnum() << endl;
 	cout << "numarc = " << gaml.arcnum() << endl;
 	// to do
+	int v;
+	typename graph_AML<char, int>::anode *p;
+	for(v = 0; v < gaml.vexnum(); ++v)
+	{
+		cout << v <<" : ";
+		for(p = gaml.first(v); p; p = p->next(v))
+		  cout <<  *p << " ";
+		cout << endl;
+	}
 	return 0;
 }

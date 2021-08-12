@@ -28,8 +28,26 @@ static int c[]={
 	0,1,1,0,0
 };
 
+/** 8 x 8*/
+static int e[]={
+	0,1,1,0,0,0,0,0,
+	1,0,0,1,1,0,0,0,
+	1,0,0,0,0,1,1,0,
+	0,1,0,0,0,0,0,1,
+	0,1,0,0,0,0,0,1,
+	0,0,1,0,0,0,1,0,
+	0,0,1,0,0,1,0,0,
+	0,0,0,1,1,0,0,0,
+};
+
 static char b[] = {'A', 'B', 'C', 'D'};
 static char d[] = {'A', 'B', 'C', 'D', 'E'};
+static char f[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+
+static void visit(int i)
+{
+	cout << i << " ";
+}
 
 int main(int ac, char * av[])
 {
@@ -48,7 +66,6 @@ int main(int ac, char * av[])
 	}
 	arcs->set_values(a, 16);
 	//to do
-
 	delete vexs;
 	delete arcs;
 	vexs = a1::instance(5);
@@ -59,7 +76,23 @@ int main(int ac, char * av[])
 	gaml.show_AML();
 	cout << "vexnum = " << gaml.vexnum() << endl;
 	cout << "arcnum = " << gaml.arcnum() << endl;
-	DFS(gaml);
+	DFS(gaml, visit);
+	cout << endl;
+
+	//to do
+	delete vexs;
+	delete arcs;
+	vexs = a1::instance(8);
+	vexs->set_values(f, 8);
+	arcs = a2::instance(8, 8);
+	arcs->set_values(e, 64);
+	graph_AML<char, int> gaml1(*vexs,  *arcs, graph_AML<char, int>::UDG);
+	gaml1.show_AML();
+	cout << "vexnum = " << gaml1.vexnum() << endl;
+	cout << "arcnum = " << gaml1.arcnum() << endl;
+	DFS(gaml1, visit);
+	cout << endl;
+
 	return 0;
 }
 

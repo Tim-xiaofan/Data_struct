@@ -34,6 +34,9 @@ class graph_AML
 					<< a.weigth << ", " << std::boolalpha << a.mark <<"}";
 				return os;
 			}
+			arcnode * next(int v);
+			const arcnode * next(int v) const;//TODO
+			int adj(int v) const;
 		};
 		template <typename T1, typename U1>
 		struct vexnode
@@ -41,15 +44,16 @@ class graph_AML
 			T1 data;
 			arcnode<U1> *firstarc;
 			int degree;
+			bool mark;
 			vexnode(arcnode<U1> *fa = nullptr):
-				firstarc(fa), degree(0){}
+				firstarc(fa), degree(0), mark(false){}
 		};
-		typedef arcnode<U> anode;
 		typedef vexnode<T, U> vnode;
 		typedef array<T, 1> a1;
 		typedef array<U, 2> a2;
 	public:
 		typedef enum {UDG, UDN} graph_kind;
+		typedef arcnode<U> anode;
 	private:
 		int _vexnum, _arcnum;
 		vnode * _vexs;
@@ -62,7 +66,33 @@ class graph_AML
 		void show_degree(void) const;
 		int vexnum(void)const{return _vexnum;}
 		int arcnum(void)const{return _arcnum;}
+		anode * first(int v) {return _vexs[v].firstarc;}
+		const anode * first(int v) const {return _vexs[v].firstarc;}
+		bool is_marked(int v) const {return _vexs[v].mark;}
+		void markup(int v) {_vexs[v].mark = true;}
+		void markdown(int v) {_vexs[v].mark = false;}
 };
+
+template <typename T, typename U>
+template <typename U1>
+graph_AML<T, U>::arcnode<U1> * 
+graph_AML<T, U>::arcnode<U1>::
+next(int v)
+{
+	if(ivex == v) return ilink;
+	if(jvex == v) return jlink;
+	return nullptr;
+}
+
+template <typename T, typename U>
+template <typename U1>
+int graph_AML<T, U>::arcnode<U1>::
+adj(int v) const
+{
+	if(v == ivex) return jvex;
+	if(v == jvex) return ivex;
+	return -1;//error
+}
 
 template <typename T, typename U>
 graph_AML<T, U>::
