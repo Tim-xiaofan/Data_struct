@@ -5,7 +5,7 @@
 APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := test.cpp DFS.h
+SRCS-y := test.cpp graph_algorithm.h
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"

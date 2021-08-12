@@ -61,7 +61,7 @@ int main(int ac, char * av[])
 	cout << "numarc = " << gaml.arcnum() << endl;
 	// to do
 	int v;
-	typename graph_AML<char, int>::anode *p;
+	const typename graph_AML<char, int>::anode *p;
 	for(v = 0; v < gaml.vexnum(); ++v)
 	{
 		cout << v <<" : ";

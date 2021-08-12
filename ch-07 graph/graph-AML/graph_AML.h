@@ -34,8 +34,7 @@ class graph_AML
 					<< a.weigth << ", " << std::boolalpha << a.mark <<"}";
 				return os;
 			}
-			arcnode * next(int v);
-			const arcnode * next(int v) const;//TODO
+			const arcnode * next(int v) const;
 			int adj(int v) const;
 		};
 		template <typename T1, typename U1>
@@ -75,9 +74,9 @@ class graph_AML
 
 template <typename T, typename U>
 template <typename U1>
-graph_AML<T, U>::arcnode<U1> * 
+const typename graph_AML<T, U>:: template arcnode<U1> * 
 graph_AML<T, U>::arcnode<U1>::
-next(int v)
+next(int v) const
 {
 	if(ivex == v) return ilink;
 	if(jvex == v) return jlink;

@@ -5,7 +5,7 @@
 #include <string>
 #include <cstdlib>
 #include <cfloat>
-#include "DFS.h"
+#include "graph_algorithm.h"
 
 using std::cout;
 using std::endl;
@@ -76,8 +76,19 @@ int main(int ac, char * av[])
 	gaml.show_AML();
 	cout << "vexnum = " << gaml.vexnum() << endl;
 	cout << "arcnum = " << gaml.arcnum() << endl;
+	cout << "DFS : ";
 	DFS(gaml, visit);
 	cout << endl;
+
+	cout << "DFS1 : ";
+	DFS(gaml, visit, false);
+	cout << endl;
+
+	cout << "BFS : ";
+	BFS(gaml, visit);
+	cout << endl;
+
+	
 
 	//to do
 	delete vexs;
@@ -90,7 +101,16 @@ int main(int ac, char * av[])
 	gaml1.show_AML();
 	cout << "vexnum = " << gaml1.vexnum() << endl;
 	cout << "arcnum = " << gaml1.arcnum() << endl;
+	cout << "DFS : ";
 	DFS(gaml1, visit);
+	cout << endl;
+	
+	cout << "DFS1 : ";
+	DFS(gaml1, visit, false);
+	cout << endl;
+	
+	cout << "BFS : ";
+	BFS(gaml1, visit);
 	cout << endl;
 
 	return 0;
