@@ -100,14 +100,6 @@ inorder_traverse(node *root, const UnaryOperator & op)
 	}
 }
 
-//template<typename Data>
-//template<typename UnaryOperator>
-//void bitree<Data>::
-//test(const UnaryOperator & op) 
-//{
-//	char a = 'a';
-//	op(a);
-//}
 
 template<typename Data>
 template<typename Cmp>
@@ -119,9 +111,6 @@ cmp_construct(const Data * ds, int ct, const Cmp & cmp)
 	for(i = 0; i < ct; i++)
 	{
 		cmp_insert(_root, ds[i], cmp);
-		//cout << "after inster " << ds[i] << ":";
-		//preorder_traverse();
-		//cout << endl;
 	}
 
 	return true;
@@ -152,16 +141,11 @@ bool bitree<Data>::
 preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 {
 	if(pre == nullptr || in == nullptr || ct <= 0)
-	  return true;
+	  return false;
 
-	//cout << "pre:";
-	//show_ds(pre, ct);
-	//cout << "in:";
-	//show_ds(in, ct);
-	/** create root*/
+	/** create root from preorder*/
 	if(root == nullptr) root = new node;
 	root->data = pre[0]; 
-	//cout << "root data = " << root->data << endl;
 
 	/** look left and right in inorder*/
 	int lct = 0, rct = 0, root_pos;
@@ -170,8 +154,6 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 		break;
 	lct = root_pos;
 	rct = ct - lct - 1;
-	//cout << "lct = " << lct << endl;
-	//cout << "rct = " << rct << endl;
 
 	/** create lchild*/
 	preinorder_construct(root->lchild, &pre[1], in, lct);

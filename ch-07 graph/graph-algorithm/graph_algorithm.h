@@ -18,11 +18,13 @@ using std::endl;
 using std::cout;
 using std::cerr;
 
+#define MAX_NB_VEX 64
+
 template <typename T, typename U, typename OP>
 void DFS(const graph_AML<T, U> & G, const OP & op, bool recursion = true)
 {
 	int v, w, u;
-	bool visited[G.vexnum()] = {false};
+	bool visited[64] = {false};
 	sqstack<int> stack(G.vexnum());
 	typedef typename graph_AML<T, U>::anode node;
 	const node * p;
@@ -80,7 +82,7 @@ void BFS(graph_AML<T, U> & G, const OP & op)
 {
 	typedef typename graph_AML<T, U>::anode node;
 	int v, w, u;
-	bool visited[G.vexnum()] = {false};
+	bool visited[MAX_NB_VEX] = {false};
 	linkqueue<int> q(G.vexnum());
 	const node * p;
 

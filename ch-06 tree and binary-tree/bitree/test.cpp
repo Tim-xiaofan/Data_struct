@@ -28,6 +28,7 @@ int main()
 	SEP("int");
 	bitree<int> tree;
 	tree.preinorder_construct(preorder, inorder, 5);
+	cout << "after creating from preorder-inorder : \n";
 	cout << "preorder show : ";
 	tree.preorder_traverse(show<int>());
 	cout << "inorder show : ";
@@ -46,10 +47,8 @@ int main()
 	tree1.inorder_traversex();
 
 	int n;
-	cout << "n : ";
+	cout << "number of vexs : ";
 	cin >> n;
-	cout << "count : " << bitree<int>::count(n) << endl;
-	unsigned int max = 0xffffffff;
-	cout << "max = " << max << endl;
+	cout << "bumber of different trees : " << bitree<int>::count(n) << endl;
 	return 0;
 }

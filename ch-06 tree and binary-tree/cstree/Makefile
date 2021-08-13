@@ -5,7 +5,7 @@
 APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := test.cpp bitree.h
+SRCS-y := test.cpp cstree.h
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
