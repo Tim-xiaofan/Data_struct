@@ -70,6 +70,7 @@ class graph_AML
 		bool is_marked(int v) const {return _vexs[v].mark;}
 		void markup(int v) {_vexs[v].mark = true;}
 		void markdown(int v) {_vexs[v].mark = false;}
+		T data(int v) const {return _vexs[v].data;}
 };
 
 template <typename T, typename U>

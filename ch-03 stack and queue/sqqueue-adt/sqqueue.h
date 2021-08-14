@@ -23,6 +23,7 @@ class sqqueue : private SqList<Item>
 		/** operator*/
 		bool enqueue(const Item & i);
 		bool dequeue(Item & i);
+		bool first(Item & i)const{i = base::operator[](_front); return true;}
 		void show(void)const;
 };
 
