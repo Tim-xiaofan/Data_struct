@@ -43,7 +43,10 @@ class cstree
 		template<typename OP>
 		void levelorder_traverse(const OP & op = show<T>) const;
 	private:
-		//从第v个顶点出发深度优先遒历图G，建立以T为根的生成树。
+		/**
+		 * O(e)
+		 * 从第v个顶点出发深度优先遒历图G，建立以T为根的生成树。
+		 * */
 		template<typename U>
 		void DFS_tree(const graph_AML<T, U> & G, int v, node * t, bool * visited);
 };

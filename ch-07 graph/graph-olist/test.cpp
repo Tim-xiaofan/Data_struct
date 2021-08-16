@@ -16,8 +16,8 @@ typedef array<char, 1> a1;
 static int a[]={
 	0,1,1,0,
 	0,0,0,0,
-	0,0,0,1,
-	1,0,0,0
+	1,0,0,1,
+	1,1,1,0
 };
 
 static int c[]={
