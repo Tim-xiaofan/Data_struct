@@ -76,7 +76,7 @@ graph_olist<T, U>::
 graph_olist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 {
 	int t, h;
-	anode *p;
+	anode *p, *tail;
 	U w;
 
 	_vexnum = vexs.get_bound(1);
@@ -89,10 +89,25 @@ graph_olist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 	  for(h = 0; h < _vexnum; ++h)
 		if((w = arcs.at(t, h)) != 0)
 		{
-			/** insert into two list */
-			p = new anode(t, h, _vexs[t].firstout, _vexs[h].firstin, w);
-			_vexs[t].firstout = p;
-			_vexs[h].firstin = p;
+			p = new anode(t, h, nullptr, nullptr, w);
+			/** append into two list */
+			if(_vexs[t].firstout == nullptr)
+			  _vexs[t].firstout = p;
+			else
+			{
+			  for(tail = _vexs[t].firstout; tail->tlink; tail = tail->tlink)
+				continue;
+			  tail->tlink = p; 
+			}
+
+			if(_vexs[h].firstin == nullptr)
+			  _vexs[h].firstin = p;
+			else
+			{
+			  for(tail = _vexs[h].firstin; tail->hlink; tail = tail->hlink)
+				continue;
+			  tail->hlink = p; 
+			}
 			_vexs[t].outnum++;
 			_vexs[h].innum++;
 			_arcnum++;

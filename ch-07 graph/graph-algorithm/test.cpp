@@ -157,6 +157,8 @@ int main(int ac, char * av[])
 	cout << "BFS : ";
 	BFS(go, visit);
 	cout << endl;
+
+	tarjan(go, nullptr);
 	
 	cout << "\n** olist **\n";
 	delete vexs;

@@ -8,11 +8,12 @@
 #include <cfloat>
 #include <new>
 #include <typeinfo>
+#include <cstring>
 #include "array.h"
 #include "List.h"
 #include "graph_AML.h"
 #include "linkqueue.h"
-#include "sqstack.h"
+#include "sqqueue.h"
 
 using std::endl;
 using std::cout;
@@ -31,8 +32,8 @@ void DFS(const Graph & G, const OP & op, bool recursion = true)
 
 	if(recursion)
 	{
-	  for(v = 0; v < G.vexnum(); ++v)
-		if(!visited[v]) DFS(G, v, visited, op);
+		for(v = 0; v < G.vexnum(); ++v)
+		  if(!visited[v]) DFS(G, v, visited, op);
 	}
 	else
 	{
@@ -62,7 +63,7 @@ void DFS(const Graph & G, const OP & op, bool recursion = true)
 }
 
 template <typename Graph, typename OP>
-void DFS(const Graph & G, int v, bool * visited, const OP & op)
+void DFS(const Graph & G, int v, bool * visited, OP & op)
 {
 	int w;
 	typedef typename Graph::anode node;
@@ -78,7 +79,7 @@ void DFS(const Graph & G, int v, bool * visited, const OP & op)
 }
 
 template <typename Graph, typename OP>
-void rDFS(const Graph & G, const OP & op, bool recursion = true)
+void rDFS(const Graph & G, OP & op, bool recursion = true)
 {
 	int v, w, u;
 	bool rvisited[64] = {false};
@@ -88,8 +89,8 @@ void rDFS(const Graph & G, const OP & op, bool recursion = true)
 
 	if(recursion)
 	{
-	  for(v = 0; v < G.vexnum(); ++v)
-		if(!rvisited[v]) rDFS(G, v, rvisited, op);
+		for(v = 0; v < G.vexnum(); ++v)
+		  if(!rvisited[v]) rDFS(G, v, rvisited, op);
 	}
 	else
 	{
@@ -119,7 +120,7 @@ void rDFS(const Graph & G, const OP & op, bool recursion = true)
 }
 
 template <typename Graph, typename OP>
-void rDFS(const Graph & G, int v, bool * rvisited, const OP & op)
+void rDFS(const Graph & G, int v, bool * rvisited, OP & op)
 {
 	int w;
 	typedef typename Graph::anode node;
@@ -151,7 +152,7 @@ void BFS(const Graph & G, const OP & op)
 		  visited[v] = true;
 		  while(!q.is_empty())
 		  {
-			  q.dequeue(w);//"先被访问的顶点的邻接点"先于"后被访问的顶点的邻接点"被访问
+			  q.dequeue(w);//first visited vex's adj is first to visit
 			  for(p = G.first(w); p; p = p->next(w))
 			  {
 				  u = p->adj(w);
@@ -164,5 +165,35 @@ void BFS(const Graph & G, const OP & op)
 			  }
 		  }//while
 	  }
-}//BFS
+}
+
+struct finish
+{
+	sqstack<int> stack;
+	finish(int capacity = MAX_NB_VEX):stack(capacity){}
+	void operator()(int v){stack.push(v);}
+	void show(void)const{stack.show();}
+	void clear(void){stack.clear();}
+	bool is_empty(void)const{return is_empty();}
+};
+
+template<typename Graph, typename OP>
+void tarjan(const Graph & G, const OP & op)
+{
+	int v, u, nb = G.vexnum();
+	bool * visited = new bool[nb];
+	//bool * rvisited = new bool[nb];
+	finish f(nb), f1(nb);
+
+	memset(visited, 0, nb);
+	for(v = 0; v < nb; ++v)
+	  if(!visited[v]) 
+	  {
+		  DFS(G, v, visited, f);
+		  cout << "finished : ";
+		  f.show();
+		  //memset(rvisited, 0, nb);
+		  while(!f.is_empty())
+	  }
+}
 #endif

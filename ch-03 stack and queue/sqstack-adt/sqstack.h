@@ -32,6 +32,7 @@ class sqstack : private SqList<Item>
 		/** random access*/
 		Item & operator[](int i){return base::operator[](i);}
 		const Item & operator[](int i)const{return base::operator[](i);}
+		void clear(void);
 };
 template<typename Item>
 bool sqstack<Item>::
@@ -41,5 +42,13 @@ get_top(Item & i)const
 	  return false;
 	i = base::operator[](base::length()-1);
 	return true;
+}
+
+template<typename Item>
+void sqstack<Item>::
+clear(void)
+{
+	Item i;
+	while(!is_empty()) pop(i);
 }
 #endif
