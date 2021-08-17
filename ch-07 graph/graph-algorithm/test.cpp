@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cfloat>
 #include "graph_algorithm.h"
+#include "graph_olist.h"
 
 using std::cout;
 using std::endl;
@@ -38,6 +39,21 @@ static int e[]={
 	0,0,1,0,0,0,1,0,
 	0,0,1,0,0,1,0,0,
 	0,0,0,1,1,0,0,0,
+};
+
+static int g[]={
+	0,1,1,0,
+	0,0,0,0,
+	1,0,0,1,
+	1,1,1,0
+};
+
+
+static int h[]={
+	0,1,1,0,
+	0,0,0,0,
+	0,0,0,1,
+	1,1,0,0
 };
 
 static char b[] = {'A', 'B', 'C', 'D'};
@@ -73,6 +89,7 @@ int main(int ac, char * av[])
 	arcs = a2::instance(5, 5);
 	arcs->set_values(c, 25);
 	graph_AML<char, int> gaml(*vexs,  *arcs, graph_AML<char, int>::UDG);
+	cout << "** AML **\n";
 	gaml.show_AML();
 	cout << "vexnum = " << gaml.vexnum() << endl;
 	cout << "arcnum = " << gaml.arcnum() << endl;
@@ -88,7 +105,7 @@ int main(int ac, char * av[])
 	BFS(gaml, visit);
 	cout << endl;
 
-	
+
 
 	//to do
 	delete vexs;
@@ -98,19 +115,74 @@ int main(int ac, char * av[])
 	arcs = a2::instance(8, 8);
 	arcs->set_values(e, 64);
 	graph_AML<char, int> gaml1(*vexs,  *arcs, graph_AML<char, int>::UDG);
+	cout << "\n** AML **\n";
 	gaml1.show_AML();
 	cout << "vexnum = " << gaml1.vexnum() << endl;
 	cout << "arcnum = " << gaml1.arcnum() << endl;
 	cout << "DFS : ";
 	DFS(gaml1, visit);
 	cout << endl;
-	
+
 	cout << "DFS1 : ";
 	DFS(gaml1, visit, false);
 	cout << endl;
-	
+
 	cout << "BFS : ";
 	BFS(gaml1, visit);
+	cout << endl;
+
+	cout << "\n** olist **\n";
+	delete vexs;
+	delete arcs;
+	vexs = a1::instance(4);
+	vexs->set_values(b, 4);
+	arcs = a2::instance(4, 4);
+	arcs->set_values(g, 4 * 4);
+	graph_olist<char, int> go(*vexs,  *arcs, graph_olist<char, int>::DG);
+	go.show_olist();
+	cout << "vexnum = " << go.vexnum() << endl;
+	cout << "arcnum = " << go.arcnum() << endl;
+	cout << "DFS : ";
+	DFS(go, visit);
+	cout << endl;
+	
+	cout << "DFS1 : ";
+	DFS(go, visit, false);
+	cout << endl;
+	
+	cout << "Reverse DFS : ";
+	rDFS(go, visit);
+	cout << endl;
+	
+	cout << "BFS : ";
+	BFS(go, visit);
+	cout << endl;
+	
+	cout << "\n** olist **\n";
+	delete vexs;
+	delete arcs;
+	vexs = a1::instance(4);
+	vexs->set_values(b, 4);
+	arcs = a2::instance(4, 4);
+	arcs->set_values(h, 4 * 4);
+	graph_olist<char, int> go1(*vexs,  *arcs, graph_olist<char, int>::DG);
+	go1.show_olist();
+	cout << "vexnum = " << go1.vexnum() << endl;
+	cout << "arcnum = " << go1.arcnum() << endl;
+	cout << "DFS : ";
+	DFS(go1, visit);
+	cout << endl;
+	
+	cout << "DFS1 : ";
+	DFS(go1, visit, false);
+	cout << endl;
+	
+	cout << "Reverse DFS : ";
+	rDFS(go1, visit);
+	cout << endl;
+	
+	cout << "BFS : ";
+	BFS(go1, visit);
 	cout << endl;
 
 	return 0;

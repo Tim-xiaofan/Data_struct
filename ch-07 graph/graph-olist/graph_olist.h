@@ -33,6 +33,10 @@ class graph_olist
 					<< a.weigth << "}";
 				return os;
 			}
+			const arcnode * next(int v) const {return tlink;}
+			const arcnode * rnext(int v) const {return hlink;};
+			int adj(int v) const {return headvex;}
+			int radj(int v) const {return tailvex;}
 		};
 		template <typename T1, typename U1>
 		struct vexnode
@@ -43,12 +47,12 @@ class graph_olist
 			vexnode(arcnode<U1> *fo = nullptr, arcnode<U1> *fi = nullptr):
 				firstout(fo), firstin(fi), outnum(0), innum(0){}
 		};
-		typedef arcnode<U> anode;
 		typedef vexnode<T, U> vnode;
 		typedef array<T, 1> a1;
 		typedef array<U, 2> a2;
 	public:
 		typedef enum {DG, DN} graph_kind;
+		typedef arcnode<U> anode;
 	private:
 		int _vexnum, _arcnum;
 		vnode * _vexs;
@@ -62,6 +66,8 @@ class graph_olist
 		void show_iodegree(void) const;
 		int vexnum(void) const{return _vexnum;}
 		int arcnum(void) const{return _arcnum;}
+		const anode * first(int v) const {return _vexs[v].firstout;}
+		const anode * rfirst(int v) const {return _vexs[v].firstin;}
 };
 
 /** O(n + n * n)*/
@@ -99,27 +105,34 @@ void graph_olist<T, U>::
 show_olist(void) const
 {
 	int i;
-	anode *p;
+	const anode *p;
 
 	for(i = 0; i < _vexnum; ++i)
 	{
 		cout << _vexs[i].data << ":\n";
 		cout << "\tout("<< _vexs[i].outnum<<"):";
-		p = _vexs[i].firstout;
-		while(p)
-		{
-			cout << *p << " ";
-			p = p->tlink;
-		}
+		for(p = first(i); p; p = p->next(i))
+		  cout << *p << " ";
 		cout << endl;
+
+		//p = _vexs[i].firstout;
+		//while(p)
+		//{
+		//	cout << *p << " ";
+		//	p = p->tlink;
+		//}
+		//cout << endl;
 		cout << "\tin("<< _vexs[i].innum<<"):";
-		p = _vexs[i].firstin;
-		while(p)
-		{
-			cout << *p << " ";
-			p = p->hlink;
-		}
+		for(p = rfirst(i); p; p = p->rnext(i))
+		  cout << *p << " ";
 		cout << endl;
+		//p = _vexs[i].firstin;
+		//while(p)
+		//{
+		//	cout << *p << " ";
+		//	p = p->hlink;
+		//}
+		//cout << endl;
 	}
 }
 

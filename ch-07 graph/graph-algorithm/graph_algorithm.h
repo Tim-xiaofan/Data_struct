@@ -20,13 +20,13 @@ using std::cerr;
 
 #define MAX_NB_VEX 64
 
-template <typename T, typename U, typename OP>
-void DFS(const graph_AML<T, U> & G, const OP & op, bool recursion = true)
+template <typename Graph, typename OP>
+void DFS(const Graph & G, const OP & op, bool recursion = true)
 {
 	int v, w, u;
 	bool visited[64] = {false};
 	sqstack<int> stack(G.vexnum());
-	typedef typename graph_AML<T, U>::anode node;
+	typedef typename Graph::anode node;
 	const node * p;
 
 	if(recursion)
@@ -61,11 +61,11 @@ void DFS(const graph_AML<T, U> & G, const OP & op, bool recursion = true)
 	}
 }
 
-template <typename T, typename U, typename OP>
-void DFS(const graph_AML<T, U> & G, int v, bool * visited, const OP & op)
+template <typename Graph, typename OP>
+void DFS(const Graph & G, int v, bool * visited, const OP & op)
 {
 	int w;
-	typedef typename graph_AML<T, U>::anode node;
+	typedef typename Graph::anode node;
 	const node * p;
 
 	op(v);
@@ -77,10 +77,67 @@ void DFS(const graph_AML<T, U> & G, int v, bool * visited, const OP & op)
 	}
 }
 
-template <typename T, typename U, typename OP>
-void BFS(graph_AML<T, U> & G, const OP & op)
+template <typename Graph, typename OP>
+void rDFS(const Graph & G, const OP & op, bool recursion = true)
 {
-	typedef typename graph_AML<T, U>::anode node;
+	int v, w, u;
+	bool rvisited[64] = {false};
+	sqstack<int> stack(G.vexnum());
+	typedef typename Graph::anode node;
+	const node * p;
+
+	if(recursion)
+	{
+	  for(v = 0; v < G.vexnum(); ++v)
+		if(!rvisited[v]) rDFS(G, v, rvisited, op);
+	}
+	else
+	{
+		for(v = 0; v < G.vexnum(); ++v)
+		  if(!rvisited[v])
+		  {
+			  op(v);
+			  rvisited[v] = true;
+			  stack.push(v);
+			  while(!stack.is_empty())
+			  {
+				  stack.pop(w);
+				  for(p = G.rfirst(w); p; p = p->rnext(w))// Is there any adjacency vex for w?
+				  {
+					  u = p->radj(w);
+					  if(!rvisited[u])
+					  {
+						  op(u);
+						  rvisited[u] = true;
+						  stack.push(u);
+						  break;//deep
+					  }
+				  }
+			  }
+		  }
+	}
+}
+
+template <typename Graph, typename OP>
+void rDFS(const Graph & G, int v, bool * rvisited, const OP & op)
+{
+	int w;
+	typedef typename Graph::anode node;
+	const node * p;
+
+	op(v);
+	rvisited[v] = true;
+	for(p = G.rfirst(v); p; p=p->rnext(v))
+	{
+		w = p->radj(v);
+		if(!rvisited[w]) rDFS(G, w, rvisited, op);
+	}
+}
+
+template <typename Graph, typename OP>
+void BFS(const Graph & G, const OP & op)
+{
+	typedef typename Graph::anode node;
 	int v, w, u;
 	bool visited[MAX_NB_VEX] = {false};
 	linkqueue<int> q(G.vexnum());
