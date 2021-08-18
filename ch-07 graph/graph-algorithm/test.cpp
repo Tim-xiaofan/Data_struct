@@ -38,7 +38,7 @@ static int e[]={
 	0,1,0,0,0,0,0,1,
 	0,0,1,0,0,0,1,0,
 	0,0,1,0,0,1,0,0,
-	0,0,0,1,1,0,0,0,
+	0,0,0,1,1,0,0,0
 };
 
 static int g[]={
@@ -56,9 +56,23 @@ static int h[]={
 	1,1,0,0
 };
 
+static int A[] = {
+//  1 2 3 4 5 6 7 8 9
+	0,1,0,1,0,0,0,0,0,//1
+	0,0,1,0,0,0,0,0,0,//2
+	1,0,0,0,0,0,0,0,0,//3
+	0,0,0,0,1,0,0,0,0,//4
+	0,0,0,0,0,1,1,1,0,//5
+	0,0,0,1,0,0,0,0,0,//6
+	0,0,0,0,0,1,0,0,0,//7
+	0,0,0,0,0,0,0,0,1,//8
+	0,0,0,0,0,0,0,1,0 //9
+};
+
 static char b[] = {'A', 'B', 'C', 'D'};
 static char d[] = {'A', 'B', 'C', 'D', 'E'};
 static char f[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+static char B[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8'};
 
 static void visit(int i)
 {
@@ -157,16 +171,18 @@ int main(int ac, char * av[])
 	cout << "BFS : ";
 	BFS(go, visit);
 	cout << endl;
+	
+	cout << "kosaraju : ";
+	kosaraju(go, visit);
 
-	tarjan(go, nullptr);
 	
 	cout << "\n** olist **\n";
 	delete vexs;
 	delete arcs;
-	vexs = a1::instance(4);
-	vexs->set_values(b, 4);
-	arcs = a2::instance(4, 4);
-	arcs->set_values(h, 4 * 4);
+	vexs = a1::instance(9);
+	vexs->set_values(B, 9);
+	arcs = a2::instance(9, 9);
+	arcs->set_values(A, 9 * 9);
 	graph_olist<char, int> go1(*vexs,  *arcs, graph_olist<char, int>::DG);
 	go1.show_olist();
 	cout << "vexnum = " << go1.vexnum() << endl;
@@ -183,9 +199,16 @@ int main(int ac, char * av[])
 	rDFS(go1, visit);
 	cout << endl;
 	
+	cout << "Post DFS : ";
+	post_DFS(go1, visit);
+	cout << endl;
+	
 	cout << "BFS : ";
 	BFS(go1, visit);
 	cout << endl;
+	
+	cout << "kosaraju : ";
+	kosaraju(go1, visit);
 
 	return 0;
 }

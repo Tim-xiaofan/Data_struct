@@ -14,6 +14,7 @@
 #include "graph_AML.h"
 #include "linkqueue.h"
 #include "sqqueue.h"
+#include "sqstack.h"
 
 using std::endl;
 using std::cout;
@@ -22,7 +23,7 @@ using std::cerr;
 #define MAX_NB_VEX 64
 
 template <typename Graph, typename OP>
-void DFS(const Graph & G, const OP & op, bool recursion = true)
+void DFS(const Graph & G, OP & op, bool recursion = true)
 {
 	int v, w, u;
 	bool visited[64] = {false};
@@ -175,25 +176,59 @@ struct finish
 	void show(void)const{stack.show();}
 	void clear(void){stack.clear();}
 	bool is_empty(void)const{return is_empty();}
+	bool pop(int & v){return stack.pop(v);}
+	bool push(int v){return stack.push(v);}
 };
 
-template<typename Graph, typename OP>
-void tarjan(const Graph & G, const OP & op)
-{
-	int v, u, nb = G.vexnum();
-	bool * visited = new bool[nb];
-	//bool * rvisited = new bool[nb];
-	finish f(nb), f1(nb);
 
-	memset(visited, 0, nb);
-	for(v = 0; v < nb; ++v)
+template <typename Graph, typename OP>
+void post_DFS(const Graph & G, OP & op)
+{
+	int v;
+	bool visited[64] = {false};
+
+	for(v = 0; v < G.vexnum(); ++v)
 	  if(!visited[v]) 
 	  {
-		  DFS(G, v, visited, f);
-		  cout << "finished : ";
-		  f.show();
-		  //memset(rvisited, 0, nb);
-		  while(!f.is_empty())
+		  post_DFS(G, v, visited, op);
 	  }
+}
+
+template <typename Graph, typename OP>
+void post_DFS(const Graph & G, int v, bool * visited, OP & op)
+{
+	int w;
+	typedef typename Graph::anode node;
+	const node * p;
+
+	visited[v] = true;
+	for(p = G.first(v); p; p=p->next(v))
+	{
+		w = p->adj(v);
+		if(!visited[w]) post_DFS(G, w, visited, op);
+	}
+	op(v);
+}
+
+template<typename Graph, typename OP>
+int kosaraju(const Graph & G, const OP & op)
+{
+	int nb = G.vexnum(), v, ct = 0;
+	finish f(nb);
+	bool visited[64] = {false};
+	
+	post_DFS(G, f);
+	cout << "f : ";
+	f.show();
+	while(f.pop(v))
+	{
+		if(!visited[v]) 
+		{
+			cout << "scc-"<< ++ct << " : "; 
+			rDFS(G, v, visited, op);
+			cout << endl;
+		}  
+	}
+	return ct;
 }
 #endif
