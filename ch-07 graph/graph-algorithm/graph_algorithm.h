@@ -15,6 +15,7 @@
 #include "linkqueue.h"
 #include "sqqueue.h"
 #include "sqstack.h"
+#include "graph_array.h"
 
 using std::endl;
 using std::cout;
@@ -175,7 +176,7 @@ struct finish
 	void operator()(int v){stack.push(v);}
 	void show(void)const{stack.show();}
 	void clear(void){stack.clear();}
-	bool is_empty(void)const{return is_empty();}
+	bool is_empty(void)const{return stack.is_empty();}
 	bool pop(int & v){return stack.pop(v);}
 	bool push(int v){return stack.push(v);}
 };
@@ -215,7 +216,7 @@ int kosaraju(const Graph & G, const OP & op)
 {
 	int nb = G.vexnum(), v, ct = 0;
 	finish f(nb);
-	bool visited[64] = {false};
+	bool visited[MAX_NB_VEX] = {false};
 	
 	post_DFS(G, f);
 	cout << "f : ";
@@ -230,5 +231,17 @@ int kosaraju(const Graph & G, const OP & op)
 		}  
 	}
 	return ct;
+}
+
+template<typename Graph, typename OP>
+int prime(const Graph & G, const OP & op)
+{
+    int nb = G.vexnum(), v;
+    bool visited[MAX_NB_VEX] = {false};
+
+    for(v = 0; v < nb; ++v)
+    {
+    }
+    return 0;
 }
 #endif

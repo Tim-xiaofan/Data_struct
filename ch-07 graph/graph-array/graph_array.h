@@ -39,6 +39,7 @@ class graph_array
 		void show_iodegree(void) const;
 		int get_odegree(int v) const;
 		int get_idegree(int v) const;
+        int vexnum(void) const{return _nb_vex;}
 	private:
 		void create(const a2 & arcs);
 };
