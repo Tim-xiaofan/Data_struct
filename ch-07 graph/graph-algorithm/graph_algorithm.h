@@ -234,13 +234,26 @@ int kosaraju(const Graph & G, const OP & op)
 }
 
 template<typename Graph, typename OP>
-int prime(const Graph & G, const OP & op)
+int prime(const Graph & G, int u , const OP & op)
 {
-    int nb = G.vexnum(), v;
+    typedef typename Graph::cost_type cost_type;
+    int nb = G.vexnum(), v, w;
     bool visited[MAX_NB_VEX] = {false};
 
+    //closedge[i - 1] = Min{cost(u,vi)|u属于U}, vi属于V-U
+    struct {
+        int adjvex;//依附在U中的顶点 
+        cost_type lowcost;
+    }closedge[MAX_NB_VEX];//记录从U到V一U具有最小代价的边
+
+    closedge[u].cost = 0; // U={u}
     for(v = 0; v < nb; ++v)
     {
+        if(v != u) closedge[v] = {u, G.cost(u, v)};//V-U
+    }
+    for(v = 1; v < nb; ++v)
+    {
+        u = min(closedge);//next node
     }
     return 0;
 }
