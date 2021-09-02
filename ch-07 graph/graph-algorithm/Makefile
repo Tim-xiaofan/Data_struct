@@ -5,7 +5,11 @@
 APP = test
 
 # all source are stored in SRCS-y
+ifneq ($(shell uname),Darwin)
 SRCS-y := test.cpp graph_algorithm.h
+else
+SRCS-y := test.cpp
+endif
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -44,4 +48,13 @@ clean:
 	rm -Force *.exe
 	rm -Force $(APP)
 endif
+endif
+
+ifeq ($(shell uname),Darwin)
+.PHONY: clean
+clean:
+	echo "MacOs rm"
+	rm -f *.o
+	rm -f *.exe
+	rm -f $(APP)
 endif
