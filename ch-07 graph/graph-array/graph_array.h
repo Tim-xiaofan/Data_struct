@@ -61,10 +61,10 @@ graph_array<T, U>::
 graph_array(const a1 & vexs, const a2 & arcs, graph_kind kind)
 {
 	_nb_vex = vexs.get_bound(1);
-	cout << "_nb_vex = " << _nb_vex << endl;
+	//cout << "_nb_vex = " << _nb_vex << endl;
 	_vexs = a1::instance(vexs);
-	cout << "_vexs :\n";
-	show_array(*_vexs);
+	//cout << "_vexs :\n";
+	//show_array(*_vexs);
 	_kind = kind;
 	create(arcs);
 }
@@ -75,13 +75,22 @@ create(const a2 & arcs)
 {
 	int i, j;
 	_nb_arc = 0;
-	for(i = 0; i < _nb_vex; ++i)
-	  for(j = i; j < _nb_vex; ++j)
-		if(arcs.at(i, j) != 0) _nb_arc++;
-	cout << "_nb_arc = " << _nb_arc << endl;
+	if(_kind == DN || _kind == UDN)
+	{
+		for(i = 0; i < _nb_vex; ++i)
+		  for(j = i; j < _nb_vex; ++j)
+			if(arcs.at(i, j) != INT_MAX) _nb_arc++;
+	}
+	else
+	{
+		for(i = 0; i < _nb_vex; ++i)
+		  for(j = i; j < _nb_vex; ++j)
+			if(arcs.at(i, j) != 0) _nb_arc++;
+	}
+	//cout << "_nb_arc = " << _nb_arc << endl;
 	_arcs = a2::instance(arcs);
-	cout << "_arcs :\n";
-	show_array(*_arcs);
+	//cout << "_arcs :\n";
+	//show_array(*_arcs);
 }
 
 template<typename T, typename U>
@@ -93,7 +102,10 @@ show_array(const array<V, dim> & a)
 	if(dim == 1)
 	{
 		for(i = 0; i < a.get_bound(1); ++i)
-		  cout << std::setw(2) << a.at(i) << " ";
+		{
+		  if(a.at(i) == INT_MAX) cout << std::setw(2) << 'I' << " "; 
+		  else cout << std::setw(2) << a.at(i) << " ";
+		}
 		cout << endl;
 	}
 	else
@@ -101,7 +113,11 @@ show_array(const array<V, dim> & a)
 		for(i = 0; i < a.get_bound(1); ++i)
 		{
 			for(j = 0; j < a.get_bound(2); ++j)
-			  cout << std::setw(2)<< a.at(i, j) << " ";
+			{
+				if(a.at(i, j) == INT_MAX) cout << std::setw(2) << 'I' << " "; 
+				else cout << std::setw(2) << a.at(i, j) << " ";
+				//cout << std::setw(2)<< a.at(i, j) << " ";
+			}
 			cout << endl;
 		}
 	}

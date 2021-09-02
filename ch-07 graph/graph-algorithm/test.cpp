@@ -13,15 +13,16 @@ using std::endl;
 using std::cerr;
 typedef array<int, 2> a2;
 typedef array<char, 1> a1;
+#define I INT_MAX
 
 static int a[]={
 //  1 2 3 4 5 6
-	0,6,1,5,0,0,//1
-	6,0,5,0,3,0,//2
-	1,5,0,5,6,4,//3
-	5,0,5,0,0,2,//4
-	0,3,6,0,0,6,//5
-	0,0,4,2,6,0 //6
+	I,6,1,5,I,I,//1
+	6,I,5,I,3,I,//2
+	1,5,I,5,6,4,//3
+	5,I,5,I,I,2,//4
+	I,3,6,I,I,6,//5
+	I,I,4,2,6,I //6
 };
 
 static char b[] = {'1', '2', '3', '4', '5', '6'};
@@ -33,6 +34,7 @@ static char b[] = {'1', '2', '3', '4', '5', '6'};
 
 int main(int ac, char * av[])
 {
+	int cost;
     a1 * vexs;
     a2 * arcs;
 	vexs = a1::instance(6);
@@ -41,9 +43,17 @@ int main(int ac, char * av[])
 	arcs->set_values(a, 6 * 6);
 	graph_array<char, int> G(*vexs,  *arcs, graph_array<char, int>::UDN);
 	cout << "** AML **\n";
-	cout << "vexnum = " << G.vexnum() << endl;
-	cout << "arcnum = " << G.arcnum() << endl;
-    prime(G, 0);
+	//cout << "vexnum = " << G.vexnum() << endl;
+	//cout << "arcnum = " << G.arcnum() << endl;
+	cout << "--prime_O3 : " << endl;
+    cost = prime_O3(G, 0);
+	cout << "cost = " << cost << endl;
+	cout << "--prime_O2 : " << endl;
+	cost = prime_O2(G, 0);
+	cout << "cost = " << cost << endl;
+	cout << "--prime_O2 1 : " << endl;
+	prime_O2(G, 1);
+	cout << "cost = " << cost << endl;
     return 0;
 }
 
