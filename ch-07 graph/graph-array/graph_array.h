@@ -28,6 +28,7 @@ class graph_array
 		a1 *_vexs;
 		a2 *_arcs;
 	public:
+        typedef U cost_type;
 		graph_array(const a1 & vex, const a2 & arcs, graph_kind kind);
 		~graph_array(){delete _vexs; delete _arcs;}
 		template<typename V, int dim = 1>
@@ -40,6 +41,9 @@ class graph_array
 		int get_odegree(int v) const;
 		int get_idegree(int v) const;
         int vexnum(void) const{return _nb_vex;}
+        int arcnum(void) const{return _nb_arc;}
+        U cost(int i, int j) const {return _arcs->at(i, j);}
+        T vexname(int v)const { return _vexs->at(v);}
 	private:
 		void create(const a2 & arcs);
 };
@@ -64,7 +68,7 @@ create(const a2 & arcs)
 	int i, j;
 	_nb_arc = 0;
 	for(i = 0; i < _nb_vex; ++i)
-	  for(j = 0; j < _nb_vex; ++j)
+	  for(j = i; j < _nb_vex; ++j)
 		if(arcs.at(i, j) != 0) _nb_arc++;
 	cout << "_nb_arc = " << _nb_arc << endl;
 	_arcs = a2::instance(arcs);

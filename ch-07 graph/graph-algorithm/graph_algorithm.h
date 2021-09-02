@@ -233,27 +233,78 @@ int kosaraju(const Graph & G, const OP & op)
 	return ct;
 }
 
-template<typename Graph, typename OP>
-int prime(const Graph & G, int u , const OP & op)
+template<typename Graph>
+int prime(const Graph & G, int u)
 {
     typedef typename Graph::cost_type cost_type;
-    int nb = G.vexnum(), v, w;
-    bool visited[MAX_NB_VEX] = {false};
+    int nb = G.vexnum(), v, w, k;
+    cost_type min;
+    bool first;
 
     //closedge[i - 1] = Min{cost(u,vi)|u属于U}, vi属于V-U
-    struct {
+    struct tmp{
         int adjvex;//依附在U中的顶点 
         cost_type lowcost;
+        tmp(int a = 0, cost_type l = 0):adjvex(a), lowcost(l){}
     }closedge[MAX_NB_VEX];//记录从U到V一U具有最小代价的边
 
-    closedge[u].cost = 0; // U={u}
+    closedge[u].lowcost = -1; // U={u}
     for(v = 0; v < nb; ++v)
     {
         if(v != u) closedge[v] = {u, G.cost(u, v)};//V-U
     }
+    cout << "after init from "<< u << ": ";
+    for(v = 0; v < nb; ++v)
+    {
+        //if(closedge[v].lowcost != -1)
+        cout << "{(" << v << "," << closedge[v].adjvex <<"):"
+            << closedge[v].lowcost<< "}";
+        if(v == nb -1) cout << endl;
+        else cout << " ";
+    }
     for(v = 1; v < nb; ++v)
     {
-        u = min(closedge);//next node
+        first = true;
+        k = u;
+        for(w = 0; w < nb; ++w)//与u邻接cost最小的顶点
+        {
+            if(G.cost(u, w) && closedge[w].lowcost != -1)//不在U中且cost最小
+            {
+                if(first) 
+                {
+                    min = closedge[w].lowcost;
+                    first = false;
+                    k = w;
+                    continue;
+                }
+                if(closedge[w].lowcost < min) 
+                {
+                    min = closedge[w].lowcost;
+                    k = w;
+                }
+            }
+        }
+        cout << "choice is " << k << " : ";
+        cout << "(" << u << "," << k << ")" << endl;
+        closedge[k].lowcost = -1;//k并入U
+        for(w = 0; w < nb; ++w)
+        {
+            if(closedge[w].lowcost != -1 &&
+                        (closedge[w].lowcost))
+            {
+                closedge[w] = {k, G.cost(k, w)};
+            }
+        }
+        cout << "after init from " << k << ": ";
+        for(w = 0; w < nb; ++w)
+        {
+            //if(closedge[w].lowcost != -1 && closedge[w].lowcost != 0)
+            cout << "{(" << w << "," << closedge[w].adjvex<<"):"
+                << closedge[w].lowcost<< "}";
+            if(w == nb -1) cout << endl;
+            else cout << " ";
+        }
+        u = k;
     }
     return 0;
 }
