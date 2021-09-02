@@ -23,289 +23,288 @@ using std::cerr;
 
 #define MAX_NB_VEX 64
 
+template <typename Array>
+void show_array(const Array & a, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        cout << a[i];
+        if(i ==  size - 1) cout << endl;
+        else cout << " ";
+    }
+}
+
+template <typename Array, typename DataType>
+void init_array(Array & a, int size, DataType d = 0)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+    {
+        a[i] = d;
+    }
+}
+
 template <typename Graph, typename OP>
 void DFS(const Graph & G, OP & op, bool recursion = true)
 {
-	int v, w, u;
-	bool visited[64] = {false};
-	sqstack<int> stack(G.vexnum());
-	typedef typename Graph::anode node;
-	const node * p;
+    int v, w, u;
+    bool visited[64] = {false};
+    sqstack<int> stack(G.vexnum());
+    typedef typename Graph::anode node;
+    const node * p;
 
-	if(recursion)
-	{
-		for(v = 0; v < G.vexnum(); ++v)
-		  if(!visited[v]) DFS(G, v, visited, op);
-	}
-	else
-	{
-		for(v = 0; v < G.vexnum(); ++v)
-		  if(!visited[v])
-		  {
-			  op(v);
-			  visited[v] = true;
-			  stack.push(v);
-			  while(!stack.is_empty())
-			  {
-				  stack.pop(w);
-				  for(p = G.first(w); p; p = p->next(w))// Is there any adjacency vex for w?
-				  {
-					  u = p->adj(w);
-					  if(!visited[u])
-					  {
-						  op(u);
-						  visited[u] = true;
-						  stack.push(u);
-						  break;//deep
-					  }
-				  }
-			  }
-		  }
-	}
+    if(recursion)
+    {
+        for(v = 0; v < G.vexnum(); ++v)
+          if(!visited[v]) DFS(G, v, visited, op);
+    }
+    else
+    {
+        for(v = 0; v < G.vexnum(); ++v)
+          if(!visited[v])
+          {
+              op(v);
+              visited[v] = true;
+              stack.push(v);
+              while(!stack.is_empty())
+              {
+                  stack.pop(w);
+                  for(p = G.first(w); p; p = p->next(w))// Is there any adjacency vex for w?
+                  {
+                      u = p->adj(w);
+                      if(!visited[u])
+                      {
+                          op(u);
+                          visited[u] = true;
+                          stack.push(u);
+                          break;//deep
+                      }
+                  }
+              }
+          }
+    }
 }
 
 template <typename Graph, typename OP>
 void DFS(const Graph & G, int v, bool * visited, OP & op)
 {
-	int w;
-	typedef typename Graph::anode node;
-	const node * p;
+    int w;
+    typedef typename Graph::anode node;
+    const node * p;
 
-	op(v);
-	visited[v] = true;
-	for(p = G.first(v); p; p=p->next(v))
-	{
-		w = p->adj(v);
-		if(!visited[w]) DFS(G, w, visited, op);
-	}
+    op(v);
+    visited[v] = true;
+    for(p = G.first(v); p; p=p->next(v))
+    {
+        w = p->adj(v);
+        if(!visited[w]) DFS(G, w, visited, op);
+    }
 }
 
 template <typename Graph, typename OP>
 void rDFS(const Graph & G, OP & op, bool recursion = true)
 {
-	int v, w, u;
-	bool rvisited[64] = {false};
-	sqstack<int> stack(G.vexnum());
-	typedef typename Graph::anode node;
-	const node * p;
+    int v, w, u;
+    bool rvisited[64] = {false};
+    sqstack<int> stack(G.vexnum());
+    typedef typename Graph::anode node;
+    const node * p;
 
-	if(recursion)
-	{
-		for(v = 0; v < G.vexnum(); ++v)
-		  if(!rvisited[v]) rDFS(G, v, rvisited, op);
-	}
-	else
-	{
-		for(v = 0; v < G.vexnum(); ++v)
-		  if(!rvisited[v])
-		  {
-			  op(v);
-			  rvisited[v] = true;
-			  stack.push(v);
-			  while(!stack.is_empty())
-			  {
-				  stack.pop(w);
-				  for(p = G.rfirst(w); p; p = p->rnext(w))// Is there any adjacency vex for w?
-				  {
-					  u = p->radj(w);
-					  if(!rvisited[u])
-					  {
-						  op(u);
-						  rvisited[u] = true;
-						  stack.push(u);
-						  break;//deep
-					  }
-				  }
-			  }
-		  }
-	}
+    if(recursion)
+    {
+        for(v = 0; v < G.vexnum(); ++v)
+          if(!rvisited[v]) rDFS(G, v, rvisited, op);
+    }
+    else
+    {
+        for(v = 0; v < G.vexnum(); ++v)
+          if(!rvisited[v])
+          {
+              op(v);
+              rvisited[v] = true;
+              stack.push(v);
+              while(!stack.is_empty())
+              {
+                  stack.pop(w);
+                  for(p = G.rfirst(w); p; p = p->rnext(w))// Is there any adjacency vex for w?
+                  {
+                      u = p->radj(w);
+                      if(!rvisited[u])
+                      {
+                          op(u);
+                          rvisited[u] = true;
+                          stack.push(u);
+                          break;//deep
+                      }
+                  }
+              }
+          }
+    }
 }
 
 template <typename Graph, typename OP>
 void rDFS(const Graph & G, int v, bool * rvisited, OP & op)
 {
-	int w;
-	typedef typename Graph::anode node;
-	const node * p;
+    int w;
+    typedef typename Graph::anode node;
+    const node * p;
 
-	op(v);
-	rvisited[v] = true;
-	for(p = G.rfirst(v); p; p=p->rnext(v))
-	{
-		w = p->radj(v);
-		if(!rvisited[w]) rDFS(G, w, rvisited, op);
-	}
+    op(v);
+    rvisited[v] = true;
+    for(p = G.rfirst(v); p; p=p->rnext(v))
+    {
+        w = p->radj(v);
+        if(!rvisited[w]) rDFS(G, w, rvisited, op);
+    }
 }
 
 template <typename Graph, typename OP>
 void BFS(const Graph & G, const OP & op)
 {
-	typedef typename Graph::anode node;
-	int v, w, u;
-	bool visited[MAX_NB_VEX] = {false};
-	linkqueue<int> q(G.vexnum());
-	const node * p;
+    typedef typename Graph::anode node;
+    int v, w, u;
+    bool visited[MAX_NB_VEX] = {false};
+    linkqueue<int> q(G.vexnum());
+    const node * p;
 
-	for(v = 0; v < G.vexnum(); ++v)
-	  if(!visited[v])
-	  {
-		  q.enqueue(v);
-		  op(v);
-		  visited[v] = true;
-		  while(!q.is_empty())
-		  {
-			  q.dequeue(w);//first visited vex's adj is first to visit
-			  for(p = G.first(w); p; p = p->next(w))
-			  {
-				  u = p->adj(w);
-				  if(!visited[u])
-				  {
-					  op(u);
-					  visited[u] = true;
-					  q.enqueue(u);
-				  }
-			  }
-		  }//while
-	  }
+    for(v = 0; v < G.vexnum(); ++v)
+      if(!visited[v])
+      {
+          q.enqueue(v);
+          op(v);
+          visited[v] = true;
+          while(!q.is_empty())
+          {
+              q.dequeue(w);//first visited vex's adj is first to visit
+              for(p = G.first(w); p; p = p->next(w))
+              {
+                  u = p->adj(w);
+                  if(!visited[u])
+                  {
+                      op(u);
+                      visited[u] = true;
+                      q.enqueue(u);
+                  }
+              }
+          }//while
+      }
 }
 
 struct finish
 {
-	sqstack<int> stack;
-	finish(int capacity = MAX_NB_VEX):stack(capacity){}
-	void operator()(int v){stack.push(v);}
-	void show(void)const{stack.show();}
-	void clear(void){stack.clear();}
-	bool is_empty(void)const{return stack.is_empty();}
-	bool pop(int & v){return stack.pop(v);}
-	bool push(int v){return stack.push(v);}
+    sqstack<int> stack;
+    finish(int capacity = MAX_NB_VEX):stack(capacity){}
+    void operator()(int v){stack.push(v);}
+    void show(void)const{stack.show();}
+    void clear(void){stack.clear();}
+    bool is_empty(void)const{return stack.is_empty();}
+    bool pop(int & v){return stack.pop(v);}
+    bool push(int v){return stack.push(v);}
 };
 
 
 template <typename Graph, typename OP>
 void post_DFS(const Graph & G, OP & op)
 {
-	int v;
-	bool visited[64] = {false};
+    int v;
+    bool visited[64] = {false};
 
-	for(v = 0; v < G.vexnum(); ++v)
-	  if(!visited[v]) 
-	  {
-		  post_DFS(G, v, visited, op);
-	  }
+    for(v = 0; v < G.vexnum(); ++v)
+      if(!visited[v]) 
+      {
+          post_DFS(G, v, visited, op);
+      }
 }
 
 template <typename Graph, typename OP>
 void post_DFS(const Graph & G, int v, bool * visited, OP & op)
 {
-	int w;
-	typedef typename Graph::anode node;
-	const node * p;
+    int w;
+    typedef typename Graph::anode node;
+    const node * p;
 
-	visited[v] = true;
-	for(p = G.first(v); p; p=p->next(v))
-	{
-		w = p->adj(v);
-		if(!visited[w]) post_DFS(G, w, visited, op);
-	}
-	op(v);
+    visited[v] = true;
+    for(p = G.first(v); p; p=p->next(v))
+    {
+        w = p->adj(v);
+        if(!visited[w]) post_DFS(G, w, visited, op);
+    }
+    op(v);
 }
 
 template<typename Graph, typename OP>
 int kosaraju(const Graph & G, const OP & op)
 {
-	int nb = G.vexnum(), v, ct = 0;
-	finish f(nb);
-	bool visited[MAX_NB_VEX] = {false};
-	
-	post_DFS(G, f);
-	cout << "f : ";
-	f.show();
-	while(f.pop(v))
-	{
-		if(!visited[v]) 
-		{
-			cout << "scc-"<< ++ct << " : "; 
-			rDFS(G, v, visited, op);
-			cout << endl;
-		}  
-	}
-	return ct;
+    int nb = G.vexnum(), v, ct = 0;
+    finish f(nb);
+    bool visited[MAX_NB_VEX] = {false};
+
+    post_DFS(G, f);
+    cout << "f : ";
+    f.show();
+    while(f.pop(v))
+    {
+        if(!visited[v]) 
+        {
+            cout << "scc-"<< ++ct << " : "; 
+            rDFS(G, v, visited, op);
+            cout << endl;
+        }  
+    }
+    return ct;
 }
 
 template<typename Graph>
-int prime(const Graph & G, int u)
+int prime(const Graph & G, int t)
 {
     typedef typename Graph::cost_type cost_type;
-    int nb = G.vexnum(), v, w, k;
+    int nb = G.vexnum(), i, j, ct = 0, u, k;
     cost_type min;
+    int U[MAX_NB_VEX];
     bool first;
 
-    //closedge[i - 1] = Min{cost(u,vi)|u属于U}, vi属于V-U
-    struct tmp{
-        int adjvex;//依附在U中的顶点 
-        cost_type lowcost;
-        tmp(int a = 0, cost_type l = 0):adjvex(a), lowcost(l){}
-    }closedge[MAX_NB_VEX];//记录从U到V一U具有最小代价的边
-
-    closedge[u].lowcost = -1; // U={u}
-    for(v = 0; v < nb; ++v)
+    init_array(U, nb, -1);
+    U[t] = t;
+    ct++;
+    //cout << "U : ";
+    //show_array(U, nb);
+    while(ct < nb)
     {
-        if(v != u) closedge[v] = {u, G.cost(u, v)};//V-U
-    }
-    cout << "after init from "<< u << ": ";
-    for(v = 0; v < nb; ++v)
-    {
-        //if(closedge[v].lowcost != -1)
-        cout << "{(" << v << "," << closedge[v].adjvex <<"):"
-            << closedge[v].lowcost<< "}";
-        if(v == nb -1) cout << endl;
-        else cout << " ";
-    }
-    for(v = 1; v < nb; ++v)
-    {
-        first = true;
-        k = u;
-        for(w = 0; w < nb; ++w)//与u邻接cost最小的顶点
+        for(i = 0; i < nb && ct < nb; ++i)
         {
-            if(G.cost(u, w) && closedge[w].lowcost != -1)//不在U中且cost最小
+            first = true;
+            u = U[i];
+            if(u == -1) continue;
+            k = 0;
+            for(j = 0; j < nb; ++j)
             {
-                if(first) 
+                //cout << "(u=" << u << ",j=" << j << "):" 
+                //    << G.cost(u, j) << ", " << U[j] << endl;
+                if(G.cost(u, j) && U[j] == -1)//not in U and adj
                 {
-                    min = closedge[w].lowcost;
-                    first = false;
-                    k = w;
-                    continue;
-                }
-                if(closedge[w].lowcost < min) 
-                {
-                    min = closedge[w].lowcost;
-                    k = w;
+                    if(first)
+                    {
+                        first = false;
+                        min = G.cost(u, j);
+                        k = j;
+                        continue;
+                    }
+                    if(G.cost(u, j) < min)
+                    {
+                        min = G.cost(u, j);
+                        k = j;
+                    }
                 }
             }
+            U[k] = k;
+            ct++;
+            //cout << "chois is " << k << ", " << "ct = " << ct << ": ";
+            //show_array(U, nb);
+            cout << "(" << u << "," << k << ")";
         }
-        cout << "choice is " << k << " : ";
-        cout << "(" << u << "," << k << ")" << endl;
-        closedge[k].lowcost = -1;//k并入U
-        for(w = 0; w < nb; ++w)
-        {
-            if(closedge[w].lowcost != -1 &&
-                        (closedge[w].lowcost))
-            {
-                closedge[w] = {k, G.cost(k, w)};
-            }
-        }
-        cout << "after init from " << k << ": ";
-        for(w = 0; w < nb; ++w)
-        {
-            //if(closedge[w].lowcost != -1 && closedge[w].lowcost != 0)
-            cout << "{(" << w << "," << closedge[w].adjvex<<"):"
-                << closedge[w].lowcost<< "}";
-            if(w == nb -1) cout << endl;
-            else cout << " ";
-        }
-        u = k;
     }
+    cout <<  endl;
     return 0;
 }
 #endif

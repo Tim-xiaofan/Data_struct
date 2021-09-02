@@ -17,6 +17,13 @@ using std::cerr;
 template<typename T, typename U = int>
 class graph_array
 {
+    private:
+        template <typename U1>
+        struct arcnode
+        {
+            int vexnum, i;
+            array<U1, 2> * a;
+        };
 	private:
 		typedef array<T, 1> a1;
 		typedef array<U, 2> a2;
@@ -29,6 +36,7 @@ class graph_array
 		a2 *_arcs;
 	public:
         typedef U cost_type;
+        typedef arcnode<U> anode;
 		graph_array(const a1 & vex, const a2 & arcs, graph_kind kind);
 		~graph_array(){delete _vexs; delete _arcs;}
 		template<typename V, int dim = 1>
