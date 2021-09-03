@@ -5,7 +5,11 @@
 APP = test
 
 # all source are stored in SRCS-y
+ifneq ($(shell uname),Darwin)
 SRCS-y := test.cpp graph_adjlist.h
+else
+SRCS-y := test.cpp
+endif
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -27,21 +31,17 @@ $(APP): $(SRCS-y) Makefile
 	$(CXX) $(CPPFLAGS) $(SRCS-y) -o $@
 
 
-ifeq ($(shell uname),Linux)
+ifneq ($(OS),Windows_NT)
 .PHONY: clean
 clean:
-	echo "Linux rm"
 	rm -f *.o
 	rm -f *.exe
 	rm -f $(APP)
 else 
-ifeq ($(OS),Windows_NT)
 SHELL=powershell.exe
 .PHONY: clean
 clean:
-	echo "Windows rm"
 	rm -Force *.o
 	rm -Force *.exe
 	rm -Force $(APP)
-endif
 endif

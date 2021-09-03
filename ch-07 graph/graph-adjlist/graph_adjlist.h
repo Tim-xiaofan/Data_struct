@@ -9,10 +9,11 @@
 #include <new>
 #include <typeinfo>
 #include "array.h"
-#include "List.h"
 using std::endl;
 using std::cout;
 using std::cerr;
+
+#define INF INT_MAX
 
 template <typename T, typename U>
 class graph_adjlist
@@ -24,20 +25,27 @@ class graph_adjlist
 		{
 			int adjvex;
 			U1 weigth;
-			arcnode(int i = 0, U1 w = 0):
-				adjvex(i), weigth(w){}
+			struct arcnode * nextarc;
+			arcnode(int i = 0, U1 w = 0, arcnode * na = nullptr):
+				adjvex(i), weigth(w), nextarc(na){}
 			friend std::ostream & operator<<(std::ostream & os, const struct arcnode & a)
 			{
 				os << "(adjvex=" << a.adjvex << ", weigth=" << a.weigth << ")";
 				return os;
 			}
+			int adj(int v) const {return adjvex;}
 		};
 		template<typename T1, typename U1>
 		struct vexnode
 		{
 			T1 data;
-			List<arcnode<U1>> adjlist;
-			vexnode():adjlist(MAX_NB_VEXS){}
+			arcnode<U1> * firstarc;
+			arcnode<U1> * lastarc;
+			int size;
+			vexnode(arcnode<U1> *fa = nullptr, arcnode<U1> *la = nullptr, int sz = 0):
+				firstarc(fa), lastarc(la), size(sz){}
+			void append(arcnode<U1> * an);
+			void show(void)const;
 		};
 		typedef vexnode<T, U> vnode;
 		typedef arcnode<U> anode;
@@ -58,11 +66,11 @@ class graph_adjlist
 		void show_adjlists(void)const;
 		/** O(1)*/
 		int get_degree(int i) const {return (_kind == UDN || _kind == UDG) ?
-			_adjlists[i].adjlist.length() : -1;}
+			_adjlists[i].size : -1;}
 		void show_degrees(void) const;
 		/** O(1)*/
 		int get_odegree(int i) const {return (_kind == DN || _kind == DG) ?
-			_adjlists[i].adjlist.length() : -1;}
+			_adjlists[i].size : -1;}
 		/** O(2 * e) or O(1)*/
 		int get_idegree(int i) const;
 		void show_iodegrees(void) const;
@@ -70,6 +78,9 @@ class graph_adjlist
 		bool is_adj(int i, int j) const;
 		void create_radjlists(void);
 		void show_radjlists(void)const;
+		int vexnum(void) const{return _nb_vex;}
+		int arcnum(void) const{return _nb_arc;}
+	private:
 };
 
 /** O(n*n)*/
@@ -78,7 +89,7 @@ graph_adjlist<T, U>::
 graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 {
 	int i, j;
-	T current;
+	U current;
 	
 	_nb_vex = vexs.get_bound(1);
 	_vexs = a1::instance(vexs);// O(n)
@@ -89,11 +100,22 @@ graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 	{
 		_adjlists[i].data = _vexs->at(i);
 		for(j = 0; j < _nb_vex; ++j)
-		if((current = arcs.at(i, j)) != 0)
-		{
-			_adjlists[i].adjlist.append(anode(j, current));
-			_nb_arc++;
-		}
+		  if(kind == DG || kind == UDG)
+		  {
+			  if((current = arcs.at(i, j)) != 0)
+			  {
+				  _adjlists[i].append(new anode(j, current, nullptr));
+				  _nb_arc++;
+			  }
+		  }
+		  else
+		  {
+			  if((current = arcs.at(i, j)) != INF)
+			  {
+				  _adjlists[i].append(new anode(j, current, nullptr));
+				  _nb_arc++;
+			  }
+		  }
 	}
 	_kind = kind;
 	_radjlists = nullptr;
@@ -108,19 +130,7 @@ show_adjlists(void)const
 	for(i = 0; i <_nb_vex; ++i)
 	{
 		cout << _vexs->at(i) << " : ";
-		_adjlists[i].adjlist.show();
-	}
-}
-
-template <typename T, typename U>
-void graph_adjlist<T, U>::
-show_degrees(void) const
-{
-	int i;
-	for(i = 0; i <_nb_vex; ++i)
-	{
-		cout << _vexs->at(i) << " : "
-			<< get_degree(i) << endl;
+		_adjlists[i].show();
 	}
 }
 
@@ -138,19 +148,49 @@ kind_str(void) const
 	}
 }
 
+template <typename T, typename U>
+void graph_adjlist<T, U>::
+show_degrees(void) const
+{
+	int i;
+	for(i = 0; i <_nb_vex; ++i)
+	{
+		cout << _vexs->at(i) << " : "
+			<< get_degree(i) << endl;
+	}
+}
+
+
+/** O(2 * e)*/
+template<typename T, typename U>
+void  graph_adjlist<T, U>::
+create_radjlists(void)
+{
+	int k;
+	const anode * p;
+	
+	if(_radjlists) return;//avoid repeating
+	_radjlists = new vnode[_nb_vex];
+	for(k = 0; k <_nb_vex; ++k)//traverse all adjlist
+	{
+		for(p = _adjlists[k].firstarc; p; p = p->nextarc)
+		  _radjlists[p->adjvex].append(new anode(k, p->weigth, nullptr));
+	}
+}
+
+
 template<typename T, typename U>
 int graph_adjlist<T, U>::
 get_idegree(int i) const
 {
 	int k, d = 0;
-	typename List<anode>::const_iterator it;
+	const anode *p;
 
-	if(_radjlists) return _radjlists[i].adjlist.length();
+	if(_radjlists) return _radjlists[i].size;
 
 	for(k = 0; k < _nb_vex; ++k)
-	  for(it = _adjlists[k].adjlist.begin();
-				  it !=  _adjlists[k].adjlist.end(); ++it)
-		  if((*it).adjvex == i) d++;//adj is i
+	  for(p = _adjlists[k].firstarc; p; p = p->nextarc)
+		  if(p->adjvex == i) d++;//adj is i
 	return d;
 }
 
@@ -172,30 +212,12 @@ template<typename T, typename U>
 bool graph_adjlist<T, U>::
 is_adj(int i, int j) const
 {
-	typename List<anode>::const_iterator it;
-	for(it = _adjlists[i].adjlist.begin();
-				it !=  _adjlists[i].adjlist.end(); ++it)
-	  if((*it).adjvex == j) return true;
+	const anode *p;
+	for(p = _adjlists[i].firstarc; p; p = p->nextarc)
+	  if(p->adjvex == j) return true;
 	return false;
 }
 
-/** O(2 * e)*/
-template<typename T, typename U>
-void  graph_adjlist<T, U>::
-create_radjlists(void)
-{
-	int k;
-	typename List<anode>::const_iterator it;
-	
-	if(_radjlists) return;//avoid repeating
-	_radjlists = new vnode[_nb_vex];
-	for(k = 0; k <_nb_vex; ++k)//traverse all adjlist
-	{
-		for(it = _adjlists[k].adjlist.begin();
-					it !=  _adjlists[k].adjlist.end(); ++it)
-		  _radjlists[(*it).adjvex].adjlist.append(anode(k, (*it).weigth));
-	}
-}
 
 template <typename T, typename U>
 void graph_adjlist<T, U>::
@@ -206,7 +228,40 @@ show_radjlists(void)const
 	for(i = 0; i <_nb_vex; ++i)
 	{
 		cout << _vexs->at(i) << " : ";
-		_radjlists[i].adjlist.show();
+		_radjlists[i].show();
 	}
+}
+
+template <typename T, typename U>
+template <typename T1, typename U1>
+void graph_adjlist<T, U>::vexnode<T1, U1>::
+append(typename graph_adjlist<T, U>::arcnode<U1> * an)
+{
+	//0 --> 1
+	if(firstarc == nullptr)
+	{
+		firstarc = an;
+		lastarc = an;
+	}
+	else
+	{
+		lastarc->nextarc = an;
+		lastarc = an;
+	}
+	size++;
+}
+
+
+template <typename T, typename U>
+template <typename T1, typename U1>
+void graph_adjlist<T, U>::vexnode<T1, U1>::
+show(void) const
+{
+	const typename graph_adjlist<T, U>::arcnode<U1> * p;
+	for(p = firstarc; p; p = p->nextarc)
+	{
+		cout << *p << " ";
+	}
+	cout << endl;
 }
 #endif

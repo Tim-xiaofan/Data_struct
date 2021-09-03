@@ -28,8 +28,13 @@ class array
 		~array(){delete [] _base; delete[]_constant; delete[]_bounds;}
 		static array * instance(int b1, ...);
 		static array * instance(const array & a);
+#ifdef __linux__
 		[[deprecated("Replaced by 'const T at(i, ...)const', which has an improved interface")]]
 		bool value(T & t, ...) const;
+#elif __APPLE__ 
+		bool value(T & t, ...) const 
+			__attribute__((deprecated("Replaced by 'const T at(i, ...)const', which has an improved interface")));
+#endif
 		const T at(int i, ...) const;
 		bool set_value(const T & t, ...);
 		void show_constant(void)const;
