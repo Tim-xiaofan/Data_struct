@@ -45,7 +45,7 @@ int main(int ac, char * av[])
 	cout << "** AML **\n";
 	//cout << "vexnum = " << G.vexnum() << endl;
 	//cout << "arcnum = " << G.arcnum() << endl;
-	cout << "--prime_O3 : " << endl;
+	cout << "--prime_O3(not work) : " << endl;
     cost = prime_O3(G, 0);
 	cout << "cost = " << cost << endl;
 	cout << "--prime_O2 : " << endl;

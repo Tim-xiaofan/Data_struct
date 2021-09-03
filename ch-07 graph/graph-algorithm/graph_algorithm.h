@@ -316,6 +316,8 @@ int prime_O3(const Graph & G, int t)
     return cost;
 }
 
+/** O(n * n)边数无关，因此适用于求边稠密的网的最小生成树
+ * TODO: 未实现对邻接表，十字链表，多重邻接表的支持*/
 template<typename Graph>
 int prime_O2(const Graph & G, int u)
 {
