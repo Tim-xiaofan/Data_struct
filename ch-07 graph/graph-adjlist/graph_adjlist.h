@@ -34,6 +34,7 @@ class graph_adjlist
 				return os;
 			}
 			int adj(int v) const {return adjvex;}
+			const arcnode* next(int)const { return nextarc;}
 		};
 		template<typename T1, typename U1>
 		struct vexnode
@@ -48,11 +49,11 @@ class graph_adjlist
 			void show(void)const;
 		};
 		typedef vexnode<T, U> vnode;
-		typedef arcnode<U> anode;
 		typedef array<T, 1> a1;
 		typedef array<U, 2> a2;
 	public:
 		typedef enum {DG, DN, UDG, UDN} graph_kind;
+		typedef arcnode<U> anode;
 	private:
 		int _nb_vex, _nb_arc;
 		graph_kind _kind;
@@ -80,6 +81,7 @@ class graph_adjlist
 		void show_radjlists(void)const;
 		int vexnum(void) const{return _nb_vex;}
 		int arcnum(void) const{return _nb_arc;}
+		const anode * first(int v)const{return _adjlists[v].firstarc;}
 	private:
 };
 
@@ -129,7 +131,7 @@ show_adjlists(void)const
 
 	for(i = 0; i <_nb_vex; ++i)
 	{
-		cout << _vexs->at(i) << " : ";
+		cout << std::left <<std::setw(2) << i <<") "<<_vexs->at(i) << " : ";
 		_adjlists[i].show();
 	}
 }

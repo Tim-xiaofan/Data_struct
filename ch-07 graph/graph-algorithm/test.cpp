@@ -7,8 +7,10 @@
 #include <cfloat>
 #include "graph_algorithm.h"
 #include "graph_olist.h"
+#include "graph_adjlist.h"
 
 //#define PRIME 1
+#define ARTICUL 1
 
 using std::cout;
 using std::endl;
@@ -54,11 +56,50 @@ test_prime(void)
 }
 #endif
 
+#ifdef ARTICUL
+static void 
+test_articul(void)
+{
+	int a[]={
+		  //1 2 3 4 5 6 7 8 9 a b c d
+	/*1*/	0,1,1,0,0,1,0,0,0,0,0,1,0,
+	/*2*/	1,0,1,1,0,0,1,1,0,0,0,0,1,
+	/*3*/	1,1,0,0,0,0,0,0,0,0,0,0,0,
+	/*4*/	0,1,0,0,1,0,0,0,0,0,0,0,0,
+	/*5*/	0,0,0,1,0,0,0,0,0,0,0,0,0,
+	/*6*/	1,0,0,0,0,0,0,0,0,0,0,0,0,
+	/*7*/	0,1,0,0,0,0,0,1,1,0,1,0,0,
+	/*8*/	0,1,0,0,0,0,1,0,0,0,1,0,0,
+	/*9*/	0,0,0,0,0,0,1,0,0,0,0,0,0,
+	/*a*/	0,0,0,0,0,0,0,0,0,0,0,1,1,
+	/*b*/	0,0,0,0,0,0,1,1,0,0,0,0,0,
+	/*c*/	1,0,0,0,0,0,0,0,0,1,0,0,1,
+	/*d*/	0,1,0,0,0,0,0,0,0,1,0,1,0
+	};
+	char b[] = {
+		'A', 'B', 'C', 'D', 'E', 'F', 'G',
+		'H', 'I', 'G', 'K', 'L', 'M'
+	};
+	a1 * vexs;
+	a2 * arcs;
+	vexs = a1::instance(13);
+	vexs->set_values(b, 13);
+	arcs = a2::instance(13, 13);
+	arcs->set_values(a, 13 * 13);
+	graph_adjlist<char, int> G(*vexs, *arcs, graph_adjlist<char, int>::UDG);
+	cout << "** UDG **" << endl;
+	G.show_adjlists();
+	cout << "ARTICUL:" << endl;
+	find_articul(G, print);
+}
+#endif
+
 int main(int ac, char * av[])
 {
 #ifdef PRIME
 	test_prime();
 #endif
+	test_articul();
 	return 0;
 }
 

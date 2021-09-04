@@ -44,6 +44,8 @@ static int C[]={
 
 int main(int ac, char * av[])
 {
+	//char * p;
+	//cout << *p;
 	cout << "INT_MAX = " << I << endl;
 	a1 * vexs = a1::instance(4);
 	if(!vexs) 

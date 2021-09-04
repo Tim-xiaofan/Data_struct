@@ -50,6 +50,11 @@ void show_closedge(const closedges & cds, int size)
     }
 }
 
+void print(int v)
+{
+	cout << v << " ";
+}
+
 template <typename Array, typename DataType>
 void init_array(Array & a, int size, DataType d = 0)
 {
@@ -375,5 +380,83 @@ int prime_O2(const Graph & G, int u)
     }
 	//cout << endl;
     return cost;
+}
+
+template<typename Graph, typename OP>
+void find_articul(const Graph & G, const OP & op = print)
+{
+	int v, count = 1, visited[MAX_NB_VEX] = {0}, vexnum = G.vexnum();
+	int low[MAX_NB_VEX] = {0};//深度优先搜索树中点i所能回溯到的最浅层的点
+	const typename Graph::anode * p;
+	visited[0] = 1;//v0最先访问(先序遍历)
+	//cout << "visited : ";
+	//show_array(visited, vexnum);
+	
+	p = G.first(0);
+	//cout << "find : *p = "<< *p << endl;
+	v = p->adj(0);
+	//cout << "find : v = " << v << endl;
+	DFS_articul(G, v, visited, low, count, op);//从v0开始做DFS
+	if(count < vexnum)
+	{
+		op(0);
+		//cout << endl;
+		while(p->next(0))
+		{
+			p = p->next(0);
+			v = p->adj(0);
+			if(!visited[v])
+			  DFS_articul(G, v, visited, low, count, op);
+		}
+	}
+	cout << endl;
+	//cout << "visited : ";
+	//show_array(visited, vexnum);
+	//cout << "low     : ";
+	//show_array(low, vexnum);
+}
+
+/**
+  从v开始做深度优先遍历
+ */
+template<typename Graph, typename OP>
+void DFS_articul(const Graph & G, 
+			int v, 
+			int *visited, 
+			int *low,
+			int & count,
+			const OP & op = print)
+{
+	int min = ++count, w;
+	visited[v] = min;
+	//cout << "visited : ";
+	//show_array(visited, G.vexnum());
+	const typename Graph::anode * p;
+	bool first = true;
+	//cout << "v = " << v << endl;
+
+	for(p = G.first(v); p; p = p->next(v))
+	{
+		w = p->adj(0);
+		//cout << "w = " << w << endl;
+		if(!visited[w])//w未曾访问，w是v的孩子
+		{
+			DFS_articul(G, w, visited, low, count, op);
+			if(low[w] < min) min = low[w];
+			if(low[w] >= visited[v] && first)//关节点<--没有回边
+			{
+				//cout << "found : v = " << v << 
+				//	", w = " << w << endl;
+				op(v);
+				first = false;
+				//cout << endl;
+			}
+		}
+		else if(visited[w] < min) 
+		  min = visited[w];//w已访问，w是v的祖先
+	}
+	low[v] = min;
+	//cout << "low : ";
+	//show_array(low, G.vexnum());
 }
 #endif
