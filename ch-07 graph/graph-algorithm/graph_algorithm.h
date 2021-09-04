@@ -382,6 +382,7 @@ int prime_O2(const Graph & G, int u)
     return cost;
 }
 
+/** 寻找连通图的关节点: O(n + e)*/
 template<typename Graph, typename OP>
 void find_articul(const Graph & G, const OP & op = print)
 {
@@ -458,5 +459,40 @@ void DFS_articul(const Graph & G,
 	low[v] = min;
 	//cout << "low : ";
 	//show_array(low, G.vexnum());
+}
+
+/** 邻接表有向图 G：
+	G无回路，则输出 G 的顶点的一个拓扑序列并返回 OK，否则 ERROR。
+	O(n + e)
+ */
+template<typename Graph, typename OP>
+bool topological_sort(const Graph & G, const OP & op)
+{
+	int vexnum = G.vexnum(), v, w, count = 0;//输出的顶点计数
+	int indegress[MAX_NB_VEX];//各个顶点的入度
+	sqstack<int> stack(vexnum);//存放入度为0的顶点
+	const typename Graph::anode * p;
+
+	for(v = 0; v < vexnum; ++v)
+	  indegress[v] = G.get_idegree(v);
+	//cout << "\ninit : ";
+	//show_array(indegress, vexnum);
+
+	for(v = 0; v < vexnum; ++v)
+	  if(!indegress[v]) stack.push(v);//入度为0的入栈
+
+	while(!stack.is_empty())
+	{
+		stack.pop(v);
+		op(v); ++count;//输出顶点并计数
+		//每个邻接点入度减一（模拟删除v）
+		for(p = G.first(v); p; p = p->next(v))
+		{
+			w = p->adj(v);
+			if(!(--indegress[w])) stack.push(w);//出现新的入度为零的顶点
+		}
+	}
+	if(count < vexnum) return false;//有顶点不在拓扑有序序列中，存在回路
+	else return true;
 }
 #endif

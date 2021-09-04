@@ -43,8 +43,11 @@ class graph_adjlist
 			arcnode<U1> * firstarc;
 			arcnode<U1> * lastarc;
 			int size;
-			vexnode(arcnode<U1> *fa = nullptr, arcnode<U1> *la = nullptr, int sz = 0):
-				firstarc(fa), lastarc(la), size(sz){}
+			int indegree;
+			vexnode(arcnode<U1> *fa = nullptr, 
+						arcnode<U1> *la = nullptr, 
+						int sz = 0, int id = -1):
+				firstarc(fa), lastarc(la), size(sz), indegree(id){}
 			void append(arcnode<U1> * an);
 			void show(void)const;
 		};
@@ -55,14 +58,14 @@ class graph_adjlist
 		typedef enum {DG, DN, UDG, UDN} graph_kind;
 		typedef arcnode<U> anode;
 	private:
-		int _nb_vex, _nb_arc;
+		int _vexnum, _arcnum;
 		graph_kind _kind;
 		a1* _vexs;
 		vnode *_adjlists;
 		vnode *_radjlists;
 	public:
 		~graph_adjlist(){delete _vexs; delete [] _adjlists; delete [] _radjlists;}
-		graph_adjlist():_nb_vex(0), _nb_arc(0), _kind(DG), _vexs(nullptr), _adjlists(nullptr), _radjlists(nullptr){}
+		graph_adjlist():_vexnum(0), _arcnum(0), _kind(DG), _vexs(nullptr), _adjlists(nullptr), _radjlists(nullptr){}
 		graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind);
 		void show_adjlists(void)const;
 		/** O(1)*/
@@ -79,10 +82,10 @@ class graph_adjlist
 		bool is_adj(int i, int j) const;
 		void create_radjlists(void);
 		void show_radjlists(void)const;
-		int vexnum(void) const{return _nb_vex;}
-		int arcnum(void) const{return _nb_arc;}
+		int vexnum(void) const{return _vexnum;}
+		int arcnum(void) const{return _arcnum;}
 		const anode * first(int v)const{return _adjlists[v].firstarc;}
-	private:
+		bool rm_zeroind_vex(int v);
 };
 
 /** O(n*n)*/
@@ -93,21 +96,21 @@ graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 	int i, j;
 	U current;
 	
-	_nb_vex = vexs.get_bound(1);
+	_vexnum = vexs.get_bound(1);
 	_vexs = a1::instance(vexs);// O(n)
-	_nb_arc = 0;
-	_adjlists = new vnode[_nb_vex];
+	_arcnum = 0;
+	_adjlists = new vnode[_vexnum];
 	/** O(n * n) */
-	for(i = 0; i < _nb_vex; ++i) 
+	for(i = 0; i < _vexnum; ++i) 
 	{
 		_adjlists[i].data = _vexs->at(i);
-		for(j = 0; j < _nb_vex; ++j)
+		for(j = 0; j < _vexnum; ++j)
 		  if(kind == DG || kind == UDG)
 		  {
 			  if((current = arcs.at(i, j)) != 0)
 			  {
 				  _adjlists[i].append(new anode(j, current, nullptr));
-				  _nb_arc++;
+				  _arcnum++;
 			  }
 		  }
 		  else
@@ -115,7 +118,7 @@ graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 			  if((current = arcs.at(i, j)) != INF)
 			  {
 				  _adjlists[i].append(new anode(j, current, nullptr));
-				  _nb_arc++;
+				  _arcnum++;
 			  }
 		  }
 	}
@@ -129,7 +132,7 @@ show_adjlists(void)const
 {
 	int i;
 
-	for(i = 0; i <_nb_vex; ++i)
+	for(i = 0; i <_vexnum; ++i)
 	{
 		cout << std::left <<std::setw(2) << i <<") "<<_vexs->at(i) << " : ";
 		_adjlists[i].show();
@@ -155,7 +158,7 @@ void graph_adjlist<T, U>::
 show_degrees(void) const
 {
 	int i;
-	for(i = 0; i <_nb_vex; ++i)
+	for(i = 0; i <_vexnum; ++i)
 	{
 		cout << _vexs->at(i) << " : "
 			<< get_degree(i) << endl;
@@ -172,8 +175,8 @@ create_radjlists(void)
 	const anode * p;
 	
 	if(_radjlists) return;//avoid repeating
-	_radjlists = new vnode[_nb_vex];
-	for(k = 0; k <_nb_vex; ++k)//traverse all adjlist
+	_radjlists = new vnode[_vexnum];
+	for(k = 0; k <_vexnum; ++k)//traverse all adjlist
 	{
 		for(p = _adjlists[k].firstarc; p; p = p->nextarc)
 		  _radjlists[p->adjvex].append(new anode(k, p->weigth, nullptr));
@@ -190,7 +193,7 @@ get_idegree(int i) const
 
 	if(_radjlists) return _radjlists[i].size;
 
-	for(k = 0; k < _nb_vex; ++k)
+	for(k = 0; k < _vexnum; ++k)
 	  for(p = _adjlists[k].firstarc; p; p = p->nextarc)
 		  if(p->adjvex == i) d++;//adj is i
 	return d;
@@ -201,7 +204,7 @@ void graph_adjlist<T, U>::
 show_iodegrees(void) const
 {
 	int i;
-	for(i = 0; i < _nb_vex; ++i)
+	for(i = 0; i < _vexnum; ++i)
 	{
 		cout << _vexs->at(i) << " : ";
 		cout << "idgress = "<< get_idegree(i)
@@ -227,7 +230,7 @@ show_radjlists(void)const
 {
 	int i;
 
-	for(i = 0; i <_nb_vex; ++i)
+	for(i = 0; i <_vexnum; ++i)
 	{
 		cout << _vexs->at(i) << " : ";
 		_radjlists[i].show();
@@ -266,4 +269,5 @@ show(void) const
 	}
 	cout << endl;
 }
+
 #endif

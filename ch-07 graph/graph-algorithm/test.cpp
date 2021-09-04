@@ -10,7 +10,7 @@
 #include "graph_adjlist.h"
 
 //#define PRIME 1
-#define ARTICUL 1
+//#define ARTICUL 1
 
 using std::cout;
 using std::endl;
@@ -94,12 +94,52 @@ test_articul(void)
 }
 #endif
 
+#define TOPO_SORT
+#ifdef TOPO_SORT
+static void
+test_topo_sort(void)
+{
+	int a[]={
+		  //1 2 3 4 5 6 
+	/*1*/	0,1,1,1,0,0,
+	/*2*/	0,0,0,0,0,0,
+	/*3*/	0,0,0,0,1,0,
+	/*4*/	0,0,0,0,1,0,
+	/*5*/	0,0,0,0,0,0,
+	/*6*/	0,0,0,1,1,0
+	};
+	char b[] = {
+		'A', 'B', 'C', 'D', 'E', 'F', 'G',
+		'H', 'I', 'G', 'K', 'L', 'M'
+	};
+	a1 * vexs;
+	a2 * arcs;
+	vexs = a1::instance(6);
+	vexs->set_values(b, 6);
+	arcs = a2::instance(6, 6);
+	arcs->set_values(a, 6 * 6);
+	graph_adjlist<char, int> G(*vexs, *arcs, graph_adjlist<char, int>::DG);
+	cout << "** DG **" << endl;
+	G.show_adjlists();
+	cout << "topological_sort : ";
+	bool noloop = topological_sort(G, print);
+	cout << endl; 
+	if(!noloop) cout << "there are loop(s)." << endl;
+	else cout << "there are not loop(s)." << endl;
+}
+#endif
+
 int main(int ac, char * av[])
 {
 #ifdef PRIME
 	test_prime();
 #endif
+#ifdef ARTICUL
 	test_articul();
+#endif
+#ifdef TOPO_SORT
+	test_topo_sort();
+#endif
 	return 0;
 }
 
