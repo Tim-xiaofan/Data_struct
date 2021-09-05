@@ -418,7 +418,7 @@ void find_articul(const Graph & G, const OP & op = print)
 }
 
 /**
-  从v开始做深度优先遍历
+  从v开始做深度优先遍历, 并输出关键点
  */
 template<typename Graph, typename OP>
 void DFS_articul(const Graph & G, 
@@ -494,5 +494,106 @@ bool topological_sort(const Graph & G, const OP & op)
 	}
 	if(count < vexnum) return false;//有顶点不在拓扑有序序列中，存在回路
 	else return true;
+}
+
+/** 邻接表有向图 G：O(n + e)
+	G无回路，则输出 G 的顶点的一个拓扑序列并返回 OK，否则ERROR。
+	有向网G采用邻接表存储结构，求各顶点事件的最早发生时间ve
+	T为拓扑序列顶点栈，S为零入度顶点栈。
+	若G无回路，则用栈T返回G的一个拓扑序列，且函数值为OK，否则为 ERROR。
+ */
+template<typename Graph>
+bool cricticalpath_topologicalsort(const Graph & G, 
+			sqstack<int> & T, 
+			typename Graph::cost_type *ve)
+{
+	int vexnum = G.vexnum(), v, w, count = 0;//输出的顶点计数
+	int indegress[MAX_NB_VEX];//各个顶点的入度
+	sqstack<int> stack(vexnum);//存放入度为0的顶点
+	const typename Graph::anode * p;
+
+	for(v = 0; v < vexnum; ++v)
+	  indegress[v] = G.get_idegree(v);
+	//cout << "\ninit : ";
+	//show_array(indegress, vexnum);
+
+	for(v = 0; v < vexnum; ++v)
+	  if(!indegress[v]) stack.push(v);//入度为0的入栈
+
+	while(!stack.is_empty())
+	{
+		stack.pop(v);
+		//op(v); 
+		T.push(v);
+		++count;//输出顶点并计数
+		//每个邻接点入度减一（模拟删除v）
+		for(p = G.first(v); p; p = p->next(v))
+		{
+			w = p->adj(v);
+			if(!(--indegress[w])) 
+			  stack.push(w);//出现新的入度为零的顶点
+			if(ve[v] + p->cost(v) > ve[w]) ve[w] = ve[v] + p->cost(v);
+		}
+	}
+	if(count < vexnum) return false;//有顶点不在拓扑有序序列中，存在回路
+	else return true;
+}
+
+/** G 为有向网，输出 G 的各项关键活动。
+	O(n + e)
+ */
+template<typename Graph>
+bool cricticalpath(const Graph & G)
+{
+	int vexnum = G.vexnum(), v, w;
+	sqstack<int> T(MAX_NB_VEX);
+	typename Graph::cost_type ve[MAX_NB_VEX] = {0},
+			 vl[MAX_NB_VEX], dut, ee, el;
+	const typename Graph::anode * p;
+	char tag;
+
+	if(!cricticalpath_topologicalsort(G, T, ve)) 
+	  return false;
+	cout << "T : ";
+	T.show();
+	cout << "ve : ";
+	show_array(ve, vexnum);
+
+	for(v = 0; v < vexnum; ++v)
+	  vl[v] = ve[vexnum - 1];
+
+	while(!T.is_empty())
+	{
+		T.pop(v);
+		for(p = G.first(v); p; p = p->next(v))
+		{
+			w = p->adj(v);
+			dut = p->cost(v);
+			//cout << "vl[" << w <<"]=" << vl[w] 
+			//	<< ", dut=" << dut 
+			//	<< ", vl[" << v <<"]=" << vl[v] << endl;
+			if(vl[w] - dut < vl[v]) vl[v] = vl[w] - dut;
+		}
+	}
+	cout << "vl : ";
+	show_array(vl, vexnum);
+
+	for(v = 0; v < vexnum; ++v)
+	{
+		for(p = G.first(v); p ; p = p->next(v))
+		{
+			w = p->adj(v);
+			dut = p->cost(v);
+			ee = ve[v];
+			el = vl[w] - dut;
+			tag = (ee == el) ? '*':' ';
+			cout << "{a=(" << v << "," << w 
+				<< "), dut=" << dut
+				<< ", ee=" << ee
+				<< ", el=" << el
+				<< ", " << tag << "}" << endl;
+		}
+	}
+	return true;
 }
 #endif

@@ -35,6 +35,7 @@ class graph_adjlist
 			}
 			int adj(int v) const {return adjvex;}
 			const arcnode* next(int)const { return nextarc;}
+			const U1 cost(int v) const {return weigth;}
 		};
 		template<typename T1, typename U1>
 		struct vexnode
@@ -57,6 +58,7 @@ class graph_adjlist
 	public:
 		typedef enum {DG, DN, UDG, UDN} graph_kind;
 		typedef arcnode<U> anode;
+		typedef U cost_type;
 	private:
 		int _vexnum, _arcnum;
 		graph_kind _kind;
