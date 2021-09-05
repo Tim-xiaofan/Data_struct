@@ -13,8 +13,6 @@ using std::endl;
 using std::cout;
 using std::cerr;
 
-#define INF INT_MAX
-
 template <typename T, typename U>
 class graph_adjlist
 {
@@ -59,6 +57,7 @@ class graph_adjlist
 		typedef enum {DG, DN, UDG, UDN} graph_kind;
 		typedef arcnode<U> anode;
 		typedef U cost_type;
+		enum {INF = INT_MAX};
 	private:
 		int _vexnum, _arcnum;
 		graph_kind _kind;

@@ -129,7 +129,7 @@ test_topo_sort(void)
 }
 #endif
 
-#define CRITICAL_PATH 1
+//#define CRITICAL_PATH 1
 #ifdef CRITICAL_PATH
 static void
 test_criticalpath(void)
@@ -163,6 +163,47 @@ test_criticalpath(void)
 }
 #endif
 
+#define DIJ 1
+#ifdef DIJ
+static void
+test_dijkstra(void)
+{
+#define I INT_MAX
+	int a[]={
+		  //1 2 3 4 5 6 
+	/*1*/	I,I,10,I,30,100,
+	/*2*/	I,I,5,I,I,I,
+	/*3*/	I,I,I,50,I,I,
+	/*4*/	I,I,I,I,I,10,
+	/*5*/	I,I,I,20,I,60,
+	/*6*/	I,I,I,I,I,I
+	};
+	char b[] = {'1', '2', '3', '4', '5', '6'};
+	a1 * vexs;
+	a2 * arcs;
+	vexs = a1::instance(6);
+	vexs->set_values(b, 6);
+	arcs = a2::instance(6, 6);
+	arcs->set_values(a, 6 * 6);
+	graph_array<char, int> G(*vexs, *arcs, graph_array<char, int>::DN);
+	cout << "** DN **" << endl;
+	//G.show_adjlists();
+	
+	bool P[MAX_NB_VEX][MAX_NB_VEX];
+	int D[MAX_NB_VEX], v, w, v0 = 0;
+	cout << "DIJ from " << v0 << " : "<< endl;
+	dijkstra(G, v0, P, D);
+	cout << "Paths : " << endl;
+	for(v = 0; v < G.vexnum(); ++v)
+	{
+		cout << "to "<< v << " : ";
+		for(w = 0; w < G.vexnum(); ++w)
+		  if(P[v][w]) cout << w << " ";
+		cout << " len=" << D[v] << endl;
+	}
+}
+#endif
+
 int main(int ac, char * av[])
 {
 #ifdef PRIME
@@ -176,6 +217,9 @@ int main(int ac, char * av[])
 #endif
 #ifdef CRITICAL_PATH
 	test_criticalpath();
+#endif
+#ifdef DIJ 
+	test_dijkstra();
 #endif
 	return 0;
 }

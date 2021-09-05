@@ -65,6 +65,18 @@ void init_array(Array & a, int size, DataType d = 0)
     }
 }
 
+void show_S(bool *finalx, int size)
+{
+	int i;
+	cout << "S : ";
+
+    for(i = 0; i < size; ++i)
+    {
+        if(finalx[i]) cout << i << " ";
+    }
+	cout << endl;
+}
+
 template <typename Graph, typename OP>
 void DFS(const Graph & G, OP & op, bool recursion = true)
 {
@@ -595,5 +607,68 @@ bool cricticalpath(const Graph & G)
 		}
 	}
 	return true;
+}
+
+/**
+  用Dijkstra算法求有向网G的v0顶点到其余顶点v的最短路径P[v]及其带权长度D[v].
+  若P[v][w]为TRUE，则w是从v0到v当前求得最短路径上的顶点。
+  final[v]为TRUE当且仅当v∈S，即已经求得从v0到v的最短路径。
+  O(n * n)
+ */
+template<typename Graph>
+void dijkstra(const Graph & G, 
+			int v0, 
+			bool P[][MAX_NB_VEX], 
+			typename Graph::cost_type * D)
+{
+	int i, j, v, w, vexnum = G.vexnum();
+	bool finalx[MAX_NB_VEX];
+	typename Graph::cost_type min;
+
+	for(v = 0; v < vexnum; ++v)
+	{
+		finalx[v] = false;
+		D[v] = G.cost(v0, v);
+		for(w = 0; w < vexnum; ++w) 
+		  P[v][w] = false;
+		if(D[v] < Graph::INF)
+		{
+			P[v][v0] = true;//起点
+			P[v][v] = true;//终点
+		}
+	}
+	D[v0] = 0; 
+	finalx[v0] = true; //v0加入集合S
+	//cout << "after v0\n";
+	//show_S(finalx, vexnum);
+	//cout << "D : ";
+	for(i = 1; i < vexnum; ++i)
+	{
+		cout << "---- i = " << i  << " ------"<< endl;
+		show_S(finalx, vexnum);
+		cout << "D : ";
+		show_array(D, vexnum);
+		min = Graph::INF;//V-S中，当前离v0最近的距离
+		for(w = 0; w < vexnum; ++w)
+		  if(!finalx[w] && D[w] < min) //V-S中的w离v0更近
+		  {
+			  v = w;
+			  min = D[w];
+		  }
+		//cout << "min_vex=" << v << ", min=" << min << endl;
+		finalx[v] = true; //加入S
+		for(w = 0; w < vexnum; ++w)
+		  if(!finalx[w] && (G.cost(v, w) != Graph::INF)
+					  && (G.cost(v, w) + min < D[w]))
+		  {
+			  D[w] = min + G.cost(v, w);
+			  //cout << "update D[" << w << "]" << endl;
+			  //cout << "D : ";
+			  //show_array(D, vexnum);
+			  for(j = 0; j < vexnum; ++j)
+				P[w][j] = P[v][j];//j在Path(v0...v)-->j在Path(v0...w)
+			  P[w][w] = true;
+		  }
+	}
 }
 #endif

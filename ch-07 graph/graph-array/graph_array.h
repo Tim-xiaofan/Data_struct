@@ -29,6 +29,7 @@ class graph_array
 		typedef array<U, 2> a2;
 	public:
 		typedef enum {DG, DN, UDG, UDN} graph_kind;
+		enum {INF = INT_MAX};
 	private:
 		int _nb_vex, _nb_arc;
 		graph_kind _kind;

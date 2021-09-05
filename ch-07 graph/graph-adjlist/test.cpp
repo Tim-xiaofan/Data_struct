@@ -32,7 +32,7 @@ static int B[]={
 	0,1,1,0,0
 };
 
-#define I INF
+#define I INT_MAX
 static int C[]={
 	I,5,I,7,I,I,
 	I,I,4,I,I,I,
