@@ -36,6 +36,7 @@ class array
 			__attribute__((deprecated("Replaced by 'const T at(i, ...)const', which has an improved interface")));
 #endif
 		const T at(int i, ...) const;
+		T & at(int i, ...);
 		bool set_value(const T & t, ...);
 		void show_constant(void)const;
 		void show_bounds(void)const;
@@ -174,6 +175,23 @@ at(int i, ...) const
 	//std::cout << "off = " << off << std::endl;
 	va_end(ap);
 	return -1;
+}
+
+template<typename T, int dim>
+T & array<T, dim>::
+at(int i, ...) 
+{
+	int off;
+	va_list ap;
+	va_start(ap, i);
+	if(locate(i, ap, off))
+	{
+		va_end(ap);
+		return _base[off];
+	}
+	//std::cout << "off = " << off << std::endl;
+	va_end(ap);
+	return _base[0];
 }
 
 template<typename T, int dim>

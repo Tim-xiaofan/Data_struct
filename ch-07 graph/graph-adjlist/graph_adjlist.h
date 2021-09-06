@@ -241,7 +241,7 @@ show_radjlists(void)const
 template <typename T, typename U>
 template <typename T1, typename U1>
 void graph_adjlist<T, U>::vexnode<T1, U1>::
-append(typename graph_adjlist<T, U>::arcnode<U1> * an)
+append(graph_adjlist<T, U>::arcnode<U1> * an)
 {
 	//0 --> 1
 	if(firstarc == nullptr)
@@ -263,7 +263,7 @@ template <typename T1, typename U1>
 void graph_adjlist<T, U>::vexnode<T1, U1>::
 show(void) const
 {
-	const typename graph_adjlist<T, U>::arcnode<U1> * p;
+	const graph_adjlist<T, U>::arcnode<U1> * p;
 	for(p = firstarc; p; p = p->nextarc)
 	{
 		cout << *p << " ";

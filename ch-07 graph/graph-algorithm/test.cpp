@@ -163,7 +163,7 @@ test_criticalpath(void)
 }
 #endif
 
-#define DIJ 1
+//#define DIJ 1
 #ifdef DIJ
 static void
 test_dijkstra(void)
@@ -204,6 +204,36 @@ test_dijkstra(void)
 }
 #endif
 
+#define FLOYD 1
+#ifdef FLOYD
+static void
+test_floyd(void)
+{
+#define I INT_MAX
+	int a[]={
+		  //1 2 3 4 5 6 
+	/*1*/	0,4,11,
+	/*2*/	6,0,2,
+	/*3*/	3,I,0
+	};
+	char b[] = {'0', '1', '2'};
+	a1 * vexs;
+	a2 * arcs;
+	vexs = a1::instance(3);
+	vexs->set_values(b, 3);
+	arcs = a2::instance(3, 3);
+	arcs->set_values(a, 3 * 3);
+	graph_array<char, int> G(*vexs, *arcs, graph_array<char, int>::DN);
+	cout << "** DN **" << endl;
+	//G.show_adjlists();
+	
+	a3 *P = a3::instance(3, 3, 3);
+	int D[MAX_NB_VEX][MAX_NB_VEX];
+	cout << "floyd : " << endl;
+	floyd(G, *P, D);
+}
+#endif
+
 int main(int ac, char * av[])
 {
 #ifdef PRIME
@@ -220,6 +250,9 @@ int main(int ac, char * av[])
 #endif
 #ifdef DIJ 
 	test_dijkstra();
+#endif
+#ifdef FLOYD 
+	test_floyd();
 #endif
 	return 0;
 }
