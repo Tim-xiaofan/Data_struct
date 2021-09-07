@@ -47,6 +47,7 @@ class bitree
 		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op);
+		void second_optimal(node * & T, const Data * table, float *sw, int low, int high);
 	public:
 		bitree():_root(nullptr), _ct(0){}
 		//template<typename UnaryOperator>
@@ -66,6 +67,8 @@ class bitree
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void inorder_traversex(const UnaryOperator & op = show){inorder_traversex(_root, op); cout << endl;}
 		static int count(int n) {return fact(2 * n) / fact(n) /fact(n + 1);}
+		/** 构造次优查找树的*/
+		void second_optimal(const Data * table, float * w, int size);
 };
 
 /** root first*/
@@ -194,4 +197,61 @@ inorder_traversex(node *root, const UnaryOperator & op)
 		}
 	}
 }
+
+
+template<typename Data>
+void bitree<Data>::
+second_optimal(const Data * table, float * w, int size)
+{
+	if(size == 0) return;
+	int i;
+	float *sw = new float[size];
+
+	sw[0] = 0;
+	for(i = 1; i < size; ++i)
+	  sw[i] = sw[i -1] + w[i];
+
+	second_optimal(_root, table, sw, 0, size - 1);
+}
+
+template<typename T>
+T abs(const T & t)
+{
+	if(t < 0) return (0 - t);
+	return t;
+}
+
+template<typename Data>
+void bitree<Data>::
+second_optimal(node * & T, const Data * table,  float * sw, int low, int high)
+{
+	int i = low, j;
+	float dw, min = abs(sw[high] - sw[low]);
+	if(low == 0)  dw = sw[high] + 0;
+	else  dw = sw[high] + sw[low -1];
+
+	//min(Pi), i is current root
+	cout << "\n-----------------------------------" << endl;
+	cout << "low = " << low << ", high = " << high << endl;
+	cout << table[low] << " ";
+	for(j = low + 1; j <= high; ++j)
+	{
+		cout << table[j] << " ";
+	  if(abs(dw - sw[j] - sw[j - 1]) < min)
+	  {
+		  min = abs(dw - sw[j] - sw[j -1]);
+		  i = j;
+	  }
+	}
+	cout << endl;
+	T = new node();
+	T->data = table[i];
+	cout << "min = " << min << endl;
+	cout << "i = " << i << endl;
+	if(i != low)//create left child
+	  second_optimal(T->lchild, table, sw, low, i - 1);
+	if(i != high)//create right child
+	  second_optimal(T->rchild, table, sw, i + 1, high);
+}
+
 #endif

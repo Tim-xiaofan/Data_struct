@@ -11,6 +11,7 @@ CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/array-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/sparse-matrix-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/lists/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-06\ tree\ and\ binary-tree/huffman-tree/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-06\ tree\ and\ binary-tree/bitree/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-05\ array\ and\ lists/array-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-07\ graph/graph-adjlist/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-07\ graph/graph-olist/
