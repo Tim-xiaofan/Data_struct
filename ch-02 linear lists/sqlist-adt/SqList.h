@@ -1,10 +1,11 @@
 /* 20210323 22:25, zyj, GuangDong*/
 //SqList.h
+#ifndef _SQLIST_H
+#define _SQLIST_H
 #include <iostream>
 #include <iterator>
 #include <cstring> /** memset*/
-#ifndef SQLIST_H
-#define SQLIST_H
+#include <string>
 
 //
 //template <typename Item>
@@ -52,11 +53,13 @@ class SqList
 	public:
 		/** types*/
 		typedef iterator<Item> input_iterator;
+        typedef input_iterator const_iterator;
 		typedef Item item_type;
+        typedef Item elem_type;
 
 		/** constructor and assignment operator*/
 		explicit SqList(int size = DEFAULT_SIZE):_size(size), _length(0)
-	{_items = new Item[size + 1];}
+    {_items = new Item[size + 1];}
 		SqList(const SqList & l);
 		SqList(const Item *is, int n);
 		SqList & operator=(const SqList &) = delete;
@@ -70,7 +73,7 @@ class SqList
 		bool insert_n(int pos, const Item & i);
 		bool append(const Item & i);
 		bool append_bulk(const Item *is, int n);
-		void show(void) const;
+		void show(const std::string & info = "") const;
 		int search(const Item & i) const;
 		bool is_full(void) const {return (_length == _size);}
 		bool is_empty(void) const {return (_length == 0);}
@@ -239,10 +242,11 @@ search(const Item &i) const
 
 template <typename Item>
 void SqList<Item>::
-show(void)const
+show(const std::string & info)const
 {
 	int pos;
-
+    
+    std::cout << info;
 	if(is_empty())
 	{
 		//printf("EMPTY LIST!\n");

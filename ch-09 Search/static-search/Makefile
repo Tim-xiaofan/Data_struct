@@ -5,7 +5,7 @@
 APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := test.cpp SqList.h
+SRCS-y := test.cpp static_search.h
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
@@ -21,7 +21,7 @@ endif
 endif
 
 # Add flag 
-CPPFLAGS += -g -Wall -I./ -std=c++11
+CPPFLAGS += -g -Wall -std=c++11
 
 $(APP): $(SRCS-y) Makefile 
 	$(CXX) $(CPPFLAGS) $(SRCS-y) -o $@
