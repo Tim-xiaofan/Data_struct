@@ -46,8 +46,8 @@ class bitree
 		void inorder_traverse(node * root, const UnaryOperator & op) ;
 		template<typename Cmp>
 		void cmp_insert(node * & root, const Data & d, const Cmp & cmp);
-		static int less(const Data & d1, const Data & d2){return d1 - d2;}
 		static void show(const Data & d){cout << d <<" ";}
+		static Data default_cmp(const Data & a, const Data & b) {return (a - b);};
 		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op) ;
@@ -64,9 +64,12 @@ class bitree
 		void inorder_traverse(const UnaryOperator & op = show);
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void level_traverse(const UnaryOperator & op = show);
-		/** cmp construct*/
-		template<typename Cmp = int(*)(const Data &, const Data&)>
-		bool cmp_construct(const Data * ds, int ct, const Cmp & cmp = less);
+		/** 构造二叉排序树*/
+		template<typename Cmp = Data(*)(const Data &, const Data &)>
+		void sorted_construct(const Data * ds, int ct, const Cmp & cmp = default_cmp);
+		/** 在排序二叉树插入新的节点 */
+		template<typename Cmp = Data(*)(const Data &, const Data &)>
+		bool sorted_insert(const Data & d, const Cmp & cmp = default_cmp);
 		/** preorder and inorder create*/
 		bool preinorder_construct(const Data * pre, const Data *in, int ct){_node_num = ct;return preinorder_construct(_root, pre, in , ct);}
 		/** root second, not recursion*/
@@ -115,18 +118,13 @@ inorder_traverse(node *root, const UnaryOperator & op)
 
 template<typename Data>
 template<typename Cmp>
-bool bitree<Data>:: 
-cmp_construct(const Data * ds, int ct, const Cmp & cmp)
+void bitree<Data>:: 
+sorted_construct(const Data * ds, int ct, const Cmp & cmp)
 {
-	/** TODO:check whethe threre are duplicated elements in the ds array*/
 	int i;
-	for(i = 0; i < ct; i++)
-	{
-		cmp_insert(_root, ds[i], cmp);
-	}
-    _node_num = ct;
 
-	return true;
+	for(i = 0; i < ct; i++)
+	  cmp_insert(_root, ds[i], cmp);
 }
 
 template<typename Data>
@@ -136,17 +134,25 @@ cmp_insert(node * & root, const Data & d, const Cmp & cmp)
 {
 	if(root == nullptr)
 	{ 
+		_node_num ++;//really inserted
 		root = new node;
 		root->data = d;
 		//cout << endl;
-		return;
+		return ;
 	}
-	int ret = cmp(d, root->data);
-	if(ret < 0)
-	  cmp_insert(root->lchild, d, cmp);
+	Data ret = cmp(d, root->data);
+	if(ret < 0)//insert into lchild
+	{
+		cmp_insert(root->lchild, d, cmp);
+	}
 	else if(ret > 0)
-	  cmp_insert(root->rchild, d, cmp);
-	else cout << "duplicated elements " << d << endl;
+	{
+		cmp_insert(root->rchild, d, cmp);//insert into rchild
+	}
+	else 
+	{
+		cout << "duplicated element : " << d << endl;
+	}
 }
 
 template<typename Data>
@@ -391,4 +397,13 @@ get_level(const Data & d) const
     //cout << endl;
 }
 
+template<typename Data>
+template<typename Cmp>
+bool bitree<Data>::
+sorted_insert(const Data & d, const Cmp & cmp)
+{
+	int old = _node_num;
+	cmp_insert(_root, d, cmp);
+	return (old != _node_num);
+}
 #endif
