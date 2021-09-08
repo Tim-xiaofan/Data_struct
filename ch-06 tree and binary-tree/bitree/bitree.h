@@ -207,7 +207,7 @@ second_optimal(const Data * table, float * w, int size)
 	int i;
 	float *sw = new float[size];
 
-	sw[0] = 0;
+	sw[0] = w[0];
 	for(i = 1; i < size; ++i)
 	  sw[i] = sw[i -1] + w[i];
 
