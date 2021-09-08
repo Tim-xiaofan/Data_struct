@@ -9,7 +9,6 @@
 #include "SqList.h"
 #include "bitree.h"
 
-#define N 16
 
 //#define LTABLE 1
 //#define BIN 1
@@ -24,6 +23,7 @@ using std::cerr;
 static void 
 test_linear(void)
 {
+#define N 16
     SqList<int> list(N);
     int i, tar;
 
@@ -44,6 +44,7 @@ test_linear(void)
 static void 
 test_bin(void)
 {
+#define N 16
     SqList<int> list(N);
     int i, tar;
 
@@ -61,17 +62,45 @@ test_bin(void)
 #endif
 
 #ifdef SECOND_OPTIMAL
+template <typename T>
+void show_array(const T * a, int size)
+{
+    int i;
+    for(i = 0; i < size; ++i)
+      cout << a[i] << " ";
+    cout << endl;
+}
+
 static void
-test_so(void)
+test_so(char *table, float *w, int size)
 {
 	bitree<char> tree;
-	char table[9] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
-	float w[9] = {1, 1, 2, 5, 3, 4, 4, 3, 5};
-	tree.second_optimal(table, w, 9);
-	cout << "preorder : ";
+    int * levels = new int[size], ret, i;
+    float PH = 0;
+
+	tree.second_optimal(table, w, size);
+    cout << "preorder_traverse : ";
 	tree.preorder_traverse();
-	cout << "inorder : ";
+    cout << "inorder_traverse  : ";
 	tree.inorder_traverse();
+    cout << "level_traverse    : ";
+	tree.level_traverse();
+    cout << "levels            : ";
+    ret = tree.get_levels(levels);
+    show_array(levels, ret);
+    cout << "table             : ";
+    show_array(table, size);
+    cout << "w                 : ";
+    show_array(w, size);
+    cout << "levels            : ";
+    for(i = 0; i < size; ++i)
+      cout <<tree.get_level(table[i]) << " ";
+    cout << endl;
+
+    /** PH calculation*/
+    for(i = 0; i < size; ++i)
+      PH += tree.get_level(table[i]) * w[i];
+    cout << "PH                : " << PH << endl;
 }
 #endif
 
@@ -84,7 +113,11 @@ int main(int ac, char * av[])
     test_bin();
 #endif
 #ifdef SECOND_OPTIMAL
-    test_so();
+	char table[9] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
+	//float w[9] = {1, 1, 2, 5, 3, 4, 4, 3, 5};
+	float w1[5] = {1, 30, 2, 29, 3};
+    //test_so(table, w, 9);
+    test_so(table, w1, 5);
 #endif
     cout << "done." << endl;
 	return 0;

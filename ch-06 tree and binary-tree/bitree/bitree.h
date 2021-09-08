@@ -3,9 +3,13 @@
 #ifndef BITREE_H
 #define BITREE_H
 #include <iostream>
+#include <string>
+
 #include "sqstack.h"
+#include "sqqueue.h"
 using std::cout;
 using std::endl;
+using std::string;
 
 
 template<typename Data>
@@ -34,48 +38,53 @@ class bitree
 		typedef Node<Data> node;
 	private:
 		node *_root;
-		int _ct;
+		int _node_num;
 	private:
 		template<typename UnaryOperator>
-		void preorder_traverse(node * root, const UnaryOperator & op);
+		void preorder_traverse(node * root, const UnaryOperator & op) ;
 		template<typename UnaryOperator>
-		void inorder_traverse(node * root, const UnaryOperator & op);
+		void inorder_traverse(node * root, const UnaryOperator & op) ;
 		template<typename Cmp>
 		void cmp_insert(node * & root, const Data & d, const Cmp & cmp);
 		static int less(const Data & d1, const Data & d2){return d1 - d2;}
 		static void show(const Data & d){cout << d <<" ";}
 		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
 		template<typename UnaryOperator>
-		void inorder_traversex(node * root, const UnaryOperator & op);
+		void inorder_traversex(node * root, const UnaryOperator & op) ;
 		void second_optimal(node * & T, const Data * table, float *sw, int low, int high);
 	public:
-		bitree():_root(nullptr), _ct(0){}
+		bitree():_root(nullptr), _node_num(0){}
 		//template<typename UnaryOperator>
 		//void test(const UnaryOperator & op);
 		/** root fisrt*/
 		template<typename UnaryOperator = void(*)(const Data &)>
-		void preorder_traverse(const UnaryOperator & op = show){preorder_traverse(_root, op); cout << endl;}
+		void preorder_traverse(const UnaryOperator & op = show);
 		/** root second*/
 		template<typename UnaryOperator = void(*)(const Data &)>
-		void inorder_traverse(const UnaryOperator & op = show){inorder_traverse(_root, op); cout << endl;}
+		void inorder_traverse(const UnaryOperator & op = show);
+		template<typename UnaryOperator = void(*)(const Data &)>
+		void level_traverse(const UnaryOperator & op = show);
 		/** cmp construct*/
 		template<typename Cmp = int(*)(const Data &, const Data&)>
 		bool cmp_construct(const Data * ds, int ct, const Cmp & cmp = less);
 		/** preorder and inorder create*/
-		bool preinorder_construct(const Data * pre, const Data *in, int ct){return preinorder_construct(_root, pre, in , ct);}
+		bool preinorder_construct(const Data * pre, const Data *in, int ct){_node_num = ct;return preinorder_construct(_root, pre, in , ct);}
 		/** root second, not recursion*/
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void inorder_traversex(const UnaryOperator & op = show){inorder_traversex(_root, op); cout << endl;}
 		static int count(int n) {return fact(2 * n) / fact(n) /fact(n + 1);}
 		/** 构造次优查找树的*/
 		void second_optimal(const Data * table, float * w, int size);
+        int get_levels(int *level) const;
+        /** 无重复节点*/
+        int get_level(const Data & d) const;
 };
 
 /** root first*/
 template<typename Data>
 template<typename UnaryOperator>
 void bitree<Data>::
-preorder_traverse(node *root, const UnaryOperator & op)
+preorder_traverse(node *root, const UnaryOperator & op) 
 {
 	if(root)
 	{
@@ -115,6 +124,7 @@ cmp_construct(const Data * ds, int ct, const Cmp & cmp)
 	{
 		cmp_insert(_root, ds[i], cmp);
 	}
+    _node_num = ct;
 
 	return true;
 }
@@ -212,6 +222,7 @@ second_optimal(const Data * table, float * w, int size)
 	  sw[i] = sw[i -1] + w[i];
 
 	second_optimal(_root, table, sw, 0, size - 1);
+    _node_num = size;
 }
 
 template<typename T>
@@ -252,6 +263,132 @@ second_optimal(node * & T, const Data * table,  float * sw, int low, int high)
 	  second_optimal(T->lchild, table, sw, low, i - 1);
 	if(i != high)//create right child
 	  second_optimal(T->rchild, table, sw, i + 1, high);
+}
+
+template<typename Data>
+template<typename UnaryOperator>
+void bitree<Data>::
+level_traverse(const UnaryOperator & op) 
+{
+    if(_root == nullptr) 
+    {
+        cout << endl;
+        return;
+    }
+    sqqueue<const node *> queue(_node_num);
+    const node * p;
+
+    queue.enqueue(_root);//enqueue root node
+    while(!queue.is_empty())
+    {
+        queue.dequeue(p);
+        op(p->data);
+        if(p->lchild) queue.enqueue(p->lchild);
+        if(p->rchild) queue.enqueue(p->rchild);
+    }
+    cout << endl;
+}
+
+
+/** 
+ * 获取所有节点所在层次
+ * return       number of node
+ * */
+template<typename Data>
+int bitree<Data>::
+get_levels(int * levels) const
+{
+    int level = 0, i = 0;;
+    if(_root == nullptr) 
+    {
+        cout << endl;
+        return 0;
+    }
+    sqqueue<const node *> queue(_node_num);
+    const node * p;
+
+    queue.enqueue(_root);//enqueue root node
+    queue.enqueue(nullptr);// tag of level end
+    ++level;
+    while(i < _node_num)
+    {
+        /** visit entire level*/
+        do
+        {
+            queue.dequeue(p);
+            if(p == nullptr)//reach end of current level
+            {
+                ++level;
+                break;
+            }
+            levels[i++] = level;
+            if(p->lchild) queue.enqueue(p->lchild);
+            if(p->rchild) queue.enqueue(p->rchild);
+        }while(1);
+        queue.enqueue(nullptr);
+    }
+    return _node_num;
+    //cout << endl;
+}
+
+
+template<typename Data>
+template<typename UnaryOperator>
+void bitree<Data>::
+preorder_traverse(const UnaryOperator & op)
+{
+    preorder_traverse(_root, op); 
+    cout << endl;
+}
+
+template<typename Data>
+template<typename UnaryOperator>
+void bitree<Data>::
+inorder_traverse(const UnaryOperator & op)
+{
+    inorder_traverse(_root, op); 
+    cout << endl;
+}
+
+/** 
+ * 获取节点d所在层次
+ * return       0 for not found, > 0 for level of node d
+ * */
+template<typename Data>
+int bitree<Data>::
+get_level(const Data & d) const
+{
+    int level = 0, i = 0;;
+    if(_root == nullptr) 
+    {
+        cout << endl;
+        return 0;
+    }
+    sqqueue<const node *> queue(_node_num);
+    const node * p;
+
+    queue.enqueue(_root);//enqueue root node
+    queue.enqueue(nullptr);// tag of level end
+    ++level;
+    while(i < _node_num)
+    {
+        /** visit entire level*/
+        do
+        {
+            queue.dequeue(p);
+            if(p == nullptr)//reach end of current level
+            {
+                ++level;
+                break;
+            }
+            if(p->data == d) return level;
+            if(p->lchild) queue.enqueue(p->lchild);
+            if(p->rchild) queue.enqueue(p->rchild);
+        }while(1);
+        queue.enqueue(nullptr);
+    }
+    return 0;
+    //cout << endl;
 }
 
 #endif
