@@ -52,6 +52,8 @@ class bitree
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op) ;
 		void second_optimal(node * & T, const Data * table, float *sw, int low, int high);
+        template<typename key_t, typename cmp_t>
+        bool sorted_search(const node * root, const key_t & k, const cmp_t & cmp) const;
 	public:
 		bitree():_root(nullptr), _node_num(0){}
 		//template<typename UnaryOperator>
@@ -64,12 +66,15 @@ class bitree
 		void inorder_traverse(const UnaryOperator & op = show);
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void level_traverse(const UnaryOperator & op = show);
-		/** 构造二叉排序树*/
+		/** 构造二叉排序树:重复节点直接舍弃*/
 		template<typename Cmp = Data(*)(const Data &, const Data &)>
 		void sorted_construct(const Data * ds, int ct, const Cmp & cmp = default_cmp);
 		/** 在排序二叉树插入新的节点 */
 		template<typename Cmp = Data(*)(const Data &, const Data &)>
 		bool sorted_insert(const Data & d, const Cmp & cmp = default_cmp);
+        /** 在排序二叉树搜寻key为k的节点*/
+        template<typename key_t = Data, typename cmp_t = Data(*)(const Data &, const Data &)>
+        bool sorted_search(const key_t & k, const cmp_t & cmp = default_cmp) const;
 		/** preorder and inorder create*/
 		bool preinorder_construct(const Data * pre, const Data *in, int ct){_node_num = ct;return preinorder_construct(_root, pre, in , ct);}
 		/** root second, not recursion*/
@@ -81,6 +86,8 @@ class bitree
         int get_levels(int *level) const;
         /** 无重复节点*/
         int get_level(const Data & d) const;
+        /** 节点数量*/
+        int node_num(void) const {return _node_num;}
 };
 
 /** root first*/
@@ -376,6 +383,7 @@ get_level(const Data & d) const
     queue.enqueue(_root);//enqueue root node
     queue.enqueue(nullptr);// tag of level end
     ++level;
+    //cout << "root->data : " << _root->data << endl;
     while(i < _node_num)
     {
         /** visit entire level*/
@@ -387,6 +395,8 @@ get_level(const Data & d) const
                 ++level;
                 break;
             }
+            //cout << "p->data : " << p->data << endl;
+            //cout << "level : " << level << endl;
             if(p->data == d) return level;
             if(p->lchild) queue.enqueue(p->lchild);
             if(p->rchild) queue.enqueue(p->rchild);
@@ -405,5 +415,40 @@ sorted_insert(const Data & d, const Cmp & cmp)
 	int old = _node_num;
 	cmp_insert(_root, d, cmp);
 	return (old != _node_num);
+}
+
+template<typename Data>
+template<typename key_t, typename cmp_t>
+bool bitree<Data>::
+sorted_search(const key_t & key, const cmp_t & cmp) const
+{
+    return sorted_search(_root, key, cmp);
+}
+        
+template<typename Data>
+template<typename key_t, typename cmp_t>
+bool bitree<Data>::
+sorted_search(const node * root, const key_t & key, const cmp_t & cmp) const
+{
+    if(root)
+    {
+        if(cmp(root->data, key) == 0)//root
+        {
+            return true;
+        }
+
+        if(root->lchild)//lchild
+        {
+            if(sorted_search(root->lchild, key, cmp)) 
+              return true;
+        }
+
+        if(root->rchild)//rchild
+        {
+            if(sorted_search(root->rchild, key, cmp)) 
+              return true;
+        }
+    }
+    return false;;
 }
 #endif

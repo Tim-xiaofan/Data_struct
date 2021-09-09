@@ -42,9 +42,10 @@ test_BST(void)
     cout << "level_traverse    : ";
 	tree.level_traverse();
 
+    cout << "node_num          : " << tree.node_num() << endl;
 	cout << "levels            : ";
     for(i = 0; i < size; ++i)
-      cout <<tree.get_level(table[i]) << " ";
+      cout << "("<< table[i] << ", level=" << tree.get_level(table[i]) << ")";
     cout << endl;
 
 	cout << "new node : ";
@@ -60,12 +61,18 @@ test_BST(void)
 		cout << "level_traverse    : ";
 		tree.level_traverse();
 
-		cout << "levels            : ";
-		for(i = 0; i < size; ++i)
-		  cout <<tree.get_level(table[i]) << " ";
-		cout << tree.get_level(d);
+		cout << "levels            :";
+        for(i = 0; i < size; ++i)
+          cout << "(" << table[i] << ", level=" << tree.get_level(table[i]) << ")";
+        cout <<"(" <<d << ", l=" << tree.get_level(d) << ")";
 		cout << endl;
 	}
+    cout << "search node : ";
+    cin >> d;
+    if(tree.sorted_search(d))
+      cout << "found" << endl;
+    else
+      cout << "not found" << endl;
 }
 #endif
 
