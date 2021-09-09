@@ -54,6 +54,9 @@ class bitree
 		void second_optimal(node * & T, const Data * table, float *sw, int low, int high);
         template<typename key_t, typename cmp_t>
         bool sorted_search(const node * root, const key_t & k, const cmp_t & cmp) const;
+        template<typename key_t = Data, typename cmp_t>
+        bool sorted_delete(node * root, const key_t &k , const cmp_t & cmp);
+        void sorted_delete(node * f, node * & p);
 	public:
 		bitree():_root(nullptr), _node_num(0){}
 		//template<typename UnaryOperator>
@@ -66,7 +69,8 @@ class bitree
 		void inorder_traverse(const UnaryOperator & op = show);
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void level_traverse(const UnaryOperator & op = show);
-		/** 构造二叉排序树:重复节点直接舍弃*/
+		
+        /** 构造二叉排序树:重复节点直接舍弃*/
 		template<typename Cmp = Data(*)(const Data &, const Data &)>
 		void sorted_construct(const Data * ds, int ct, const Cmp & cmp = default_cmp);
 		/** 在排序二叉树插入新的节点 */
@@ -75,7 +79,11 @@ class bitree
         /** 在排序二叉树搜寻key为k的节点*/
         template<typename key_t = Data, typename cmp_t = Data(*)(const Data &, const Data &)>
         bool sorted_search(const key_t & k, const cmp_t & cmp = default_cmp) const;
-		/** preorder and inorder create*/
+        /** 排序二叉树：删除key为k的节点*/
+        template<typename key_t = Data, typename cmp_t = Data(*)(const Data &, const Data &)>
+        bool sorted_delete(const key_t &k , const cmp_t & cmp = default_cmp);
+		
+        /** preorder and inorder create*/
 		bool preinorder_construct(const Data * pre, const Data *in, int ct){_node_num = ct;return preinorder_construct(_root, pre, in , ct);}
 		/** root second, not recursion*/
 		template<typename UnaryOperator = void(*)(const Data &)>
@@ -451,4 +459,70 @@ sorted_search(const node * root, const key_t & key, const cmp_t & cmp) const
     }
     return false;;
 }
+
+template<typename Data>
+template<typename key_t, typename cmp_t>
+bool bitree<Data>:: 
+sorted_delete(const key_t &k, const cmp_t & cmp)
+{
+    return sorted_delete(_root, k, cmp);
+}
+
+template<typename Data>
+template<typename key_t, typename cmp_t>
+bool bitree<Data>:: 
+sorted_delete(node * root, const key_t &k, const cmp_t & cmp)
+{
+    if(root)
+    {
+        if(cmp(root->data, k) == 0) 
+        {
+            sorted_delete(root);
+            return true;
+        }
+        else if(cmp(root->data, k) < 0) 
+          return sorted_delete(root->lchild, k, cmp);
+        else 
+          return sorted_delete(root->lchild, k, cmp);
+    }
+    return false;
+}
+
+/** sorted bitree：delete node p*/
+template<typename Data>
+void bitree<Data>::
+sorted_delete(node * f, node * & p)
+{
+    node * q, *s;
+    if(!p) return; 
+    if(!p->lchild)//empty lchild
+    {
+        q = p; 
+        p = p->rchild;
+        delete q;
+    }
+    else if(!p->lchild)
+    {
+        q = p;
+        p = p->lchild;
+        delete q;
+    }
+    else
+    {
+        /** find s*/
+        q = p;
+        s = p->lchild();
+        while(s->rchild)
+        {
+             q = s;
+             s = s->rchild;
+        }
+        s->data = p->data;//s替换p
+        if(q != p) q->rchild = s->lchild; 
+        else q->lchild = s->lchild;
+        delete s;
+    }
+    --_node_num;
+}
+
 #endif
