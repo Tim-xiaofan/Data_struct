@@ -33,6 +33,13 @@ class bitree
 			Data1 data;
 			Node *lchild, *rchild;
 			Node():lchild(nullptr), rchild(nullptr){}
+			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
+			{
+				os << "(addr=" << (void *)&nd << ", data=" << nd.data
+					<< ", lchild=" << (void *)nd.lchild 
+					<< ", rchild=" << (void *)nd.rchild << ")";
+				return os;
+			}
 		};
 	public:
 		typedef Node<Data> node;
@@ -55,8 +62,8 @@ class bitree
         template<typename key_t, typename cmp_t>
         bool sorted_search(const node * root, const key_t & k, const cmp_t & cmp) const;
         template<typename key_t = Data, typename cmp_t>
-        bool sorted_delete(node * root, const key_t &k , const cmp_t & cmp);
-        void sorted_delete(node * f, node * & p);
+        bool sorted_delete(node * & root, const key_t &k , const cmp_t & cmp);
+        void sorted_delete(node * & p);
 	public:
 		bitree():_root(nullptr), _node_num(0){}
 		//template<typename UnaryOperator>
@@ -471,19 +478,20 @@ sorted_delete(const key_t &k, const cmp_t & cmp)
 template<typename Data>
 template<typename key_t, typename cmp_t>
 bool bitree<Data>:: 
-sorted_delete(node * root, const key_t &k, const cmp_t & cmp)
+sorted_delete(node * & root, const key_t &k, const cmp_t & cmp)
 {
     if(root)
     {
-        if(cmp(root->data, k) == 0) 
+		//cout << "root = " << *root << endl;
+        if(cmp(k, root->data) == 0) 
         {
             sorted_delete(root);
             return true;
         }
-        else if(cmp(root->data, k) < 0) 
+        else if(cmp(k, root->data) < 0) 
           return sorted_delete(root->lchild, k, cmp);
         else 
-          return sorted_delete(root->lchild, k, cmp);
+          return sorted_delete(root->rchild, k, cmp);
     }
     return false;
 }
@@ -491,17 +499,19 @@ sorted_delete(node * root, const key_t &k, const cmp_t & cmp)
 /** sorted bitree：delete node p*/
 template<typename Data>
 void bitree<Data>::
-sorted_delete(node * f, node * & p)
+sorted_delete(node * & p)
 {
     node * q, *s;
     if(!p) return; 
-    if(!p->lchild)//empty lchild
+	//cout << "delete p = " << *p << endl;
+
+	if(!p->lchild)//empty lchild
     {
         q = p; 
         p = p->rchild;
         delete q;
     }
-    else if(!p->lchild)
+    else if(!p->rchild)// empty rchild
     {
         q = p;
         p = p->lchild;
@@ -509,17 +519,19 @@ sorted_delete(node * f, node * & p)
     }
     else
     {
-        /** find s*/
+        /** 寻找前驱s*/
         q = p;
-        s = p->lchild();
+        s = p->lchild;
         while(s->rchild)
         {
              q = s;
              s = s->rchild;
         }
-        s->data = p->data;//s替换p
+		//cout << "q = " << *q << endl;
+		//cout << "s = " << *s << endl;
+        p->data = s->data;//s替换p
         if(q != p) q->rchild = s->lchild; 
-        else q->lchild = s->lchild;
+        else q->lchild = s->lchild;//旋转
         delete s;
     }
     --_node_num;

@@ -22,17 +22,10 @@ void show_array(const T * a, int size)
 
 #define BST 1
 #ifdef BST
-static void
-test_BST(void)
+template<typename Tree>
+static void 
+show_tree(Tree & tree)
 {
-	const int size = 7;
-	int i, d, table[size] = {45, 24, 53, 45, 12, 24, 90};
-	bitree<int> tree;
-
-	cout << "table             : ";
-	show_array(table, size);
-
-	tree.sorted_construct(table, size);
 	cout << "preorder_traverse : ";
 	tree.preorder_traverse();
 
@@ -41,6 +34,20 @@ test_BST(void)
 
     cout << "level_traverse    : ";
 	tree.level_traverse();
+}
+
+static void
+test_BST(void)
+{
+	const int size = 9;
+	int i, d, table[size] = {45, 24, 53, 45, 12, 24, 90, 28, 27};
+	bitree<int> tree;
+
+	cout << "table             : ";
+	show_array(table, size);
+
+	tree.sorted_construct(table, size);
+	show_tree(tree);
 
     cout << "node_num          : " << tree.node_num() << endl;
 	cout << "levels            : ";
@@ -52,15 +59,7 @@ test_BST(void)
 	cin >> d;
 	if(tree.sorted_insert(d))
 	{
-		cout << "preorder_traverse : ";
-		tree.preorder_traverse();
-
-		cout << "inorder_traverse  : ";
-		tree.inorder_traverse();
-
-		cout << "level_traverse    : ";
-		tree.level_traverse();
-
+		show_tree(tree);
 		cout << "levels            :";
         for(i = 0; i < size; ++i)
           cout << "(" << table[i] << ", level=" << tree.get_level(table[i]) << ")";
@@ -73,6 +72,13 @@ test_BST(void)
       cout << "found" << endl;
     else
       cout << "not found" << endl;
+
+	cout << "delete node : ";
+	cin >> d;
+	if(tree.sorted_delete(d))
+	{
+		show_tree(tree);
+	}
 }
 #endif
 
