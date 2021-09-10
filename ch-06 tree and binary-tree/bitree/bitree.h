@@ -11,6 +11,10 @@ using std::cout;
 using std::endl;
 using std::string;
 
+#ifndef MAX_NUM_NODE 
+#define MAX_NUM_NODE 128
+#endif
+
 
 template<typename Data>
 void show_ds(const Data * ds, int ct);
@@ -41,8 +45,21 @@ class bitree
 				return os;
 			}
 		};
+        template<typename Data1>
+        struct Edge
+        {
+            Data1 tail, head;
+            Edge(const Data1 &t, const Data1 & h) : tail(t), head(h){}
+            Edge(){}
+            friend std::ostream & operator<<(std::ostream & os, const Edge & e)
+            {
+                os << "(" << e.tail << "," << e.head << ")";
+                return os;
+            }
+        };
 	public:
 		typedef Node<Data> node;
+        typedef Edge<Data> edge;
 	private:
 		node *_root;
 		int _node_num;
@@ -98,11 +115,14 @@ class bitree
 		static int count(int n) {return fact(2 * n) / fact(n) /fact(n + 1);}
 		/** 构造次优查找树的*/
 		void second_optimal(const Data * table, float * w, int size);
+        /** 输出所有节点的层次*/
         int get_levels(int *level) const;
-        /** 无重复节点*/
+        /** 无重复节点：输出节点D的层次*/
         int get_level(const Data & d) const;
         /** 节点数量*/
         int node_num(void) const {return _node_num;}
+        /** 按层次输出边*/
+        int get_edges(edge * E, int size);
 };
 
 /** root first*/
@@ -535,6 +555,40 @@ sorted_delete(node * & p)
         delete s;
     }
     --_node_num;
+}
+
+/** return number of edge*/
+template <typename Data>
+int bitree<Data>::
+get_edges(edge * E, int size)
+{
+    int i = 0;
+    if(size < _node_num -1)
+      return 0;
+    
+    if(_root == nullptr) 
+    {
+        return 0;
+    }
+    sqqueue<const node *> queue(_node_num);
+    const node * p;
+
+    queue.enqueue(_root);//enqueue root node
+    while(!queue.is_empty())
+    {
+        queue.dequeue(p);
+        if(p->lchild) 
+        {
+            E[i++] = edge(p->data, p->lchild->data);
+            queue.enqueue(p->lchild);
+        }
+        if(p->rchild) 
+        {
+            E[i++] = edge(p->data, p->rchild->data);
+            queue.enqueue(p->rchild);
+        }
+    }
+    return i;
 }
 
 #endif

@@ -20,10 +20,8 @@ void show_array(const T * a, int size)
     cout << endl;
 }
 
-#define BST 1
-#ifdef BST
 template<typename Tree>
-static void 
+void 
 show_tree(Tree & tree)
 {
 	cout << "preorder_traverse : ";
@@ -35,6 +33,9 @@ show_tree(Tree & tree)
     cout << "level_traverse    : ";
 	tree.level_traverse();
 }
+
+//#define BST 1
+#ifdef BST
 
 static void
 test_BST(void)
@@ -82,10 +83,34 @@ test_BST(void)
 }
 #endif
 
+#define EDGE 1
+#ifdef EDGE
+static void 
+test_edge(void)
+{
+    const int size = 9;
+    int ret, table[size] = {45, 24, 53, 45, 12, 24, 90, 28, 27};
+	bitree<int> tree;
+    bitree<int>::edge E[size]; 
+
+	cout << "table             : ";
+	show_array(table, size);
+
+	tree.sorted_construct(table, size);
+	show_tree(tree);
+    ret = tree.get_edges(E, size);
+    cout << "edges             : ";
+    show_array(E, ret);
+}
+#endif
+
 int main(int ac, char * av[])
 {
 #ifdef BST
 	test_BST();
+#endif
+#ifdef EDGE
+	test_edge();
 #endif
 	return 0;
 }
