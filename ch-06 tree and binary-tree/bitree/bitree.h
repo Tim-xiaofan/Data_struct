@@ -60,27 +60,21 @@ class bitree
 	public:
 		typedef Node<Data> node;
         typedef Edge<Data> edge;
-	private:
+	protected:
 		node *_root;
 		int _node_num;
+	protected:
+		static void show(const Data & d){cout << d <<" ";}
 	private:
 		template<typename UnaryOperator>
 		void preorder_traverse(node * root, const UnaryOperator & op) ;
 		template<typename UnaryOperator>
 		void inorder_traverse(node * root, const UnaryOperator & op) ;
-		template<typename Cmp>
-		void cmp_insert(node * & root, const Data & d, const Cmp & cmp);
-		static void show(const Data & d){cout << d <<" ";}
 		static Data default_cmp(const Data & a, const Data & b) {return (a - b);};
 		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op) ;
 		void second_optimal(node * & T, const Data * table, float *sw, int low, int high);
-        template<typename key_t, typename cmp_t>
-        bool sorted_search(const node * root, const key_t & k, const cmp_t & cmp) const;
-        template<typename key_t = Data, typename cmp_t>
-        bool sorted_delete(node * & root, const key_t &k , const cmp_t & cmp);
-        void sorted_delete(node * & p);
 	public:
 		bitree():_root(nullptr), _node_num(0){}
 		//template<typename UnaryOperator>
@@ -93,19 +87,6 @@ class bitree
 		void inorder_traverse(const UnaryOperator & op = show);
 		template<typename UnaryOperator = void(*)(const Data &)>
 		void level_traverse(const UnaryOperator & op = show);
-		
-        /** 构造二叉排序树:重复节点直接舍弃*/
-		template<typename Cmp = Data(*)(const Data &, const Data &)>
-		void sorted_construct(const Data * ds, int ct, const Cmp & cmp = default_cmp);
-		/** 在排序二叉树插入新的节点 */
-		template<typename Cmp = Data(*)(const Data &, const Data &)>
-		bool sorted_insert(const Data & d, const Cmp & cmp = default_cmp);
-        /** 在排序二叉树搜寻key为k的节点*/
-        template<typename key_t = Data, typename cmp_t = Data(*)(const Data &, const Data &)>
-        bool sorted_search(const key_t & k, const cmp_t & cmp = default_cmp) const;
-        /** 排序二叉树：删除key为k的节点*/
-        template<typename key_t = Data, typename cmp_t = Data(*)(const Data &, const Data &)>
-        bool sorted_delete(const key_t &k , const cmp_t & cmp = default_cmp);
 		
         /** preorder and inorder create*/
 		bool preinorder_construct(const Data * pre, const Data *in, int ct){_node_num = ct;return preinorder_construct(_root, pre, in , ct);}
@@ -159,44 +140,6 @@ inorder_traverse(node *root, const UnaryOperator & op)
 }
 
 
-template<typename Data>
-template<typename Cmp>
-void bitree<Data>:: 
-sorted_construct(const Data * ds, int ct, const Cmp & cmp)
-{
-	int i;
-
-	for(i = 0; i < ct; i++)
-	  cmp_insert(_root, ds[i], cmp);
-}
-
-template<typename Data>
-template<typename Cmp>
-void bitree<Data>:: 
-cmp_insert(node * & root, const Data & d, const Cmp & cmp)
-{
-	if(root == nullptr)
-	{ 
-		_node_num ++;//really inserted
-		root = new node;
-		root->data = d;
-		//cout << endl;
-		return ;
-	}
-	Data ret = cmp(d, root->data);
-	if(ret < 0)//insert into lchild
-	{
-		cmp_insert(root->lchild, d, cmp);
-	}
-	else if(ret > 0)
-	{
-		cmp_insert(root->rchild, d, cmp);//insert into rchild
-	}
-	else 
-	{
-		cout << "duplicated element : " << d << endl;
-	}
-}
 
 template<typename Data>
 bool bitree<Data>:: 
@@ -443,120 +386,7 @@ get_level(const Data & d) const
     //cout << endl;
 }
 
-template<typename Data>
-template<typename Cmp>
-bool bitree<Data>::
-sorted_insert(const Data & d, const Cmp & cmp)
-{
-	int old = _node_num;
-	cmp_insert(_root, d, cmp);
-	return (old != _node_num);
-}
-
-template<typename Data>
-template<typename key_t, typename cmp_t>
-bool bitree<Data>::
-sorted_search(const key_t & key, const cmp_t & cmp) const
-{
-    return sorted_search(_root, key, cmp);
-}
         
-template<typename Data>
-template<typename key_t, typename cmp_t>
-bool bitree<Data>::
-sorted_search(const node * root, const key_t & key, const cmp_t & cmp) const
-{
-    if(root)
-    {
-        if(cmp(root->data, key) == 0)//root
-        {
-            return true;
-        }
-
-        if(root->lchild)//lchild
-        {
-            if(sorted_search(root->lchild, key, cmp)) 
-              return true;
-        }
-
-        if(root->rchild)//rchild
-        {
-            if(sorted_search(root->rchild, key, cmp)) 
-              return true;
-        }
-    }
-    return false;;
-}
-
-template<typename Data>
-template<typename key_t, typename cmp_t>
-bool bitree<Data>:: 
-sorted_delete(const key_t &k, const cmp_t & cmp)
-{
-    return sorted_delete(_root, k, cmp);
-}
-
-template<typename Data>
-template<typename key_t, typename cmp_t>
-bool bitree<Data>:: 
-sorted_delete(node * & root, const key_t &k, const cmp_t & cmp)
-{
-    if(root)
-    {
-		//cout << "root = " << *root << endl;
-        if(cmp(k, root->data) == 0) 
-        {
-            sorted_delete(root);
-            return true;
-        }
-        else if(cmp(k, root->data) < 0) 
-          return sorted_delete(root->lchild, k, cmp);
-        else 
-          return sorted_delete(root->rchild, k, cmp);
-    }
-    return false;
-}
-
-/** sorted bitree：delete node p*/
-template<typename Data>
-void bitree<Data>::
-sorted_delete(node * & p)
-{
-    node * q, *s;
-    if(!p) return; 
-	//cout << "delete p = " << *p << endl;
-
-	if(!p->lchild)//empty lchild
-    {
-        q = p; 
-        p = p->rchild;
-        delete q;
-    }
-    else if(!p->rchild)// empty rchild
-    {
-        q = p;
-        p = p->lchild;
-        delete q;
-    }
-    else
-    {
-        /** 寻找前驱s*/
-        q = p;
-        s = p->lchild;
-        while(s->rchild)
-        {
-             q = s;
-             s = s->rchild;
-        }
-		//cout << "q = " << *q << endl;
-		//cout << "s = " << *s << endl;
-        p->data = s->data;//s替换p
-        if(q != p) q->rchild = s->lchild; 
-        else q->lchild = s->lchild;//旋转
-        delete s;
-    }
-    --_node_num;
-}
 
 /** return number of edge*/
 template <typename Data>

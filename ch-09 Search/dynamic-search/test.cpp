@@ -4,7 +4,7 @@
 #include <iomanip>
 #include <string>
 #include <cstdlib>
-#include "bitree.h"
+#include "sorted_bitree.h"
 
 using std::cout;
 using std::cin;
@@ -42,7 +42,7 @@ test_BST(void)
 {
 	const int size = 9;
 	int i, d, table[size] = {45, 24, 53, 45, 12, 24, 90, 28, 27};
-	bitree<int> tree;
+	sorted_bitree<int> tree;
 
 	cout << "table             : ";
 	show_array(table, size);
@@ -90,8 +90,8 @@ test_edge(void)
 {
     const int size = 10;
     int ret, table[size] = {45, 24, 53, 45, 12, 24, 90, 28, 27, 49};
-	bitree<int> tree;
-    bitree<int>::edge E[size]; 
+	sorted_bitree<int> tree;
+    sorted_bitree<int>::edge E[size]; 
 
 	cout << "table             : ";
 	show_array(table, size);
