@@ -35,8 +35,9 @@ class bitree
 		struct Node
 		{
 			Data1 data;
+			int bf;//平衡因子
 			Node *lchild, *rchild;
-			Node():lchild(nullptr), rchild(nullptr){}
+			Node():bf(0), lchild(nullptr), rchild(nullptr){}
 			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
 			{
 				os << "(addr=" << (void *)&nd << ", data=" << nd.data

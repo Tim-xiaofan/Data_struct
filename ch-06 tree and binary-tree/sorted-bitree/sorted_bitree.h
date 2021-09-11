@@ -25,6 +25,8 @@ class sorted_bitree : public bitree<Data>
 		typedef typename base::node node;
 		typedef typename base::edge edge;
 	protected:
+		using base::_root;
+		using base::_node_num;
 		template<typename Cmp>
 		void cmp_insert(node * & root, const Data & d, const Cmp & cmp);
 		template<typename key_t, typename cmp_t>
@@ -33,6 +35,7 @@ class sorted_bitree : public bitree<Data>
 		template<typename key_t, typename cmp_t>
 		bool sorted_delete(node * & root, const key_t &k , const cmp_t & cmp);
         void sorted_delete(node * & p);
+		//node * & root(void) {return base::_root;}
 	public:
 		sorted_bitree():base(){}
 		/** 构造二叉排序树:重复节点直接舍弃*/
@@ -56,7 +59,7 @@ cmp_insert(node * & root, const Data & d, const Cmp & cmp)
 {
 	if(root == nullptr)
 	{
-		base::_node_num ++;//really inserted
+		_node_num ++;//really inserted
 		root = new node;
 		root->data = d;
 		//cout << endl;
