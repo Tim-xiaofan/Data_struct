@@ -88,8 +88,8 @@ test_BST(void)
 static void 
 test_edge(void)
 {
-    const int size = 9;
-    int ret, table[size] = {45, 24, 53, 45, 12, 24, 90, 28, 27};
+    const int size = 10;
+    int ret, table[size] = {45, 24, 53, 45, 12, 24, 90, 28, 27, 49};
 	bitree<int> tree;
     bitree<int>::edge E[size]; 
 
@@ -101,6 +101,7 @@ test_edge(void)
     ret = tree.get_edges(E, size);
     cout << "edges             : ";
     show_array(E, ret);
+	tree.show_edges();
 }
 #endif
 

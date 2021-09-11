@@ -53,7 +53,7 @@ class bitree
             Edge(){}
             friend std::ostream & operator<<(std::ostream & os, const Edge & e)
             {
-                os << "(" << e.tail << "," << e.head << ")";
+                os << e.tail << " " << e.head;
                 return os;
             }
         };
@@ -122,7 +122,8 @@ class bitree
         /** 节点数量*/
         int node_num(void) const {return _node_num;}
         /** 按层次输出边*/
-        int get_edges(edge * E, int size);
+        int get_edges(edge * E, int size) const;
+		void show_edges(void) const;
 };
 
 /** root first*/
@@ -560,7 +561,7 @@ sorted_delete(node * & p)
 /** return number of edge*/
 template <typename Data>
 int bitree<Data>::
-get_edges(edge * E, int size)
+get_edges(edge * E, int size) const
 {
     int i = 0;
     if(size < _node_num -1)
@@ -589,6 +590,20 @@ get_edges(edge * E, int size)
         }
     }
     return i;
+}
+
+template<typename Data>
+void bitree<Data>::
+show_edges(void) const
+{
+	edge E[MAX_NUM_NODE];
+	int ret, i;
+
+	ret = get_edges(E, MAX_NUM_NODE);
+	cout << "edges : ";
+	for(i = 0; i < ret; ++i)
+	  cout << E[i] << "  ";
+	cout << endl;
 }
 
 #endif
