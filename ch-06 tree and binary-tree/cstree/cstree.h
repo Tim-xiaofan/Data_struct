@@ -22,7 +22,7 @@ class cstree
 		struct Node
 		{
 			T1 data;
-			struct Node * firstchild, *nextsibling;
+			struct Node * firstchild, *nextsibling;//孩子，孩子的兄弟
 			Node(Node * fc = nullptr, Node * fs = nullptr):
 				firstchild(fc), nextsibling(fs){}
 			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
