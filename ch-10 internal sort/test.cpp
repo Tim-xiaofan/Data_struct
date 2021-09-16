@@ -20,8 +20,24 @@ test_insert(void)
 	li.show();
 }
 
+void 
+test_binsert(void)
+{
+	const int size = 9;
+	int A[size] = {38, 49, 65, 97, 76, 13, 27, 17, 99};
+	SqList<int> li(16);
+	li.append_bulk(A, size);
+	cout << "origin : ";
+	li.show();
+
+	binsert_sort(li);
+	cout << "sorted : ";
+	li.show();
+}
+
 int main(int ac, char *av[])
 {
 	test_insert();
+	test_binsert();
 	return 0;
 }

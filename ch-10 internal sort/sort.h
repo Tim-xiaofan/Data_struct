@@ -75,4 +75,42 @@ void insert_sort(sqtable_t & table, bool up = true)
 	}
 }
 
+template<typename sqtable_t>
+void binsert_sort(sqtable_t & table, bool up = true)
+{
+	int len = table.length(), i, j , low = 0, high, mid;
+	typename sqtable_t::elem_type tmp;
+
+	if(up)
+	{
+		//cout << "enter insert_sort\n";
+		//cout << "len : " << len << endl;
+		i = 1;
+		while (i < len && table[i] > table[i -1]) 
+		{
+			//cout << "i : " << i << endl;
+			++i;
+		}
+		//cout << "i = " << i << endl;
+		for(j = i; j < len; ++j)
+		{
+			tmp  = table[j];
+			high = i - 1;
+			low = 0;
+			while(low <= high)
+			{
+				mid = (low + high) / 2;
+				if(tmp < table[mid]) high = mid -1;
+				else low = mid + 1;
+			}
+			cout << "high + 1 = " << high + 1 << " : "; 
+			move(table, high + 1, i);
+			table[high + 1] = tmp;
+			++i;
+			cout << "after inserting " << tmp << ": ";
+			table.show();
+		}
+	}
+}
+
 #endif
