@@ -162,7 +162,7 @@ void twoway_insert_sort(sqtable_t & table, bool up = true)
 	d[0] = table[0];  
 	first =  0;
 	last = 1;
-	
+
 	if(up)
 	{
 		for(i = 1; i < length; ++i)
@@ -258,6 +258,79 @@ void twoway_insert_sort(sqtable_t & table, bool up = true)
 		{
 			table[i] = d[j];
 		}
+	}
+}
+
+template<typename sqtable_t>
+void show(sqtable_t & table, int dk, int start)
+{
+	int i, len = table.length();
+	for(i = start; i < len ; i += dk)
+	  cout << table[i] << " ";
+	cout << endl;
+}
+
+template<typename sqtable_t>
+void shell_insert(sqtable_t & table, int dk, int start, bool up = true)
+{
+	int i = 0, j, k, l, len = table.length();
+	typename sqtable_t::elem_type tmp;
+	int count = (len - 1 - start) / dk;
+	//int end = count * dk + start;
+	//cout << "****" << endl;
+	//cout << "start=" << start;
+	//cout << ", end=" << end;
+	//cout << ", len=" << len;
+	//cout << ", dk=" << dk;
+	//cout << ", count=" << count << ": ";
+	//show(table, dk, start);
+
+	if(!up) return;
+
+	while(i < count)
+	{
+		j = start + (i + 1) * dk;//有序表的后一个节点
+		tmp = table[j];
+		for(k = start; k < j; k += dk)//在有序表中寻找插入位置
+		{
+			if(tmp < table[k])//insert into location k
+			{
+				for(l = j; l > k; l-=dk)//move
+				  table[l] = table[l - dk];
+				table[k] = tmp;
+				break;
+			}
+		}
+		++i;
+		//cout << "after inserting("<< tmp <<") : ";
+		//show(table, dk, start);
+		//table.show();
+	}
+}
+
+/**
+  对顺序表L作一次希尔插人排序
+ */
+template<typename sqtable_t>
+void shell_insert(sqtable_t & table, int dk,  bool up = true)
+{
+	int i, len = table.length();
+
+	for(i = 0; i < len - dk; ++i)
+	  shell_insert(table, dk, i, up);//子表i的插入排序
+}
+
+template<typename sqtable_t>
+void shell_sort(sqtable_t & table, int dlta[], int t, bool up = true)
+{
+	int i;
+
+	for(i = 0; i < t; ++i)
+	{
+		//cout << "--------------" << i << "-------------" << endl;
+		shell_insert(table, dlta[i], up);//一趟增量为dlta[i]的插入排序
+		cout << "after shell(" << i + 1 << ") : ";
+		table.show();
 	}
 }
 #endif

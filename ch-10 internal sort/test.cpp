@@ -49,12 +49,29 @@ void test_2way(void)
 	li.show();
 }
 
+void test_shell(void)
+{
+	const int size = 10, t = 3;
+	int A[size] = {49, 38, 65, 97, 76, 13, 27, 49, 55, 4};
+	int dlta[t] = {5, 3, 1};
+	SqList<int> li(16);
+	li.append_bulk(A, size);
+	cout << "origin : ";
+	li.show();
+
+	shell_sort(li, dlta, t);
+	cout << "sorted : ";
+	li.show();
+}
+
 int main(int ac, char *av[])
 {
-	test_insert();
+	//test_insert();
+	//cout << "---------\n";
+	//test_binsert();
+	//cout << "---------\n";
+	//test_2way();
 	cout << "---------\n";
-	test_binsert();
-	cout << "---------\n";
-	test_2way();
+	test_shell();
 	return 0;
 }
