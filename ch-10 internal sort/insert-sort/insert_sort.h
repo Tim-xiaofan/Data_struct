@@ -1,6 +1,6 @@
 /** 20210915, zyj, GuangDong*/
-#ifndef _SORT
-#define _SORT
+#ifndef _INSERT_SORT
+#define _INSERT_SORT
 #include <iostream>
 using std::cout;
 using std::endl;

@@ -88,3 +88,5 @@ ch-06 tree and binary-tree/trie-tree/test
 ch-06 tree and binary-tree/dl-tree/test
 ch-09 Search/hashtable/test
 ch-10 internal sort/test
+ch-10 internal sort/insert-sort/test
+ch-10 internal sort/quick-sort/test

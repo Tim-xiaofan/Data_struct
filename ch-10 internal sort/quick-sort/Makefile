@@ -5,7 +5,7 @@
 APP = test
 
 # all source are stored in SRCS-y
-SRCS-y := test.cpp sort.h
+SRCS-y := test.cpp quick_sort.h
 
 ifeq ($(OS),Windows_NT)
 		PLATFORM="Windows"
