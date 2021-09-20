@@ -94,7 +94,4 @@ ch-09 search/hashtable/test
 ch-09 search/static-search/test
 ch-09 search/dynamic-search/test
 ch-10 internal sort/select-sort/test
-ch-09 search/dynamic-search/test
-ch-09 search/hashtable/test
-ch-09 search/static-search/test
-ch-10 internal sort/select-sort/test
+ch-10 internal sort/merge-sort/test

@@ -86,6 +86,7 @@ class SqList
 		/** iterator methods*/
 		input_iterator begin(void) const {return &_items[0];}
 		input_iterator end(void) const {return &_items[_length];}
+        Item * get_base(void) {return _items;}
 	private:
 		bool out_bound(int pos)const{ return (pos < 0 || pos >= _length);}
 };

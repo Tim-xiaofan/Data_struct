@@ -52,6 +52,9 @@ void heap_adjust(sqtable_t & H, int s, int m, bool up = true)
     H[s] = rc;
 }
 
+/**
+  O(nlogn)
+ */
 template <typename sqtable_t>
 void heap_sort(sqtable_t & H, bool up = true)
 {
