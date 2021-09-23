@@ -11,11 +11,42 @@ class k_merge
     private:
         loser_tree _ls;
         external _b;
-        void create_loser_tree(const external & b);
+        T _max, _min;
+        void create_loser_tree();
         void adjust(int i);
     public:
+        k_merge(const T & max, const T & min):
+            _max(max), _min(min){}
+        template<typename input_t, typename output_t>
+        void sort(const input_t & input, const output_t & output);
 };
 
+
+/**
+  利用败者树ls将编号从0到k-1的上个输入归并段中的记录归并到熟出归并度。
+  b[0]至b[k-1]为败者树上的k个叶子结点，分别存放k个输人归并度中当前记录的关键字。
+ */
+template<typename T, int k>
+template<typename input_t, typename output_t>
+void k_merge<T, k>::
+sort(const input_t & input, const output_t & output)
+{
+    int i, q;
+
+    for(i = 0; i <k; ++i)
+      input(_b[i], i);
+
+    create_loser_tree();
+    while(_b[_ls[0]] != _max)
+    {
+        q = _ls[0];
+        output(q);
+
+        input(_b[q], q);
+        adjust(q);
+    }
+    output(_max);
+}
 
 /** 沿从叶子结点b[s]到根结点ls[0]的路径调整败者树*/
 template<typename T, int k>
@@ -46,18 +77,17 @@ adjust(int s)
   */
 template<typename T, int k>
 void k_merge<T, k>::
-create_loser_tree(const external & b)
+create_loser_tree()
 {
     int i;
 
-    for(i = 0; i < k + 1; ++i)
-      _b[i] = b[i];
+    _b[k] = _min;
 
     /** 设置ls中"败者"的初值*/
     for(i = 0; i < k; ++i)
       _ls[i] = k;
 
-    /** 次从b[k-1], b[k-2],...,b[0]出发调*/
+    /** 次从b[k-1], b[k-2],...,b[0]出发调整败者*/
     for(i = k -1; i >= 0; --i) 
       adjust(_ls, i);
 }
