@@ -1,5 +1,7 @@
 #attention:must source at same path of this file
 CPLUS_INCLUDE_PATH=`pwd`/ch-02\ linear\ lists/node/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/node/
+CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/iterator/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/list-adt/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/algorithm/
 CPLUS_INCLUDE_PATH+=:`pwd`/ch-02\ linear\ lists/sqlist-adt/
