@@ -23,7 +23,7 @@ static item is1[3] = {
 	{22, 7},
 	{-9, 8}};
 
-int main()
+int main(int ac, char * av[])
 {
 	using namespace std;
 	P p(is, 4), p1(is1, 3), p2, p3;
