@@ -19,7 +19,7 @@ endif
 
 # Add flag
 LISTFLAGS += -I../list-adt -I../algorithm
-CFLAGS += -g -Wall -Wl,-rpath=../list-adt
+CFLAGS += -g -Wall -Wl,-rpath=../list-adt -std=c++11
 CC = g++
 
 $(APP): $(SRCS-y) Makefile 

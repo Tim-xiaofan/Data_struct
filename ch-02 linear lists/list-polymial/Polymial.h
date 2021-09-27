@@ -87,7 +87,7 @@ class Polymial: private List<Item>
 		/** TODO:Polymial * item */
 		Polymial operator*(const Item & i) const = delete;
 		/** TODO:item * Polymial */
-		friend operator*(const Item & i, const Polymial & P) const = delete;
+		//friend Polymial & operator*(const Item & i, const Polymial & P) const = delete;
 		int length() const {return base::length();}
 		int size() const {return base::size();}
 		bool puts(const Item *is, int ct);
