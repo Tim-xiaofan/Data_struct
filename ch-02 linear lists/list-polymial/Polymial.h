@@ -146,7 +146,7 @@ operator=(Polymial && P)
 	return *this;
 }
 
-/**  time:O(n + n) **/
+/**  time:O(n + m) **/
 template<typename Item>
 Polymial<Item> Polymial<Item>::
 operator+(const Polymial & P) const
