@@ -16,13 +16,6 @@ bool move(Tower & a, int no, Tower & b)
 template <typename Tower>
 void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
 {
-	//std::cout << "----------------\n";
-	//std::cout << "ct : " << mv_ct << std::endl;
-	//std::cout << "x : ";x.show();
-	//std::cout << "y : ";y.show();
-	//std::cout << "z : ";z.show();
-	//std::cout << "\n----------------\n";
-
 	if(n == 1)
 	{
 		move(x, 1, z);

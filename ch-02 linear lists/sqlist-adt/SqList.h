@@ -251,6 +251,7 @@ show(const std::string & info)const
 	if(is_empty())
 	{
 		//printf("EMPTY LIST!\n");
+        std::cout << "\n";
 		return;
 	}
 

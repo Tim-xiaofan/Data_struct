@@ -1,5 +1,5 @@
 /** 20210404 19:04, zyj, GuangDong*/
-//evaluate_expression.cpp -- get result of expression
+//evaluate_expression.cpp -- caculate  the result of expression
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -65,11 +65,13 @@ class expression
 						const item_type & b);
 };
 
+/** 运算集合*/
 const std::string expression::optrs[expression::NB_OPTRS] = {"+", "-", "*", "/","(", ")","#"};
 const expression::item_type expression::delimiter("#", expression::OPTR);
 const int expression::OPND = expression::item_type::OPND;
 const int expression::OPTR = expression::item_type::OPTR;
 const int expression::UNKNOWN = expression::item_type::UNKNOWN;
+/** 优先关系表*/
 const int expression::precede_tbl[NB_OPTRS][NB_OPTRS] = 
 {
 	{HIGH, HIGH, LOW, LOW, LOW, HIGH, HIGH},
@@ -191,26 +193,26 @@ bool evaluate_expression(const Expression & expr, Operand & result)
 
 	for(i = 0; i < count; i++)
 	{
-		std::cout << "#0---------------\n";
+		std::cout << "#"<< i <<"---------------\n";
 		std::cout << "cur = " << expr[i] << std::endl;
-		if((expr[i]).type() == Expression::OPND)/** It's operand*/
+		if((expr[i]).type() == Expression::OPND)/** It's operand, just push into operand stack*/
 		  opnd.push(expr[i]);
 		else/** It's operator*/
 		{
-			optr.get_top(top);
+			optr.get_top(top);//peek(not push top from statck)
 			switch(Expression::precede(top, expr[i]))
 			{
 				case Expression::LOW: /** top < current*/
 					optr.push(expr[i]);
 					break;
-				case Expression::EQUAL: /** rm bracket*/
+                case Expression::EQUAL: /** equal : rm bracket*/
 					optr.pop(theta);
 					break;
 				case Expression::HIGH:/** top > current*/
 					if(!opnd.pop(b) || !opnd.pop(a))
 					  return false;
 					optr.pop(theta);
-					/** get result and push result inito operator stack*/
+					/** get result and push result into operator stack*/
 					opnd.push(Expression::operator_theta(theta, a, b));
 					--i;
 					//optr.push(expr[i]);
@@ -219,9 +221,11 @@ bool evaluate_expression(const Expression & expr, Operand & result)
 					return false;/** error*/
 			}
 		}
+        std::cout << "operands : ";
 		opnd.show();
+        std::cout << "operator : ";
 		optr.show();
-		std::cout << "#1---------------\n";
+		std::cout << "#"<< i <<"---------------\n";
 	}
 	opnd.get_top(result);
 	return true;
@@ -232,13 +236,14 @@ int main()
 	using namespace std;
 
 	int i;
-	expression expr("(7/ + 8) * (9 + 5) / 2    # ");
-	cout << "(7/ + 8) * (9 + 5) / 2   #  " << endl;
+	expression expr("(7/2 + 8) * (9 + 5) / 2    # ");
+	cout << "expression : (7/2 + 8) * (9 + 5) / 2   #  " << endl;
 	expr.show();
 	cout << "valid : " << std::boolalpha << expr.is_valid() << endl;
 	for(i = 0; i < expr.count(); ++i)
 	  cout << expr[i] << " ";
 	cout << endl;
+    cout << "precede table : " << endl;
 	expression::show_tbl();
 	item<string> a("12", item<string>::OPND);
 	item<string> b("18", item<string>::OPND);

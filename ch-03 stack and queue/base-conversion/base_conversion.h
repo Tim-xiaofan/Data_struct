@@ -64,7 +64,7 @@ conversion(T t) const
 		remainder = t % _mode;
 		//std::cout << "push : " << remainder << std::endl;
 		//stack.push('0' + remainder);
-		stack.push(elements[remainder]);
+		stack.push(elements[remainder]);//当前余数入栈
 		t = quotient;
 	}
 

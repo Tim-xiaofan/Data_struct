@@ -78,17 +78,14 @@ match(const std::string & bkts)
 	for(i = 0; i < len; i++)
 	{
 		cur  = bkts[i];
-		//std::cout << "cur = " << cur << std::endl;
-		if(is_right(cur))
+		if(is_right(cur))//right
 		{/** check if matches top one*/
 			stack.pop(top);
 			if(top != get_left(cur))/** not matched*/
 			  return false; 
 		}
-		else/** just push into stcak*/
+		else/** left : just push into stcak*/
 		  stack.push(cur);
-		//std::cout << "stack : ";
-		//stack.show();
 	}
 	return stack.is_empty();
 }
