@@ -94,14 +94,10 @@ row_insert(const pnode & pn)
 {
 	pnode & list = _rlists[pn->i];
 	pnode cur;
-	//int pos = 0;
-	/** 0-->1 or before head*/
 	if(list == nullptr || pn->j < list->j)
 	{
-		//cout << "0-->1 or before head\n";
 		pn->right = list;
 		list = pn;
-		//cout << "#1 : " << *list << endl;
 	}
 	else
 	{/** n-->n+1 */

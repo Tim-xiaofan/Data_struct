@@ -77,18 +77,22 @@ int main()
 	M.show();
 
 	/** test transpose algorithm one*/
+	cout << "transpose :" << endl;
 	matrix_i N(7, 6, tu);
 	if(M.transpose(N))
 	  N.show();
 
 	/** test transpose algorithm two*/
 	int num[7], cpot[7], cols;
+	cout << "fast transpose :" << endl;
+	cout << "cols : " << endl;
 	cols = M.get_num(num);
 	for(i = 0; i < cols; ++i)
 	  cout << num[i] << " ";
 	cout << endl;
 
 	cols = M.get_cpot(cpot, num);
+	cout << "cpot : " << endl;
 	for(i = 0; i < cols; ++i)
 	  cout << cpot[i] << " ";
 	cout << endl;
@@ -103,7 +107,7 @@ int main()
 	cout << "rpos : ";
 	M1.show_rpos();
 
-	SEPARATE("test crosslist_smatrix");
+	SEPARATE("\n\n---------------test crosslist_smatrix-------------");
 	crosslist_matrix<int> cl(3, 4);
 	crosslist_matrix<int> cl1(*a2);
 	cout << "show_rlists: \n";

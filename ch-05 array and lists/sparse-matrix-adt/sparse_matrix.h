@@ -1,7 +1,7 @@
 /** 20210409 09:04, zyj, GuangDong */
 // sparse_matrix.h -- triple list implement
-#ifndef SPARSE_MATRIX_H
-#define SPARSE_MATRIX_H
+#ifndef _SPARSE_MATRIX_H
+#define _SPARSE_MATRIX_H
 #include <iostream>
 #include <iomanip>
 #include <cstring>
@@ -30,10 +30,10 @@ std::ostream & operator<<(std::ostream & os, const triple<U> & trp)
 }
 
 template<typename T>/** value type*/
-class sparse_matrix : public SqList<triple<T>>
+class sparse_matrix : private SqList<triple<T>>
 {
 	private:
-		typedef SqList<triple<T>> base;
+		typedef SqList<triple<T> > base;
 	protected:
 		typedef triple<T> item;
 	private:
@@ -140,6 +140,8 @@ template<typename T>
 bool sparse_matrix<T>:: 
 transposex(sparse_matrix & N)const
 {
+	int pos, pos1, col;
+	int *num = new int[_n], *cpot = new int[_n];
 	/** TODO: to suport that target matrix is matrix self*/
 	if(N._m != _n || N._n != _m || N._tu < _tu || &N == this)
 	{
@@ -148,14 +150,12 @@ transposex(sparse_matrix & N)const
 	}
 
 	/** FIXME: need to catch the exception of new operator*/
-	int *num = new int[_n], *cpot = new int[_n];
 	if(get_num(num) == -1 || get_cpot(cpot, num) == -1)
 	{
 		std::cerr << "cannot get num or cpot\n";
 		return false;
 	}
 
-	int pos, pos1, col;
 	for(pos = 0; pos < _tu; ++pos)
 	{
 		col = base::operator[](pos).j;
@@ -163,7 +163,7 @@ transposex(sparse_matrix & N)const
 		N[pos1].i = base::operator[](pos).j; 
 		N[pos1].j = base::operator[](pos).i; 
 		N[pos1].e = base::operator[](pos).e;
-		cpot[col]+=1;
+		cpot[col]+=1;//TIPS : next element's location in this column(=col)
 	}
 	delete num;
 	delete cpot;

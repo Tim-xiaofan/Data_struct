@@ -94,7 +94,7 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 	if(M.tu() * N.tu() == 0)
 	  return true;
 
-	ctemp = new int[n2];
+	ctemp = new int[n2];//Q[c][j]的一部分
 	for(mrow = 0; mrow < m1; ++mrow)
 	{
 		int mfirst, mlast, nfirst, nlast, mpos, npos, ccol;
@@ -102,18 +102,20 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		/** initialize */
 		for(ccol = 0; ccol < n2; ++ccol)
 		  ctemp[ccol] = 0;
-		mfirst = M.row_first(mrow);
+		mfirst = M.row_first(mrow);//M当前行的第一个元素
 		mlast = M.row_last(mrow);
-		std::cout << "-----------start-----------\n";
-		for(mpos = mfirst; mpos < mlast; ++mpos)
+		std::cout << "-----------row "<< mrow <<"-----------\n";
+		for(mpos = mfirst; mpos < mlast; ++mpos)//处理M的mrow一行
 		{
 			nrow = M[mpos].j;/** get row of coorresponding in N*/
-			nfirst = N.row_first(nrow);
+			nfirst = N.row_first(nrow);//N当前行的第一个元素
 			nlast = N.row_last(nrow);
 			//std::cout << "N : [" << nfirst << ", "<< nlast << ")\n";
 			for(npos = nfirst; npos < nlast; ++npos)
 			{
+				/** */
 				std::cout << "{" << M[mpos] << " * " << N[npos] << "} "; 
+				/** 设置累加器ctemp[N的列值]保存Q矩阵每行的值，结束后将ctemp中的值赋给C矩阵*/
 				ctemp[N[npos].j]+= M[mpos].e * N[npos].e;
 			}
 			std::cout << "\n";
@@ -124,7 +126,7 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 			a2.set_value(ctemp[ccol], mrow, ccol);
 		}
 		a2_show(a2);
-		std::cout << "\n-----------end-----------\n\n";
+		std::cout << "-----------row "<< mrow <<"-----------\n";
 	}
 	delete [] ctemp;
 	return true;
