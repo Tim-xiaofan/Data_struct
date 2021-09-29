@@ -9,6 +9,7 @@
 *.data
 *.old
 *.dSYM
+*__pycache__
 ch-02 Lists/List ADT/list
 ch-02 Lists/List ADT/core
 ch-02 Lists/list-union/list_union
@@ -97,3 +98,4 @@ ch-10 internal sort/select-sort/test
 ch-10 internal sort/merge-sort/test
 ch-10 internal sort/radix-sort/test
 ch-11 external sort/k-merge/test
+ch-05 array and lists/sparse-matrix-adt/test
