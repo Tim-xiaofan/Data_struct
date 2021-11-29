@@ -38,7 +38,8 @@ class bitree
 			int bf;//平衡因子
 			Node *lchild, *rchild;
 			Node():bf(0), lchild(nullptr), rchild(nullptr){}
-			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
+			friend std::ostream & operator<<(std::ostream & os, 
+                        const Node & nd)
 			{
 				os << "(addr=" << (void *)&nd << ", data=" << nd.data
 					<< ", lchild=" << (void *)nd.lchild 
@@ -52,7 +53,8 @@ class bitree
             Data1 tail, head;
             Edge(const Data1 &t, const Data1 & h) : tail(t), head(h){}
             Edge(){}
-            friend std::ostream & operator<<(std::ostream & os, const Edge & e)
+            friend std::ostream & operator<<(std::ostream & os, 
+                        const Edge & e)
             {
                 os << e.tail << " " << e.head;
                 return os;
@@ -71,11 +73,14 @@ class bitree
 		void preorder_traverse(node * root, const UnaryOperator & op) ;
 		template<typename UnaryOperator>
 		void inorder_traverse(node * root, const UnaryOperator & op) ;
-		static Data default_cmp(const Data & a, const Data & b) {return (a - b);};
-		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
+		static Data default_cmp(const Data & a, const Data & b) {
+            return (a - b);};
+		bool preinorder_construct(node * & root, const Data * pre,
+                    const Data *in, int ct);
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op) ;
-		void second_optimal(node * & T, const Data * table, float *sw, int low, int high);
+		void second_optimal(node * & T, const Data * table,
+                    float *sw, int low, int high);
 	public:
 		bitree():_root(nullptr), _node_num(0){}
 		//template<typename UnaryOperator>
@@ -90,10 +95,18 @@ class bitree
 		void level_traverse(const UnaryOperator & op = show);
 		
         /** preorder and inorder create*/
-		bool preinorder_construct(const Data * pre, const Data *in, int ct){_node_num = ct;return preinorder_construct(_root, pre, in , ct);}
+		bool preinorder_construct(const Data * pre, const Data *in, int ct)
+        {
+            _node_num = ct;
+            return preinorder_construct(_root, pre, in , ct);
+        }
 		/** root second, not recursion*/
 		template<typename UnaryOperator = void(*)(const Data &)>
-		void inorder_traversex(const UnaryOperator & op = show){inorder_traversex(_root, op); cout << endl;}
+		void inorder_traversex(const UnaryOperator & op = show)
+        {
+            inorder_traversex(_root, op); 
+            cout << endl;
+        }
 		static int count(int n) {return fact(2 * n) / fact(n) /fact(n + 1);}
 		/** 构造次优查找树的*/
 		void second_optimal(const Data * table, float * w, int size);
@@ -183,17 +196,17 @@ template<typename UnaryOperator>
 void bitree<Data>::
 inorder_traversex(node *root, const UnaryOperator & op)
 {
-	sqstack<node *> stack(32);
+	sqstack<node *> stack(_node_num);
 	node * pn = root;
 	while(!stack.is_empty() || pn)
 	{
 		if(pn)
-		{
+		{//根指针进栈.遍历左子树
 			stack.push(pn);
 			pn = pn->lchild;
 		}
 		else
-		{
+		{//根指针退栈.访问根结点，遍历右子树
 			stack.pop(pn);
 			op(pn->data);
 			pn = pn->rchild;

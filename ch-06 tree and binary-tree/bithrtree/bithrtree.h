@@ -50,30 +50,33 @@ class bithrtree
 		void cmp_insert(node * & root, const Data & d, const Cmp & cmp);
 		static int less(const Data & d1, const Data & d2){return d1 - d2;}
 		static void show(const Data & d){cout << d <<" ";}
-		bool preinorder_construct(node * & root, const Data * pre, const Data *in, int ct);
+		bool preinorder_construct(node * & root, 
+                    const Data * pre, const Data *in, int ct);
 		template<typename UnaryOperator>
 		void inorder_traversex(node * root, const UnaryOperator & op);
 		/** inorder threading*/
 		void in_threading(node * & pre, node * p);
 	public:
 		bithrtree():_root(nullptr), _thrt(nullptr), _ct(0){}
-		//template<typename UnaryOperator>
-		//void test(const UnaryOperator & op);
 		/** root fisrt*/
 		template<typename UnaryOperator = void(*)(const Data &)>
-		void preorder_traverse(const UnaryOperator & op = show){preorder_traverse(_root, op); cout << endl;}
+		void preorder_traverse(const UnaryOperator & op = show){
+            preorder_traverse(_root, op); cout << endl;}
 		/** root second*/
 		template<typename UnaryOperator = void(*)(const Data &)>
-		void inorder_traverse(const UnaryOperator & op = show){inorder_traverse(_root, op); cout << endl;}
+		void inorder_traverse(const UnaryOperator & op = show){
+            inorder_traverse(_root, op); cout << endl;}
 		/** cmp construct*/
 		template<typename Cmp = int(*)(const Data &, const Data&)>
 		bool cmp_construct(const Data * ds, int ct, const Cmp & cmp = less);
 		/** preorder and inorder create*/
-		bool preinorder_construct(const Data * pre, const Data *in, int ct){return preinorder_construct(_root, pre, in , ct);}
+		bool preinorder_construct(const Data * pre, const Data *in, int ct){
+            return preinorder_construct(_root, pre, in , ct);}
 		/** root second, not recursion*/
 		template<typename UnaryOperator = void(*)(const Data &)>
-		void inorder_traversex(const UnaryOperator & op = show){inorder_traversex(_root, op); cout << endl;}
-		/** inorder threading*/
+		void inorder_traversex(const UnaryOperator & op = show){
+            inorder_traversex(_root, op); cout << endl;}
+		/** inorder threading : 中序二叉树*/
 		void inorder_threading(void);
 		/** inorder_threading traverse*/
 		template<typename UnaryOperator = void(*)(const Data &)>
@@ -159,10 +162,6 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 	if(pre == nullptr || in == nullptr || ct <= 0)
 	  return true;
 
-	//cout << "pre:";
-	//show_ds(pre, ct);
-	//cout << "in:";
-	//show_ds(in, ct);
 	/** create root*/
 	if(root == nullptr) root = new node;
 	root->data = pre[0]; 
@@ -175,7 +174,6 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 		break;
 	lct = root_pos;
 	rct = ct - lct - 1;
-	//cout << "lct = " << lct << endl;
 	//cout << "rct = " << rct << endl;
 
 	/** create lchild*/
@@ -228,73 +226,29 @@ void indent(int ct)
 template<typename Data>
 void bithrtree<Data>::in_threading(node * & pre, node * p)
 {
-	static int level = 0;
-	++level;
-#ifdef DEBUG
-	indent(level);
-	cout << "enter level-" << level;
-	if(pre) cout << " : pre = " << pre->data;
-	else cout << " : pre = " << "NULL";
-	if(p)cout << ", p = " << p->data << "(" << p << ")" <<", p->lchild : " << p->lchild << ", p->rchild : " << p->rchild << endl;
-	else cout << ", p = " << "NULL" << endl;
-#endif
-
 	if(p)
 	{
-#ifdef DEBUG
-		indent(level);
-		cout << "#1 level-" << level << " : pre = " << pre->data <<"(" << pre <<")" << ", p = " << p->data << "(lchild: " << p->lchild <<")" << endl;
-#endif
 		in_threading(pre, p->lchild);/** threading left child*/
 
-		/** set empty pointer*/
+		/** 利用空指针*/
 		if(!p->lchild)
 		{
 			p->ltag = THREAD;
-#ifdef DEBUG
-			cout << "# level-" << level << " : ";
-			cout << p << " : "<< pre << "<--" << p->lchild <<endl;
-#endif
 			p->lchild = pre; /** precursor:last node in left child*/
-#ifdef DEBUG
-			indent(level);
-			cout << "# level-" << level << " : " << p->data << "'s precursor is " << pre->data << endl;
-			
-#endif
 		}
 		if(!pre->rchild)
 		{
 			pre->rtag = THREAD;
-#ifdef DEBUG
-			cout << "# level-" << level << " : ";
-			cout << pre << ":" << pre->rchild << "-->" << p <<endl;
-#endif
 			pre->rchild = p;/** successor*/
-#ifdef DEBUG
-			indent(level);
-			cout << "# level-" << level << " : " << pre->data << "'s successor is " << p->data << endl;
-#endif
 		}
 
 		/** update pre*/
 		pre = p;
-#ifdef DEBUG
-		indent(level);
-		cout << "#2 level-" << level << " : pre = " << pre->data << "(" << pre <<")" << ", p = " << p->data << "(" << p << ")" << "(rchild : " << p->rchild <<")" << endl;
-#endif
 		in_threading(pre, p->rchild);/** threading right child*/
 	}
-#ifdef DEBUG
-	indent(level);
-	cout << "leave level-" << level;
-	if(pre) cout << " : pre = " << pre->data;
-	else cout << " : pre = " << "NULL";
-	if(p)cout << ", p = " << p->data << ", p->lchild : " << p->lchild << ", p->rchild : " << p->rchild << endl;
-	else cout << ", p = " << "NULL" << endl;
-#endif
-	level--;
 }
 
+/** 中序线索化二叉树*/
 template<typename Data>
 void bithrtree<Data>::inorder_threading(void)
 {

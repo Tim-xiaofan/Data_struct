@@ -36,15 +36,15 @@ int main()
 	cout << "inorderx show : ";
 	tree.inorder_traversex(show<int>());
 
-	SEP("char:cannot work with repeated data");
-	bitree<char> tree1;
-	tree1.preinorder_construct(preorder1, inorder1, 12);
-	cout << "preorder show(bad) : ";
-	tree1.preorder_traverse();
-	cout << "inorder show(bad) : ";
-	tree1.inorder_traverse();
-	cout << "inorderx show : ";
-	tree1.inorder_traversex();
+	//SEP("char:cannot work with repeated data");
+	//bitree<char> tree1;
+	//tree1.preinorder_construct(preorder1, inorder1, 12);
+	//cout << "preorder show(bad) : ";
+	//tree1.preorder_traverse();
+	//cout << "inorder show(bad) : ";
+	//tree1.inorder_traverse();
+	//cout << "inorderx show : ";
+	//tree1.inorder_traversex();
 
 	int n;
 	cout << "number of vexs : ";

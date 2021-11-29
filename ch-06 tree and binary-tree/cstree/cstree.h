@@ -22,12 +22,15 @@ class cstree
 		struct Node
 		{
 			T1 data;
-			struct Node * firstchild, *nextsibling;//孩子，孩子的兄弟
+			struct Node * firstchild, *nextsibling;//节点的孩子，节点的兄弟
 			Node(Node * fc = nullptr, Node * fs = nullptr):
 				firstchild(fc), nextsibling(fs){}
-			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
+			friend std::ostream & 
+                operator<<(std::ostream & os, const Node & nd)
 			{
-				os << "(addr = "<< &nd << ", data = " << nd.data << ", fc = " << nd.firstchild << ", ns = " << nd.nextsibling <<")";
+				os << "(addr = "<< &nd << ", data = " << 
+                    nd.data << ", fc = " << nd.firstchild 
+                    << ", ns = " << nd.nextsibling <<")";
 				return os;
 			}
 		};
@@ -40,6 +43,7 @@ class cstree
 		//建立无向图G的深度优先生成森林的
 		template<typename U>
 		cstree(const graph_AML<T, U> & G);
+        //树的层次遍历
 		template<typename OP>
 		void levelorder_traverse(const OP & op = show<T>) const;
 	private:
@@ -67,27 +71,18 @@ cstree(const graph_AML<T, U> & G):_root(nullptr), _nb_vex(0)
 		  p = new node();
 		  _nb_vex++;
 		  p->data = G.data(v);
-		  if(q)
-			cout << "q = "  << q << ", q->data = " << q->data << ", q->nextsibling = " << q->nextsibling  << endl;
-		  cout << "p = "  << p << ", p->data = " << p->data << endl;
-		  cout << "after adding " << p->data << ":";
 		  if(!_root) 
 		  {
 			  _root = p;//是第一棵生成树的根
 			  _R = new node();
 			  _R->firstchild = _root; 
-			  //cout << "first tree : ";
-			  //levelorder_traverse(show<T>);
 		  }
 		  else 
 		  {
 			q->nextsibling = p;// 是其他生成树的根（前一棵的根的"兄弟")
-			//cout << "next tree : ";
-			//levelorder_traverse(show<T>);
 		  }
 		  q = p;//q指示当前生成树的根
 		  DFS_tree(G, v, p, visited);//建立以p为根的生成树
-		  cout << "tree from " << v << " : ";
 		  levelorder_traverse(show<T>);
 	  }
 }
@@ -117,14 +112,10 @@ DFS_tree(const graph_AML<T, U> & G, int v, node *  t, bool *visited)
 			{
 				t->firstchild = p;//第一个邻接点, 根的左孩子结点
 				first = false;
-				//cout << "first " << p->data << " : ";
-				//levelorder_traverse(show<T>);
 			}
 			else 
 			{
 				q->nextsibling = p; //是上一邻接顶点的右兄弟结点
-				//cout << "next " << q->nextsibling->data << " : ";
-				//levelorder_traverse(show<T>);
 			}
 			q = p;
 			DFS_tree(G, w, p, visited);
