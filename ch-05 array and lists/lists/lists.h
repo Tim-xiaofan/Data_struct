@@ -1,6 +1,6 @@
 /** 20210412 20:23, zyj, GuangDong*/
-#ifndef LISTS_H
-#define LISTS_H
+#ifndef _LISTS_H
+#define _LISTS_H
 #include <cstring>
 #include <iostream>
 using std::cout;
@@ -17,7 +17,7 @@ struct istr
 	istr(const char * mstr = nullptr):str(mstr){}
 	/** get head "()" and tail"(e),(a,(b,c,d)"*/
 	void de_head(char *head);
-    static bool is_empty(const char *s){return strcmp(empty, s) == 0;}
+	static bool is_empty(const char *s){return strcmp(empty, s) == 0;}
 	/** is atom ?*/
 	static bool is_atom(const char * s);
 	/** rm outermost parenthesis*/
@@ -37,21 +37,21 @@ de_head(char *head)
 		strcpy(head, empty);
 		return;
 	}
-	
+
 	/** get head*/
 	for(i = 0; i < len; ++i)
 	{
-	  switch(str[i])
-	  {
-		  case '(':left++; break;
-		  case ')':right++; break;
-	  }
-	  head[i] = str[i];
-	  if(left == right)
-	  {
-		  ++i;
-		  break;
-	  }
+		switch(str[i])
+		{
+			case '(':left++; break;
+			case ')':right++; break;
+		}
+		head[i] = str[i];
+		if(left == right)
+		{
+			++i;
+			break;
+		}
 	}
 	head[i] = '\0';
 	if(str[i] == ',') ++i;
@@ -60,7 +60,7 @@ de_head(char *head)
 
 
 /** single layer ?
-  * test if there is  a '(', yes for false, no for true 
+ * test if there is  a '(', yes for false, no for true 
  **/
 inline bool istr::
 is_atom(const char * s)
@@ -89,18 +89,19 @@ template <typename Atom>
 class htlists
 {
 	private:
+		/** 广义表的第1种节点：头尾链表存储表示 */
 		template<typename Atom1>
-			struct Node
+		struct Node
+		{
+			typedef enum{UNKNOW = -1, ATOM = 0, LIST = 1} elem_type;
+			elem_type tag;
+			union 
 			{
-				typedef enum{UNKNOW = -1, ATOM = 0, LIST = 1} elem_type;
-				elem_type tag;
-				union 
-				{
-					Atom1 atom;
-					struct {Node *hp, *tp;} ptr;
-				};
-				Node():tag(UNKNOW){}
+				Atom1 atom;
+				struct {Node *hp, *tp;} ptr;
 			};
+			Node():tag(UNKNOW){}
+		};
 		typedef Node<Atom> node;
 	private:
 		node *_lists;
@@ -123,42 +124,44 @@ class htlists
 		void show(void)const;
 };
 
+/** 广义表的第二种节点：扩展线性链表存储表示*/
 template <typename Atom>
 class llists
 {
 	private:
 		template<typename Atom1>
-			struct Node
+		struct Node
+		{
+			typedef enum{ATOM = 0, LIST = 0} elem_type;
+			elem_type tag;
+			union 
 			{
-				typedef enum{ATOM = 0, LIST = 0} elem_type;
-				elem_type tag;
-				union 
-				{
-					Atom1 atom;
-					Node *hp;
-				};
-				Node * tp;
+				Atom1 atom;
+				Node *hp;
 			};
+			Node * tp;
+		};
 	private:
 		typedef Node<Atom> node;
 		node *_lists;
 };
 
+/** 广义表的第2种节点实例：m元多向式*/
 template <typename Coef>
 class mplist
 {
 	private:
 		template<typename Coef1>
-			struct mpnode
+		struct mpnode
+		{
+			union
 			{
-				union
-				{
-					Coef1 coef;
-					mpnode *hp;
-				};
-				int exp;
-				mpnode * tp;
+				Coef1 coef;
+				mpnode *hp;
 			};
+			int exp;
+			mpnode * tp;
+		};
 	private:
 		typedef mpnode<Coef> node;
 		node *_lists;
@@ -187,12 +190,13 @@ depth(node * lists) const
 {
 	int max, dep;
 	node *p;
+	/** 递归算法有两个终结状态;空表和原子*/
 	if(!lists) return 1;/** depth of empty lists is 1*/
 	if(lists->tag == node::ATOM) return 0;/** depth of atom is 0*/
 
 	for(max = 0, p = lists; p; p = p->ptr.tp)
 	{
-		dep = depth(p->ptr.hp);
+		dep = depth(p->ptr.hp);//求以 p->ptr.hp为头指针的子表深度
 		if(max < dep) max = dep;
 	}
 	return max + 1;

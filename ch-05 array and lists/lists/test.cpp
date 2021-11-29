@@ -35,19 +35,19 @@ static const char * inputs[N] = {
 
 int main()
 {
-	using std::type_info;
-	arg a1;
-	a1.ct = 0;
-	a1.vals = (char *)"string";
-	cout << a1.vals << endl;
-	a1.val = 'c';
-	cout << a1.val << endl;
+	//using std::type_info;
+	//arg a1;
+	//a1.ct = 0;
+	//a1.vals = (char *)"string";
 	//cout << a1.vals << endl;
-    cout<<typeid(int).name() <<" | " <<typeid(int).hash_code() <<endl;
-    cout<<typeid(char).name() <<" | " <<typeid(char).hash_code() <<endl;
-	int j;
-	if(typeid(j) == typeid(int))
-	  cout << "j is an integer\n";
+	//a1.val = 'c';
+	//cout << a1.val << endl;
+	////cout << a1.vals << endl;
+    //cout<<typeid(int).name() <<" | " <<typeid(int).hash_code() <<endl;
+    //cout<<typeid(char).name() <<" | " <<typeid(char).hash_code() <<endl;
+	//int j;
+	//if(typeid(j) == typeid(int))
+	//  cout << "j is an integer\n";
 
 	SEP("htlist test0 start");
 	int i;

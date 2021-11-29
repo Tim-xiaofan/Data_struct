@@ -41,7 +41,7 @@ void copy_htlists(Node* & pdst, const Node* const & psrc)
 	}
 }
 
-int main()
+int main(int ac, char *av[])
 {
 	htlists<char> la, lb;
 	copy_htlists(la, lb);
