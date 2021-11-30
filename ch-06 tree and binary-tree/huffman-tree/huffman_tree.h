@@ -18,7 +18,8 @@ class huffman_tree
 		{
 			float weigth;
 			int parent, lchild, rchild;
-			friend std::ostream & operator<<(std::ostream & os, const struct Node nd)
+			friend std::ostream & 
+                operator<<(std::ostream & os, const struct Node nd)
 			{
 				os << "weigth = " <<nd.weigth << 
 					", parent = " <<nd.parent << 
@@ -37,7 +38,8 @@ class huffman_tree
 		char **_codes;//encode for each character 
 		Data *_chars;// character array
 	public:
-		huffman_tree() : _nds(nullptr), _ct(0), _n(0), _codes(nullptr), _chars(nullptr){}
+		huffman_tree() : _nds(nullptr), _ct(0), 
+        _n(0), _codes(nullptr), _chars(nullptr){}
 		~huffman_tree();
 		huffman_tree(Data * codes, float * weigths, int n);
 		int decode(const char *code, int ilen,  char *decode, int & olen);
@@ -47,13 +49,17 @@ class huffman_tree
 		void select_2s(int high, int & s1, int & s2);
 };
 
+/**
+  @param    n   需要编码的符号数量
+ */
+
 template <typename Data>
 huffman_tree<Data>::
 huffman_tree(Data * chars, float * weigths, int n)
 {
-	int i, j, s1, s2;//small
+	int i, j, s1, s2;//smalls
 
-	_ct = 2 * n - 1;
+	_ct = 2 * n - 1;//huffman树只有0度和2度节点,正则二叉树(严格二叉树)
 	_n = n;
 	_nds = new node[_ct + 1];// 0 is unused
 	_codes = new char*[n];
@@ -81,20 +87,14 @@ huffman_tree(Data * chars, float * weigths, int n)
 	/** construct the tree*/
 	for(i = n + 1; i <= _ct; ++i)
 	{
-		//cout << "------------------------------------------------\n";
-		//print_nds();
-		select_2s(i - 1, s1, s2);//select the two smallest
-		//printf("s1 = %d, s2 =%d\n", s1, s2);
-		//cout << _nds[s1] << endl;
-		//cout << _nds[s2] << endl;
-		//cout << endl << endl;
+        //select the fisrt smallest and second smallest
+		select_2s(i - 1, s1, s2);
 		_nds[i].lchild = s1;
 		_nds[i].rchild = s2;
 		_nds[i].weigth = _nds[s1].weigth + _nds[s2].weigth;
 		_nds[s1].parent = i;
 		_nds[s2].parent = i;
 	}
-	//print_nds();
 
 	/** get code for each character : from leaves to root*/
 	char * cd = new char[n];
@@ -105,15 +105,16 @@ huffman_tree(Data * chars, float * weigths, int n)
 		start =  n - 1;
 		for(current = i, parent = _nds[current].parent;
 					parent != 0; 
-					current = parent, parent = _nds[current].parent)
+					current = parent, 
+                    parent = _nds[current].parent)
 		{
 			/** from left 0, from right 1*/
 			if(_nds[parent].lchild == current) cd[--start] = '0';
 			else cd[--start] = '1';
 		}
-		_codes[i - 1] = new char[n - start];//malloc memory according to real encode-len
+        //malloc memory according to real encode-len
+		_codes[i - 1] = new char[n - start];
 		strcpy(_codes[i - 1], &cd[start]);
-		//cout <<  "cd : " << &cd[start] << endl;
 	}
 	delete [] cd;
 }
@@ -131,13 +132,18 @@ huffman_tree<Data>::
 	delete [] _codes;
 }
 
-/** parent is 0 and weigth is small*/
+/** 
+  parent is 0 and weigth is small
+  选择最小的两棵树：
+ */
 template <typename Data>
 void huffman_tree<Data>::
 select_2s(int high, int & s1, int & s2)
 {
 	int i;
 	s1 = s2 = -1;
+
+    /** lookup first*/
 	for(i = 1; i <= high; ++i)
 	{
 		if(_nds[i].parent == 0)
@@ -146,8 +152,9 @@ select_2s(int high, int & s1, int & s2)
 			break;
 		}
 	}
-	if(s1 == -1) return;
-	//cout << "s1 :" << _nds[s1] << endl;
+	
+    if(s1 == -1) return;
+
 	for(i = s1 + 1; i <= high; ++i)
 	{
 		if(_nds[i].parent == 0)
@@ -156,25 +163,21 @@ select_2s(int high, int & s1, int & s2)
 			break;
 		}
 	}
+
 	if(s2 == -1) return;
-	//cout << "s2 :" << _nds[s2] << endl;
 
 	for(i = s1; i <= high; ++i)
 	{
-		//cout << "current  : " << _nds[i] << endl;
 		if(_nds[i].parent == 0)
 		{
 			if(_nds[i].weigth < _nds[s1].weigth)
-			{
+			{//第一小
 				s2 = s1;
 				s1 = i;
-				//cout << "update s1 : " << _nds[s1] << endl;
-				//cout << "update s2 : " << _nds[s2] << endl;
 			}
 			else if(_nds[i].weigth < _nds[s2].weigth && i != s1)
-			{
+			{//第二小
 				s2 = i;
-				//cout << "update s2 : " << _nds[s2] << endl;
 			}
 		}
 	}
