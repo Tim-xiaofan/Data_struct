@@ -21,13 +21,14 @@ class graph_olist
 		template <typename U1>
 		struct arcnode
 		{
-			int tailvex, headvex;
-			struct arcnode * tlink, *hlink;
+			int tailvex, headvex;//该弧的尾和头顶点的位置
+			struct arcnode * tlink, *hlink;//分别为弧尾相同和弧头相同弧的链域
 			U1 weigth;
 			arcnode(int t = 0, int h = 0, arcnode * tlk = nullptr, 
 						arcnode * hlk = nullptr, U1 w = 0) :
 				tailvex(t), headvex(h), tlink(tlk), hlink(hlk), weigth(w){}
-			friend std::ostream & operator<<(std::ostream & os, const arcnode & a)
+			friend std::ostream & 
+                operator<<(std::ostream & os, const arcnode & a)
 			{
 				os << "{<" << a.tailvex << ", " << a.headvex << ">, "
 					<< a.weigth << "}";
@@ -42,7 +43,7 @@ class graph_olist
 		struct vexnode
 		{
 			T1 data;
-			arcnode<U1> *firstout, *firstin;
+			arcnode<U1> *firstout, *firstin;//分别指向该顶点第一条入弧和出弧
 			int outnum, innum;
 			vexnode(arcnode<U1> *fo = nullptr, arcnode<U1> *fi = nullptr):
 				firstout(fo), firstin(fi), outnum(0), innum(0){}
@@ -91,21 +92,23 @@ graph_olist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 		{
 			p = new anode(t, h, nullptr, nullptr, w);
 			/** append into two list */
+            /** 同弧尾*/
 			if(_vexs[t].firstout == nullptr)
 			  _vexs[t].firstout = p;
 			else
 			{
-			  for(tail = _vexs[t].firstout; tail->tlink; tail = tail->tlink)
-				continue;
+			  for(tail = _vexs[t].firstout; 
+                          tail->tlink; tail = tail->tlink);
 			  tail->tlink = p; 
 			}
 
+            /** 同弧头*/
 			if(_vexs[h].firstin == nullptr)
 			  _vexs[h].firstin = p;
 			else
 			{
-			  for(tail = _vexs[h].firstin; tail->hlink; tail = tail->hlink)
-				continue;
+			  for(tail = _vexs[h].firstin; 
+                          tail->hlink; tail = tail->hlink);
 			  tail->hlink = p; 
 			}
 			_vexs[t].outnum++;

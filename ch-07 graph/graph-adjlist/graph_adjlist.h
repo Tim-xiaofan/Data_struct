@@ -19,16 +19,18 @@ class graph_adjlist
 	private:
 		enum {MAX_NB_VEXS = 128};
 		template <typename U1>
-		struct arcnode
+		struct arcnode//表节点
 		{
-			int adjvex;
-			U1 weigth;
+			int adjvex;//弧所指向的顶点的位置
+			U1 weigth;//权
 			struct arcnode * nextarc;
 			arcnode(int i = 0, U1 w = 0, arcnode * na = nullptr):
 				adjvex(i), weigth(w), nextarc(na){}
-			friend std::ostream & operator<<(std::ostream & os, const struct arcnode & a)
+			friend std::ostream & 
+                operator<<(std::ostream & os, const struct arcnode & a)
 			{
-				os << "(adjvex=" << a.adjvex << ", weigth=" << a.weigth << ")";
+				os << "(adjvex=" << a.adjvex << ", weigth=" 
+                    << a.weigth << ")";
 				return os;
 			}
 			int adj(int v) const {return adjvex;}
@@ -36,13 +38,13 @@ class graph_adjlist
 			const U1 cost(int v) const {return weigth;}
 		};
 		template<typename T1, typename U1>
-		struct vexnode
+		struct vexnode//头节点
 		{
 			T1 data;
-			arcnode<U1> * firstarc;
-			arcnode<U1> * lastarc;
-			int size;
-			int indegree;
+			arcnode<U1> * firstarc;//指向第一条依附该顶点的弧的指针
+			arcnode<U1> * lastarc;//指向最后条依附该顶点的弧的指针
+			int size;//邻接点数量
+			int indegree;//入度
 			vexnode(arcnode<U1> *fa = nullptr, 
 						arcnode<U1> *la = nullptr, 
 						int sz = 0, int id = -1):
@@ -62,11 +64,13 @@ class graph_adjlist
 		int _vexnum, _arcnum;
 		graph_kind _kind;
 		a1* _vexs;
-		vnode *_adjlists;
-		vnode *_radjlists;
+		vnode *_adjlists;//邻接表
+		vnode *_radjlists;//逆邻接表
 	public:
-		~graph_adjlist(){delete _vexs; delete [] _adjlists; delete [] _radjlists;}
-		graph_adjlist():_vexnum(0), _arcnum(0), _kind(DG), _vexs(nullptr), _adjlists(nullptr), _radjlists(nullptr){}
+		~graph_adjlist(){delete _vexs; delete [] _adjlists; 
+            delete [] _radjlists;}
+		graph_adjlist():_vexnum(0), _arcnum(0), _kind(DG),
+            _vexs(nullptr), _adjlists(nullptr), _radjlists(nullptr){}
 		graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind);
 		void show_adjlists(void)const;
 		/** O(1)*/
@@ -89,7 +93,10 @@ class graph_adjlist
 		bool rm_zeroind_vex(int v);
 };
 
-/** O(n*n)*/
+/** 
+  从邻接矩阵创建图
+  O(n*n)
+ */
 template <typename T, typename U>
 graph_adjlist<T, U>::
 graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
@@ -107,7 +114,7 @@ graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 		_adjlists[i].data = _vexs->at(i);
 		for(j = 0; j < _vexnum; ++j)
 		  if(kind == DG || kind == UDG)
-		  {
+		  {//图
 			  if((current = arcs.at(i, j)) != 0)
 			  {
 				  _adjlists[i].append(new anode(j, current, nullptr));
@@ -115,7 +122,7 @@ graph_adjlist(const a1 & vexs, const a2 & arcs, graph_kind kind)
 			  }
 		  }
 		  else
-		  {
+		  {//网
 			  if((current = arcs.at(i, j)) != INF)
 			  {
 				  _adjlists[i].append(new anode(j, current, nullptr));

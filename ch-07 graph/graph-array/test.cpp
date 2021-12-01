@@ -66,10 +66,12 @@ int main(int ac, char * av[])
 		exit(EXIT_FAILURE);
 	}
 	arcs1->set_values(c, 36);
-	graph_array<char, float> ga1(*vexs1, *arcs1, graph_array<char, float>::UDN);
+	graph_array<char, float> 
+        ga1(*vexs1, *arcs1, graph_array<char, float>::UDN);
 	cout << ga1.kind_str() << endl;
 
-	graph_array<char, float> ga2(*vexs1, *arcs1, graph_array<char, float>::DG);
+	graph_array<char, float> 
+        ga2(*vexs1, *arcs1, graph_array<char, float>::DG);
 	cout << ga2.kind_str() << endl;
 	ga.show_degree();
 	cout << "----------\n";
