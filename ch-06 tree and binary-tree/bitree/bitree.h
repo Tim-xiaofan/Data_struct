@@ -245,7 +245,8 @@ T abs(const T & t)
 
 template<typename Data>
 void bitree<Data>::
-second_optimal(node * & T, const Data * table,  float * sw, int low, int high)
+second_optimal(node * & T, const Data * table,  
+            float * sw, int low, int high)
 {
 	int i = low, j;
 	float dw, min = abs(sw[high] - sw[low]);
@@ -455,42 +456,61 @@ show_edges(void) const
 	cout << endl;
 }
 
+template<typename T> static void 
+print_stack(const T & s)
+{
+    for(int i =0; i < s.length(); ++i)
+      cout << s[i]->data << " ";
+    cout << endl;
+}
+
+static void 
+print_visit(bool * a, int len)
+{
+    cout << "visit:";
+    for(int i = 0; i < len; ++i)
+      cout << a[i] << " ";
+    cout << endl;
+}
+
 template<typename Data>
 int bitree<Data>::
 longest_path(vector<Data> & path) const
 {
     sqstack<node *> stack(_node_num);
 	node * p = _root;
+    /** 与栈中节点一一对应，标记有分支是否访问*/
     bool *rvisited = new bool[_node_num];
+    int ct = 0;
     
     if(!_root) return 0;
     
-    for(int i = 0; i < _node_num; ++i) rvisited[i] = false;
-	
-    while(!stack.is_empty() || p)
+    while((!stack.is_empty() || p)  && ct < _node_num)
 	{
         while(p)
-        {
-            if(!stack.push(p))
-              return -1;
+        {//沿左分枝向下
+            stack.push(p);
+            rvisited[stack.length() -1] = false;
             p = p->lchild;
         }
-        if(rvisited[stack.length() -1])
+        if(rvisited[stack.length() -1])//当前结点的右分枝已遍历
         {
             stack.get_top(p);
+            ++ct;
             if(!p->lchild && !p->rchild) 
             {
-                if(stack.length() > path.size())
+                if(stack.length() > (int)path.size())
                 {
                     path.clear();
                     for(int i = 0; i < stack.length(); ++i)
                       path.push_back(stack[i]->data);
                 }
-                stack.pop(p);
             }
+            stack.pop();
+            p = nullptr;
         }
-        else
-        {
+        else if(!stack.is_empty())
+        {//沿右子分枝向下
             rvisited[stack.length() -1] = true;
             stack.get_top(p);
             p = p->rchild;

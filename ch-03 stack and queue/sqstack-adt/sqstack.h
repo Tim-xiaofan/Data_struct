@@ -24,6 +24,7 @@ class sqstack : private SqList<Item>
 		bool push(const Item & i){return base::append(i);}
 		/** read top item and delete it*/
 		bool pop(Item & i){return base::del_n(base::length()-1, i);}
+		void pop(void){Item i; pop(i);}
 		bool is_empty(void)const{return base::is_empty();};
 		bool is_full(void)const{ return base::is_full();};
 		void show(void)const{base::show();};

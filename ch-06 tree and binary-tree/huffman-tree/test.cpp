@@ -7,8 +7,9 @@
 
 using std::cout;
 using std::endl;
-static char chs[8] =  {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
-static float w[8] = {0.05, 0.29, 0.07, 0.08, 0.14, 0.23, 0.03, 0.11};
+static const int N =  7;
+static char chs[N] =  {'A', 'B', 'C', 'D', 'E', 'F', 'G'};
+static float w[N] = {3, 12, 7, 4, 2, 8, 11};
 static const char *code = "01111011101111110010000001";
 static const char *code1 = "11";
 static char decode[32];
