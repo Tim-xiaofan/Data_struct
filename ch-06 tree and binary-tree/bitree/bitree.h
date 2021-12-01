@@ -4,12 +4,15 @@
 #define BITREE_H
 #include <iostream>
 #include <string>
-
+#include <vector>
 #include "sqstack.h"
 #include "sqqueue.h"
+#include "List.h"
+
 using std::cout;
 using std::endl;
 using std::string;
+using std::vector;
 
 #ifndef MAX_NUM_NODE 
 #define MAX_NUM_NODE 128
@@ -119,6 +122,8 @@ class bitree
         /** 按层次输出边*/
         int get_edges(edge * E, int size) const;
 		void show_edges(void) const;
+        /** 最大路径*/
+        int longest_path(vector<Data> & path) const;
 };
 
 /** root first*/
@@ -448,6 +453,51 @@ show_edges(void) const
 	for(i = 0; i < ret; ++i)
 	  cout << E[i] << "  ";
 	cout << endl;
+}
+
+template<typename Data>
+int bitree<Data>::
+longest_path(vector<Data> & path) const
+{
+    sqstack<node *> stack(_node_num);
+	node * p = _root;
+    bool *rvisited = new bool[_node_num];
+    
+    if(!_root) return 0;
+    
+    for(int i = 0; i < _node_num; ++i) rvisited[i] = false;
+	
+    while(!stack.is_empty() || p)
+	{
+        while(p)
+        {
+            if(!stack.push(p))
+              return -1;
+            p = p->lchild;
+        }
+        if(rvisited[stack.length() -1])
+        {
+            stack.get_top(p);
+            if(!p->lchild && !p->rchild) 
+            {
+                if(stack.length() > path.size())
+                {
+                    path.clear();
+                    for(int i = 0; i < stack.length(); ++i)
+                      path.push_back(stack[i]->data);
+                }
+                stack.pop(p);
+            }
+        }
+        else
+        {
+            rvisited[stack.length() -1] = true;
+            stack.get_top(p);
+            p = p->rchild;
+        }
+	}
+    delete [] rvisited;
+    return 0;
 }
 
 #endif

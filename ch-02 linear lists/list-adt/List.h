@@ -56,6 +56,8 @@ class List
 		bool get_next(Item &i);
 		bool back(Item & i)const;
 		bool del_n(int pos, Item &i);
+        void pop_back(Item & i) {del_n(_length - 1, i);};
+        void pop_back(void) {Item i; del_n(_length - 1, i);};
 		bool insert_n(int pos, const Item & i);
 		template <typename BinaryPredicate>
 		bool insert_sorted(const Item & i, const BinaryPredicate & pre);
@@ -331,6 +333,7 @@ del_n(int pos, Item &i)
 	if(out_bound(pos))
 	{
 		fprintf(stderr, "ERROR : out of boundary\n");
+        abort();
 		return false;
 	}
 

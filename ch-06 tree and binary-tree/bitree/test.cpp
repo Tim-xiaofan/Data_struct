@@ -3,11 +3,13 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <list>
 #include "bitree.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
+using std::list;
 
 template <typename Data>
 struct show
@@ -35,6 +37,12 @@ int main()
 	tree.inorder_traverse(show<int>());
 	cout << "inorderx show : ";
 	tree.inorder_traversex(show<int>());
+    cout << "longest path :" << endl;
+    vector<int> path;
+    tree.longest_path(path);
+    for(uint32_t i = 0; i < path.size(); ++i)
+      cout << path[i] << " ";
+    cout << endl;
 
 	//SEP("char:cannot work with repeated data");
 	//bitree<char> tree1;
@@ -46,9 +54,11 @@ int main()
 	//cout << "inorderx show : ";
 	//tree1.inorder_traversex();
 
+    return 0;
 	int n;
 	cout << "number of vexs : ";
 	cin >> n;
-	cout << "bumber of different trees : " << bitree<int>::count(n) << endl;
+	cout << "bumber of different trees : " 
+        << bitree<int>::count(n) << endl;
 	return 0;
 }

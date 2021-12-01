@@ -9,7 +9,7 @@
 #include <ctime>
 #define SIZE 16
 
-static int A[4] = {3,5,8,11};
+//static int A[4] = {3,5,8,11};
 static std::string B[7]= {
 	"Sunday", 
 	"Monday", 
@@ -31,8 +31,10 @@ int main()
 	srand(time(NULL));
 	while(li.insert_sorted(rand() % 100 + 1, [](int x, int y){return x - y;}));
 	li.show();
+    li.pop_back(i);
+    cout << "pop : " << i << endl;
 	li.back(i);
-	cout <<"back : " << i << endl;
+	cout << "back : " << i << endl;
 	//List<string> ls(B, 7);
 
 	//li.append_bulk(A, 4);
