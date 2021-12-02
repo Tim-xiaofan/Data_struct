@@ -161,7 +161,8 @@ void rDFS(const Graph & G, OP & op, bool recursion = true)
 			  while(!stack.is_empty())
 			  {
 				  stack.pop(w);
-				  for(p = G.rfirst(w); p; p = p->rnext(w))// Is there any adjacency vex for w?
+                  // Is there any adjacency vex for w?
+				  for(p = G.rfirst(w); p; p = p->rnext(w))
 				  {
 					  u = p->radj(w);
 					  if(!rvisited[u])
@@ -267,6 +268,7 @@ void post_DFS(const Graph & G, int v, bool * visited, OP & op)
 	op(v);
 }
 
+/** 有向图的强连通分量*/
 template<typename Graph, typename OP>
 int kosaraju(const Graph & G, const OP & op)
 {
@@ -274,10 +276,10 @@ int kosaraju(const Graph & G, const OP & op)
 	finish f(nb);
 	bool visited[MAX_NB_VEX] = {false};
 
-	post_DFS(G, f);
+	post_DFS(G, f);//正向DFS
 	cout << "f : ";
 	f.show();
-	while(f.pop(v))
+	while(f.pop(v))//从最后的完成的点开始，倒序做逆向DFS
 	{
 		if(!visited[v]) 
 		{
@@ -300,8 +302,6 @@ int prime_O3(const Graph & G, int t)
 	init_array(U, nb, -1);
 	U[t] = t;
 	ct++;
-	//cout << "U : ";
-	//show_array(U, nb);
 	while(ct < nb)
 	{
 		for(i = 0; i < nb && ct < nb; ++i)
@@ -312,8 +312,6 @@ int prime_O3(const Graph & G, int t)
 			k = 0;
 			for(j = 0; j < nb; ++j)
 			{
-				//cout << "(u=" << u << ",j=" << j << "):" 
-				//    << G.cost(u, j) << ", " << U[j] << endl;
 				if(G.cost(u, j) != INT_MAX && U[j] == -1)//not in U and adj
 				{
 					if(G.cost(u, j) < min)
@@ -325,8 +323,6 @@ int prime_O3(const Graph & G, int t)
 			}
 			U[k] = k;
 			ct++;
-			//cout << "chois is " << k << ", " << "ct = " << ct << ": ";
-			//show_array(U, nb);
 			cout << "(" << u << "," << k << ")";
 			cost += min;
 		}
@@ -335,65 +331,62 @@ int prime_O3(const Graph & G, int t)
 	return cost;
 }
 
-/** O(n * n)边数无关，因此适用于求边稠密的网的最小生成树
- * TODO: 未实现对邻接表，十字链表，多重邻接表的支持*/
+/** 
+  最小生成树
+  O(n * n)边数无关，因此适用于求边稠密的网的最小生成树
+TODO:未实现对邻接表，十字链表，多重邻接表的支持
+ */
 template<typename Graph>
 int prime_O2(const Graph & G, int u)
 {
-	//用普里姆算法从第 u个顶点出发构造网 G的最小生成树 T，输出 T的各条边。
-	typedef typename Graph::cost_type cost_type;
-	int nb = G.vexnum(), v, w, min_vex, cost = 0;
-	cost_type min_cost;
+    /**用普里姆算法从第u个顶点出发构造网G的最小生成树T，输出T的各条边。*/
+    typedef typename Graph::cost_type cost_type;
+    int nb = G.vexnum(), v, w, min_vex, cost = 0;
+    cost_type min_cost;
 
-	// 记录从顶点集U到V- U的代价最小的边的辅助数组定义	
-	//closedge[i - 1] = Min{cost(u,vi)|u属于U}, vi属于V-U
-	struct tmp{
-		int adjvex;//依附在U中的顶点 
-		cost_type lowcost;
-		tmp(int a = 0, cost_type lc = 0):adjvex(a), lowcost(lc){}
-	}closedge[MAX_NB_VEX];//记录从U到V一U具有最小代价的边
+    /**记录从顶点集U到V- U的代价最小的边的辅助数组定义	
+    closedge[i - 1] = Min{cost(u,vi)|u属于U}, vi属于V-U*/
+    struct tmp{
+        int adjvex;//依附在U中的顶点 
+        cost_type lowcost;//0表示已经并入U
+        tmp(int a = 0, cost_type lc = 0):adjvex(a), lowcost(lc){}
+    }closedge[MAX_NB_VEX];//记录从U到V一U具有最小代价的边
 
-	closedge[u].lowcost = 0; // U={u}
-for(v = 0; v < nb; ++v)
-{
-	if(v != u) closedge[v] = {u, G.cost(u, v)};//V-U
-}
-//cout << "after init from "<< u << ": ";
-//show_closedge(closedge, nb);
-for(v = 1; v < nb; ++v)
-{
-	min_cost = INT_MAX;
-	for(w = 0; w < nb; ++w)//V-U中与U邻接,cost最小的顶点
-	{
-		if(closedge[w].lowcost)
-		{
-			if(closedge[w].lowcost < min_cost) 
-			{
-				min_cost = closedge[w].lowcost;
-				min_vex = w;
-			}
-		}
-	}
-	//cout << "choice is " << min_vex << " : ";
-	cout << "(" << closedge[min_vex].adjvex << "," << min_vex << ") | ";
-	cost += min_cost;
-	closedge[min_vex].lowcost = 0;//k并入U,重新选择最小边
-	for(w = 1; w < nb; ++w)
-	{
-		//cout << "test w = " << w << ":(min_vex=" << min_vex
-		//	<< ",lowcost=" << closedge[w].lowcost << ",cost=" 
-		//	<< G.cost(min_vex, w) << ")" << endl;
-		if(closedge[w].lowcost > G.cost(min_vex, w))
-		{
-			//cout << "update w = " << w << endl;
-			closedge[w] = {min_vex, G.cost(min_vex, w)};
-		}
-	}
-	cout << "selected " << min_vex << ": ";
-	show_closedge(closedge, nb);
-}
-//cout << endl;
-return cost;
+    /** 进入初态*/
+    closedge[u].lowcost = 0; // U={u}
+    for(v = 0; v < nb; ++v)
+    {
+        if(v != u) closedge[v] = {u, G.cost(u, v)};//V-U
+    }
+
+    for(v = 1; v < nb; ++v)
+    {//选择其余 G.vexnum -1个顶点
+        min_cost = INT_MAX;
+        for(w = 0; w < nb; ++w)//V-U中与U邻接且cost最小的顶点
+        {
+            if(closedge[w].lowcost)//属于U
+            {
+                if(closedge[w].lowcost < min_cost) 
+                {
+                    min_cost = closedge[w].lowcost;
+                    min_vex = w;
+                }
+            }
+        }
+        cout << "(" << closedge[min_vex].adjvex << "," << min_vex << ") | ";
+        cost += min_cost;
+        closedge[min_vex].lowcost = 0;//k并入U,重新选择最小边
+        for(w = 1; w < nb; ++w)
+        {//更新closedge
+            if(closedge[w].lowcost > G.cost(min_vex, w))
+            {
+                closedge[w] = {min_vex, G.cost(min_vex, w)};
+            }
+        }
+        cout << "selected " << min_vex << ": ";
+        show_closedge(closedge, nb);
+    }
+    return cost;
 }
 
 /** 寻找连通图的关节点: O(n + e)*/
@@ -404,13 +397,9 @@ void find_articul(const Graph & G, const OP & op = print)
 	int low[MAX_NB_VEX] = {0};//深度优先搜索树中点i所能回溯到的最浅层的点
 	const typename Graph::anode * p;
 	visited[0] = 1;//v0最先访问(先序遍历)
-	//cout << "visited : ";
-	//show_array(visited, vexnum);
 
 	p = G.first(0);
-	//cout << "find : *p = "<< *p << endl;
 	v = p->adj(0);
-	//cout << "find : v = " << v << endl;
 	DFS_articul(G, v, visited, low, count, op);//从v0开始做DFS
 	if(count < vexnum)
 	{
@@ -425,10 +414,6 @@ void find_articul(const Graph & G, const OP & op = print)
 		}
 	}
 	cout << endl;
-	//cout << "visited : ";
-	//show_array(visited, vexnum);
-	//cout << "low     : ";
-	//show_array(low, vexnum);
 }
 
 /**

@@ -49,10 +49,11 @@ class cstree
 	private:
 		/**
 		 * O(e)
-		 * 从第v个顶点出发深度优先遒历图G，建立以T为根的生成树。
+		 * 从第v个顶点出发深度优先遍历图G，建立以T为根的生成树。
 		 * */
 		template<typename U>
-		void DFS_tree(const graph_AML<T, U> & G, int v, node * t, bool * visited);
+		void DFS_tree(const graph_AML<T, U> & G, 
+                    int v, node * t, bool * visited);
 };
 
 template<typename T>
@@ -79,18 +80,19 @@ cstree(const graph_AML<T, U> & G):_root(nullptr), _nb_vex(0)
 		  }
 		  else 
 		  {
-			q->nextsibling = p;// 是其他生成树的根（前一棵的根的"兄弟")
+			q->nextsibling = p;//是其他生成树的根（前一棵的根的"兄弟")
 		  }
 		  q = p;//q指示当前生成树的根
 		  DFS_tree(G, v, p, visited);//建立以p为根的生成树
-		  levelorder_traverse(show<T>);
+		  //levelorder_traverse(show<T>);
 	  }
 }
 
 template<typename T>
 template<typename U>
 void cstree<T>::
-DFS_tree(const graph_AML<T, U> & G, int v, node *  t, bool *visited)
+DFS_tree(const graph_AML<T, U> & G, 
+            int v, node * t, bool *visited)
 {
 	typedef typename graph_AML<T, U>::anode arcnode;
 	const arcnode * arc;
@@ -99,7 +101,6 @@ DFS_tree(const graph_AML<T, U> & G, int v, node *  t, bool *visited)
 	bool first = true;
 
 	visited[v] = true;
-	//cout << "entering ----t = " << t->data << ", v = " << v << "-----------" <<endl;
 	for(arc = G.first(v); arc; arc = arc->next(v))
 	{
 		w = arc->adj(v);
@@ -120,10 +121,7 @@ DFS_tree(const graph_AML<T, U> & G, int v, node *  t, bool *visited)
 			q = p;
 			DFS_tree(G, w, p, visited);
 		}
-		//else cout << "w = " << w << " is visited\n";    
 	}
-	//cout << "leaving ----t = " << t->data << ", v = " << v << "-----------" <<endl;
-	//levelorder_traverse(show<T>);
 }
 
 template<typename T>
@@ -137,9 +135,6 @@ levelorder_traverse(const OP & op) const
 	if(!_root) return;
 
 	q.enqueue(_R);
-	//q.show();
-	cout << "nb = " << _nb_vex << " : \n";
-	//op(_root->data);
 	while(!q.is_empty())
 	{
 		q.dequeue(cur);
@@ -154,7 +149,6 @@ levelorder_traverse(const OP & op) const
 		cout << "} ";
 	}
 	cout << endl;
-	//cout << "leaving levelorder_traverse\n";
 }
 
 #endif

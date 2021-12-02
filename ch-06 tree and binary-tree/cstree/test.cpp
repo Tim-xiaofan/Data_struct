@@ -39,10 +39,11 @@ int main(int ac, char *av[])
 	vexs->set_values(b, 13);
 	arcs = a2::instance(13, 13);
 	arcs->set_values(a, 13 * 13);
-	graph_AML<char, int> gaml(*vexs,  *arcs, graph_AML<char, int>::UDG);
-	gaml.show_AML();
-	cout << "numvex = " << gaml.vexnum() << endl;
-	cout << "numarc = " << gaml.arcnum() << endl;
+	graph_AML<char, int> 
+        gaml(*vexs,  *arcs, graph_AML<char, int>::UDG);
+	//gaml.show_AML();
+	//cout << "numvex = " << gaml.vexnum() << endl;
+	//cout << "numarc = " << gaml.arcnum() << endl;
 
 	cstree<char> tree(gaml);
 	tree.levelorder_traverse(show<char>);

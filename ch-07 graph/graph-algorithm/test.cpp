@@ -9,7 +9,7 @@
 #include "graph_olist.h"
 #include "graph_adjlist.h"
 
-//#define PRIME 1
+#define PRIME 1
 //#define ARTICUL 1
 
 using std::cout;
@@ -204,7 +204,7 @@ test_dijkstra(void)
 }
 #endif
 
-#define FLOYD 1
+//#define FLOYD 1
 #ifdef FLOYD
 static void
 test_floyd(void)

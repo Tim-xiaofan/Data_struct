@@ -329,7 +329,6 @@ void dfs_traverse(const Graph &G)
         if (!visited[v])
             dfs(G, v, visited);
 }
-
 void dfs(const Graph &G, int v, bool *visited)
 {
     visited[v] = true;
@@ -339,6 +338,7 @@ void dfs(const Graph &G, int v, bool *visited)
             dfs(G, p->adj(v), visited);
 }
 
+/** 广度优先搜索*/
 void bfs(Graph &G)
 {
     bool visited[MAX_NUM] = {false};
@@ -365,4 +365,102 @@ void bfs(Graph &G)
                 }
             }
         }
+}
+
+/** 无向图的联通分量和生成树*/
+void dfs_forest(const Graph &G, cstree &T)
+{
+    bool visited[MAX_NUM] = {false};
+    cstree p = nullptr, q = nullptr;
+    T = nullptr;
+    for (int v = 0; v < G.vexnum(); ++v)
+        if (!visited[v])
+        {
+            p = new cstree();
+            p->data = G.data(v);
+            if (!T)
+                T = p; //第一棵生成树
+            else
+                q->nextsibling = p;
+            q = p; //指示当前生成树的根
+            dfs_tree(G, v, p, visited);
+        }
+}
+void dfs_tree(const Graph &G, int v, cstree &t, bool *visited)
+{/** 第v个顶点出发深度优先遒历图G，建立以T为根的生成树*/
+    bool fisrt = true;
+    int w, u;
+    visited[v] = true;
+    cstree p = nullptr, q = nullptr;
+
+    for (auto arc = G.first(v); arc; arc = arc->next(v))
+    {
+        w = arc->adj(v);
+        if (!visited[w])
+        {
+            p = new cstree();
+            p->data = G.data(w);
+            if (first)
+            {
+                first = tree;
+                t->firstchild = p;
+            }
+            else
+                q->nextsibling = p;
+            q = p;
+            dfs_tree(G, w, p, visited);
+        }
+    }
+}
+
+
+
+
+/** 有向图的强连通分量 : kosaraju*/
+/** 从顶点v进行DFS*/
+void DFS(const graph &G, int v, bool *visited, stack &finished, bool r)
+{
+    int w;
+    visited[v] = true;
+    finished.push(v);
+    if (r)
+    {//逆向深度优先搜索
+        for (auto p = G.rfirst(v); p; p = p->rnext(v))
+        {
+            w = p->radj(v);
+            if (!visited[w]) DFS(G, w, visited, finished, true);
+        }
+    }
+    else
+    {//正向深度优先搜索
+        for (auto p = G.first(v); p; p = p->next(v))
+        {
+            w = p->adj(v);
+            if (!visited[w]) DFS(G, w, visited, finished, false);
+        }
+    }
+}
+/** DFS*/
+void DFS(const graph &G, stack &finished, bool r = false)
+{
+    bool visited[MAX_NODE_NB] = {false};
+    for (int v = 0; v < G.vexnum(); ++v)
+        if (!visited[v])
+            DFS(G, v, visited, finished, r);
+}
+void kosaraju(const graph &G)
+{
+    bool visited[MAX_NODE_NB] = false;
+    stack finished(G.vexnum());
+    DSF(G, finished);
+    int v;
+    while (finished.pop(v))
+    {
+        if (!visited[v]) 
+        {
+            finish.clear();
+            DFS(G, v, visited, finished, true);
+            finish.show();
+        }
+    }
 }
