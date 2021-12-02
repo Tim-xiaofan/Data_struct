@@ -103,7 +103,8 @@ void DFS(const Graph & G, OP & op, bool recursion = true)
 			  while(!stack.is_empty())
 			  {
 				  stack.pop(w);
-				  for(p = G.first(w); p; p = p->next(w))// Is there any adjacency vex for w?
+                  // Is there any adjacency vex for w?
+				  for(p = G.first(w); p; p = p->next(w))
 				  {
 					  u = p->adj(w);
 					  if(!visited[u])

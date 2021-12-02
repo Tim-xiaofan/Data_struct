@@ -316,3 +316,53 @@ int get_n1(const node * T)
 /** 非递归中序遍历二叉树*/
 
 /** 求任意二叉树中第一条最长的路径长度，并输出此路径上各结点的值*/
+
+
+/**  第七章 图*/
+/**
+ * 邻接矩阵：O(n ** 2)
+ * 邻接表：O(n + e)
+ * */
+void dfs_traverse(const Graph &G)
+{
+    for (int v = 0; v < G.vexnum(); ++v)
+        if (!visited[v])
+            dfs(G, v, visited);
+}
+
+void dfs(const Graph &G, int v, bool *visited)
+{
+    visited[v] = true;
+    visit(v);
+    for (auto p = G.first(v); p; p = p.next(v))
+        if (!visited[p->adj(v)])
+            dfs(G, p->adj(v), visited);
+}
+
+void bfs(Graph &G)
+{
+    bool visited[MAX_NUM] = {false};
+    int v, w, u;
+    queue q(G.vecnum());
+    for (v = 0; v < G.vexnum; ++v)
+        if (!visited[v])
+        {
+            visited[v] = true;
+            visit(v);
+            q.enqueue(v);
+            while(!q.is_empty())
+            {
+                q.dequeue(w);
+                for(auto p = G.first(w); p; p = p->next(w))
+                {
+                    u = p->adj(w);
+                    if(!visited[u])
+                    {
+                        visit(u);
+                        visited[u] = true;
+                        q.enqueue(u);
+                    }
+                }
+            }
+        }
+}

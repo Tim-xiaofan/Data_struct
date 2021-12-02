@@ -21,14 +21,16 @@ class graph_AML
 		template <typename U1>
 		struct arcnode
 		{
-			bool mark;
-			int ivex, jvex;
-			struct arcnode * ilink, *jlink;//依附于顶点ivex, jvex
-			U1 weigth;
+			bool mark;// 访问标记
+			int ivex, jvex;//为该边依附的两个顶点
+			struct arcnode * ilink, *jlink;//依附于顶点ivex,jvex的边
+			U1 weigth;//权重
 			arcnode(int i = 0, int j = 0, arcnode * ilk = nullptr, 
 						arcnode * jlk = nullptr, U1 w = 0) :
-				mark(false), ivex(i), jvex(j), ilink(ilk), jlink(jlk), weigth(w){}
-			friend std::ostream & operator<<(std::ostream & os, const arcnode & a)
+				mark(false), ivex(i), jvex(j), 
+                ilink(ilk), jlink(jlk), weigth(w){}
+			friend std::ostream & 
+                operator<<(std::ostream & os, const arcnode & a)
 			{
 				os << "{(" << a.ivex << ", " << a.jvex << "), "
 					<< a.weigth << ", " << std::boolalpha << a.mark <<"}";
@@ -40,7 +42,7 @@ class graph_AML
 		template <typename T1, typename U1>
 		struct vexnode
 		{
-			T1 data;
+			T1 data;// 访问标记
 			arcnode<U1> *firstarc;
 			int degree;
 			bool mark;
