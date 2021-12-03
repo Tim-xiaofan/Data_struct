@@ -341,7 +341,7 @@ int prime_O2(const Graph & G, int u)
 {
     /**用普里姆算法从第u个顶点出发构造网G的最小生成树T，输出T的各条边。*/
     typedef typename Graph::cost_type cost_type;
-    int nb = G.vexnum(), v, w, min_vex, cost = 0;
+    int nb = G.vexnum(), v, w, min_vex, cost = 0, ct = 0;
     cost_type min_cost;
 
     /**记录从顶点集U到V- U的代价最小的边的辅助数组定义	
@@ -354,17 +354,18 @@ int prime_O2(const Graph & G, int u)
 
     /** 进入初态*/
     closedge[u].lowcost = 0; // U={u}
+    ++ct;
     for(v = 0; v < nb; ++v)
     {
         if(v != u) closedge[v] = {u, G.cost(u, v)};//V-U
     }
 
-    for(v = 1; v < nb; ++v)
+    for(v = 0; v < nb && ct < nb; ++v)
     {//选择其余 G.vexnum -1个顶点
         min_cost = INT_MAX;
         for(w = 0; w < nb; ++w)//V-U中与U邻接且cost最小的顶点
         {
-            if(closedge[w].lowcost)//属于U
+            if(closedge[w].lowcost)//属于V - U
             {
                 if(closedge[w].lowcost < min_cost) 
                 {
@@ -376,7 +377,8 @@ int prime_O2(const Graph & G, int u)
         cout << "(" << closedge[min_vex].adjvex << "," << min_vex << ") | ";
         cost += min_cost;
         closedge[min_vex].lowcost = 0;//k并入U,重新选择最小边
-        for(w = 1; w < nb; ++w)
+        ++ct;
+        for(w = 0; w < nb; ++w)
         {//更新closedge
             if(closedge[w].lowcost > G.cost(min_vex, w))
             {
@@ -664,7 +666,7 @@ void dijkstra(const Graph & G,
   短路径上的顶点。
  */
 typedef array<bool, 3> a3;
-static void show_path(const a3 & P, const int D[][MAX_NB_VEX]);
+static inline void show_path(const a3 & P, const int D[][MAX_NB_VEX]);
 
 template<typename Graph>
 void floyd(const Graph & G , a3 & P, 
@@ -709,7 +711,7 @@ void floyd(const Graph & G , a3 & P,
 	}
 }
 
-static void 
+static inline void 
 show_path(const a3 & P, const int D[][MAX_NB_VEX])
 {
 	int u, v, w, vexnum = P.get_bound(1);

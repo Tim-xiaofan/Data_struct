@@ -413,9 +413,6 @@ void dfs_tree(const Graph &G, int v, cstree &t, bool *visited)
     }
 }
 
-
-
-
 /** 有向图的强连通分量 : kosaraju*/
 /** 从顶点v进行DFS*/
 void DFS(const graph &G, int v, bool *visited, stack &finished, bool r)
@@ -463,4 +460,40 @@ void kosaraju(const graph &G)
             finish.show();
         }
     }
+}
+
+/**  
+ * 最小生成树
+ * O(n * n)边数无关，因此适用于求边稠密的网的最小生成树
+ */
+int prime(const graph & G, int u)
+{
+    int nb = G.vexnum(), ct = 0, min_vex;
+    G::cost_t min_cost, cost = 0;
+    closege * closeges  = new closege[nb];
+    /** 进入初态*/
+    closeges[u].lowcost = 0;
+    ++ct;
+    for(int v = 0; v < nb; ++v)
+        if(v != u) closeges[v] = {u, G.cost(u,v)};
+
+    for(int v = 0; v < nb && ct < nb; ++v)
+    {
+        min_cost = INI_MAX;
+        for(int w = 0 ; w < nb; ++w)//搜寻V-U和U之间最小
+            if(closeges[w].lowcost != 0 && min_cost > closeges[w].lowcost)
+            {
+                min_cost = closeges[w].lowcost;
+                min_vex = w;
+            }
+        cost += min_cost;
+        closeges[min_vex].lowcost = 0;//并入U
+        ++ct;
+        for(int w = 0; w < nb; ++w)//更新closedges
+            if(G.cost(min_vex, w) < closeges[w].lowcost)
+                closeges[w] = {min_vex, G.cost(min_vex, w)};
+    }
+    print(closeges);
+    delete [] closeges;
+    return cost;
 }

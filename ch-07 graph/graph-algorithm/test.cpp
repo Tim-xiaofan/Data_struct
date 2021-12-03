@@ -9,7 +9,7 @@
 #include "graph_olist.h"
 #include "graph_adjlist.h"
 
-#define PRIME 1
+//#define PRIME 1
 //#define ARTICUL 1
 
 using std::cout;
@@ -56,6 +56,7 @@ test_prime(void)
 }
 #endif
 
+#define ARTICUL 1
 #ifdef ARTICUL
 static void 
 test_articul(void)
