@@ -9,8 +9,6 @@
 #include "graph_olist.h"
 #include "graph_adjlist.h"
 
-//#define PRIME 1
-//#define ARTICUL 1
 
 using std::cout;
 using std::endl;
@@ -56,7 +54,7 @@ test_prime(void)
 }
 #endif
 
-#define ARTICUL 1
+//#define ARTICUL 1
 #ifdef ARTICUL
 static void 
 test_articul(void)
@@ -95,7 +93,7 @@ test_articul(void)
 }
 #endif
 
-//#define TOPO_SORT
+//#define TOPO_SORT 1
 #ifdef TOPO_SORT
 static void
 test_topo_sort(void)
@@ -126,7 +124,7 @@ test_topo_sort(void)
 	bool noloop = topological_sort(G, print);
 	cout << endl; 
 	if(!noloop) cout << "there are loop(s)." << endl;
-	else cout << "there are not loop(s)." << endl;
+	else cout << "there are no ring(s)." << endl;
 }
 #endif
 
@@ -164,7 +162,7 @@ test_criticalpath(void)
 }
 #endif
 
-//#define DIJ 1
+#define DIJ 1
 #ifdef DIJ
 static void
 test_dijkstra(void)
@@ -200,7 +198,9 @@ test_dijkstra(void)
 		cout << "to "<< v << " : ";
 		for(w = 0; w < G.vexnum(); ++w)
 		  if(P[v][w]) cout << w << " ";
-		cout << " len=" << D[v] << endl;
+        if(D[v] != I)
+		    cout << " len=" << D[v];
+        cout << endl;
 	}
 }
 #endif

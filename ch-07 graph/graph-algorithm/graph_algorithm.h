@@ -462,12 +462,10 @@ bool topological_sort(const Graph & G, const OP & op)
 	const typename Graph::anode * p;
 
 	for(v = 0; v < vexnum; ++v)
-	  indegress[v] = G.get_idegree(v);
-	//cout << "\ninit : ";
-	//show_array(indegress, vexnum);
-
-	for(v = 0; v < vexnum; ++v)
-	  if(!indegress[v]) stack.push(v);//入度为0的入栈
+    {
+        indegress[v] = G.get_idegree(v);
+	    if(!indegress[v]) stack.push(v);//入度为0的入栈
+    }
 
 	while(!stack.is_empty())
 	{
@@ -484,7 +482,8 @@ bool topological_sort(const Graph & G, const OP & op)
 	else return true;
 }
 
-/** 邻接表有向图 G：O(n + e)
+/** 
+  邻接表有向图 G：O(n + e)
   G无回路，则输出 G 的顶点的一个拓扑序列并返回 OK，否则ERROR。
   有向网G采用邻接表存储结构，求各顶点事件的最早发生时间ve
   T为拓扑序列顶点栈，S为零入度顶点栈。
@@ -497,46 +496,44 @@ bool cricticalpath_topologicalsort(const Graph & G,
 {
 	int vexnum = G.vexnum(), v, w, count = 0;//输出的顶点计数
 	int indegress[MAX_NB_VEX];//各个顶点的入度
-	sqstack<int> stack(vexnum);//存放入度为0的顶点
+	sqstack<int> S(vexnum);//存放入度为0的顶点
 	const typename Graph::anode * p;
 
 	for(v = 0; v < vexnum; ++v)
 	  indegress[v] = G.get_idegree(v);
-	//cout << "\ninit : ";
-	//show_array(indegress, vexnum);
 
 	for(v = 0; v < vexnum; ++v)
-	  if(!indegress[v]) stack.push(v);//入度为0的入栈
+	  if(!indegress[v]) S.push(v);//入度为0的入栈
 
-	while(!stack.is_empty())
+	while(!S.is_empty())
 	{
-		stack.pop(v);
-		//op(v); 
+		S.pop(v);
 		T.push(v);
 		++count;//输出顶点并计数
-		//每个邻接点入度减一（模拟删除v）
 		for(p = G.first(v); p; p = p->next(v))
-		{
+		{//每个邻接点入度减一（模拟删除v）
 			w = p->adj(v);
-			if(!(--indegress[w])) 
-			  stack.push(w);//出现新的入度为零的顶点
-			if(ve[v] + p->cost(v) > ve[w]) ve[w] = ve[v] + p->cost(v);
+			if(!(--indegress[w])) S.push(w);//出现新的入度为零的顶点
+			if(ve[v] + p->cost(v) > ve[w])
+              ve[w] = ve[v] + p->cost(v);
 		}
 	}
 	if(count < vexnum) return false;//有顶点不在拓扑有序序列中，存在回路
 	else return true;
 }
 
-/** G 为有向网，输出 G 的各项关键活动。
+/** 
+  G为有向网，输出G的各项关键活动。
   O(n + e)
  */
 template<typename Graph>
 bool cricticalpath(const Graph & G)
 {
 	int vexnum = G.vexnum(), v, w;
-	sqstack<int> T(MAX_NB_VEX);
-	typename Graph::cost_type ve[MAX_NB_VEX] = {0},
-			 vl[MAX_NB_VEX], dut, ee, el;
+	sqstack<int> T(MAX_NB_VEX);//T为拓扑序列顶点栈，S为零入度顶点栈。
+	typename Graph::cost_type ve[MAX_NB_VEX] = {0},//最早发生时
+			 vl[MAX_NB_VEX], //最迟发生时间
+             dut, ee, el;
 	const typename Graph::anode * p;
 	char tag;
 
@@ -551,16 +548,14 @@ bool cricticalpath(const Graph & G)
 	  vl[v] = ve[vexnum - 1];
 
 	while(!T.is_empty())
-	{
+	{//vl:向后递推
 		T.pop(v);
 		for(p = G.first(v); p; p = p->next(v))
 		{
 			w = p->adj(v);
 			dut = p->cost(v);
-			//cout << "vl[" << w <<"]=" << vl[w] 
-			//	<< ", dut=" << dut 
-			//	<< ", vl[" << v <<"]=" << vl[v] << endl;
-			if(vl[w] - dut < vl[v]) vl[v] = vl[w] - dut;
+			if(vl[w] - dut< vl[v]) 
+              vl[v] = vl[w] - dut;
 		}
 	}
 	cout << "vl : ";
@@ -597,12 +592,12 @@ void dijkstra(const Graph & G,
 			typename Graph::cost_type * D)
 {
 	int i, j, v, w, vexnum = G.vexnum();
-	bool finalx[MAX_NB_VEX];
+	bool _final[MAX_NB_VEX];
 	typename Graph::cost_type min;
 
 	for(v = 0; v < vexnum; ++v)
 	{
-		finalx[v] = false;
+		_final[v] = false;
 		D[v] = G.cost(v0, v);
 		for(w = 0; w < vexnum; ++w) 
 		  P[v][w] = false;
@@ -613,33 +608,26 @@ void dijkstra(const Graph & G,
 		}
 	}
 	D[v0] = 0; 
-	finalx[v0] = true; //v0加入集合S
-	//cout << "after v0\n";
-	//show_S(finalx, vexnum);
-	//cout << "D : ";
+	_final[v0] = true; //v0加入集合S
 	for(i = 1; i < vexnum; ++i)
 	{
 		cout << "---- i = " << i  << " ------"<< endl;
-		show_S(finalx, vexnum);
+		show_S(_final, vexnum);
 		cout << "D : ";
 		show_array(D, vexnum);
 		min = Graph::INF;//V-S中，当前离v0最近的距离
 		for(w = 0; w < vexnum; ++w)
-		  if(!finalx[w] && D[w] < min) //V-S中的w离v0更近
+		  if(!_final[w] && D[w] < min) //V-S中的w离v0更近
 		  {
 			  v = w;
 			  min = D[w];
 		  }
-		//cout << "min_vex=" << v << ", min=" << min << endl;
-		finalx[v] = true; //加入S
+		_final[v] = true; //加入S
 		for(w = 0; w < vexnum; ++w)
-		  if(!finalx[w] && (G.cost(v, w) != Graph::INF)
+		  if(!_final[w] && (G.cost(v, w) != Graph::INF)
 					  && (G.cost(v, w) + min < D[w]))
 		  {
 			  D[w] = min + G.cost(v, w);
-			  //cout << "update D[" << w << "]" << endl;
-			  //cout << "D : ";
-			  //show_array(D, vexnum);
 			  for(j = 0; j < vexnum; ++j)
 				P[w][j] = P[v][j];//j在Path(v0...v)-->j在Path(v0...w)
 			  P[w][w] = true;
