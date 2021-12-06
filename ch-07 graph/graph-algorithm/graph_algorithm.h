@@ -30,7 +30,7 @@ void show_array(const Array & a, int size)
 	for(i = 0; i < size; ++i)
 	{
 		if(a[i] == INT_MAX) cout << 'I';
-		else cout << a[i];
+		else cout << std::setw(2) << a[i];
 		if(i ==  size - 1) cout << endl;
 		else cout << " ";
 	}
@@ -50,7 +50,7 @@ void show_closedge(const closedges & cds, int size)
 	}
 }
 
-static void 
+static inline void 
 print(int v)
 {
 	cout << v << " ";
@@ -395,26 +395,17 @@ int prime_O2(const Graph & G, int u)
 template<typename Graph, typename OP>
 void find_articul(const Graph & G, const OP & op = print)
 {
-	int v, count = 1, visited[MAX_NB_VEX] = {0}, vexnum = G.vexnum();
-	int low[MAX_NB_VEX] = {0};//深度优先搜索树中点i所能回溯到的最浅层的点
-	const typename Graph::anode * p;
-	visited[0] = 1;//v0最先访问(先序遍历)
+	int v, count = 0, visited[MAX_NB_VEX] = {0},//顶点v的在DFS中访问次序
+        vexnum = G.vexnum();
+	int low[MAX_NB_VEX] = {0};//深度优先搜索树中顶点w所能回溯到的最浅层的点
 
-	p = G.first(0);
-	v = p->adj(0);
-	DFS_articul(G, v, visited, low, count, op);//从v0开始做DFS
-	if(count < vexnum)
-	{
-		op(0);
-		//cout << endl;
-		while(p->next(0))
-		{
-			p = p->next(0);
-			v = p->adj(0);
-			if(!visited[v])
-			  DFS_articul(G, v, visited, low, count, op);
-		}
-	}
+    for(v = 0; v < vexnum;++v)
+      if(!visited[v])
+      {
+          DFS_articul(G, v, visited, low, count, print);
+          if(count < vexnum)
+            op(v);
+      }
 	cout << endl;
 }
 
@@ -430,41 +421,37 @@ void DFS_articul(const Graph & G,
 			const OP & op = print)
 {
 	int min = ++count, w;
-	visited[v] = min;
-	//cout << "visited : ";
-	//show_array(visited, G.vexnum());
 	const typename Graph::anode * p;
 	bool first = true;
-	//cout << "v = " << v << endl;
+	visited[v] = min;
 
 	for(p = G.first(v); p; p = p->next(v))
 	{
 		w = p->adj(0);
-		//cout << "w = " << w << endl;
 		if(!visited[w])//w未曾访问，w是v的孩子
 		{
 			DFS_articul(G, w, visited, low, count, op);
 			if(low[w] < min) min = low[w];
 			if(low[w] >= visited[v] && first)//关节点<--没有回边
 			{
-				//cout << "found : v = " << v << 
-				//	", w = " << w << endl;
 				op(v);
 				first = false;
-				//cout << endl;
 			}
 		}
-		else if(visited[w] < min) 
+		else if(visited[w] < min)//visited[k] 
 		  min = visited[w];//w已访问，w是v的祖先
 	}
 	low[v] = min;
-	//cout << "low : ";
+	//cout << "\nvisited : ";
+	//show_array(visited, G.vexnum());
+	//cout << "low     : ";
 	//show_array(low, G.vexnum());
 }
 
-/** 邻接表有向图 G：
-  G无回路，则输出 G 的顶点的一个拓扑序列并返回 OK，否则 ERROR。
-  O(n + e)
+/** 
+ * 邻接表有向图 G：
+ * G无回路，则输出G的顶点的一个拓扑序列并返回 OK，否则 ERROR。
+ * O(n + e)
  */
 template<typename Graph, typename OP>
 bool topological_sort(const Graph & G, const OP & op)

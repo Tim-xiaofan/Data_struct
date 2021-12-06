@@ -1,3 +1,4 @@
+```c++
 bool fast_transpose(const matrix &M, matrix &N)
 {
     int pos, pos1, col, *num = new int[M.nu], *copt = new in[M.nu];
@@ -21,7 +22,8 @@ bool fast_transpose(const matrix &M, matrix &N)
     }
     return true;
 }
-
+```
+```c++
 /** matrix[M][P] * matrix[P][N]*/
 bool multi_matrix(const matrix &A, const &B, matrix &C)
 {
@@ -35,7 +37,8 @@ bool multi_matrix(const matrix &A, const &B, matrix &C)
                 C[i][j] = A[i][k] * B[k][j];
     return true;
 }
-
+```
+```c++
 /** 线性表的第一种表示:头尾表示*/
 struct htnode
 {
@@ -50,6 +53,8 @@ struct htnode
         } ptr;
     };
 };
+```
+```c++
 
 /** 线性表的第一种表示:线性扩展*/
 struct lenode
@@ -62,7 +67,8 @@ struct lenode
     };
     struct lenode *tp;
 };
-
+```
+```c++
 /** 求广义表的深度*/
 int depth(const node *lists)
 {
@@ -82,7 +88,8 @@ int depth(const node *lists)
     }
     return max + 1;
 }
-
+```
+```c++
 /** 复制广义表la <-- lb*/
 void copy(node *&to, node *from)
 {
@@ -101,7 +108,8 @@ void copy(node *&to, node *from)
         copy(to->ptr.tp, from->ptr.tp);
     }
 }
-
+```
+```c++
 /** */
 void Count() //统计输入字符串中数字字符和字母字符的个数。
 {
@@ -129,7 +137,8 @@ void Count() //统计输入字符串中数字字符和字母字符的个数。
         cout
         << "字母字符" << i + 55 << "的个数=" << num[i << endl;
 }
-
+```
+```c++
 void InvertStore(char A[])
 { //字符串逆序存储的递归算法。
     char ch;
@@ -142,7 +151,8 @@ void InvertStore(char A[])
     }
     A[i] = '\0'; //字符串结尾标记
 }
-
+```
+```c++
 void insert(char *s, char *t, int pos)
 //将字符串t插入字符串s的第pos个位置。
 {
@@ -184,7 +194,8 @@ void insert(char *s, char *t, int pos)
     for (j = 1; j <= x; j++)
         *p-- = *q--; //将t串插入到s的pos位置上
 }
-
+```
+```c++
 void Arrange(int A[], int n)
 //n个整数存于数组A中，本算法将数组中所有正数排在所有负数的前面
 {
@@ -203,7 +214,8 @@ void Arrange(int A[], int n)
         } //交换A[i] 与A[j]
     }     // while(i<j)
 } //算法Arrange结束
-
+```
+```c++
 /** 第5章  树和二叉树*/
 /** 统计叶子节点*/
 int leaf_count(const node *root)
@@ -216,7 +228,8 @@ int leaf_count(const node *root)
         return leaf_count(root->lchild) +
                leaf_count(root->rchild); //非终端节点
 }
-
+```
+```c++
 /** 判断两树是否相等*/
 bool equal(const node *T1, const node *T2)
 {
@@ -231,7 +244,8 @@ bool equal(const node *T1, const node *T2)
     else
         return false;
 }
-
+```
+```c++
 /** 交换二叉树每个结点的左孩子和右孩子*/
 void switch_lr(node * T)
 {
@@ -246,7 +260,8 @@ void switch_lr(node * T)
     switch_lr(T->lchild);
     switch_lr(T->rchild);
 }
-
+```
+```c++
 /** 双序遍历*/
 void double_traverse(node * T)
 {
@@ -263,7 +278,8 @@ void double_traverse(node * T)
         }
     }
 }
-
+```
+```c++
 /** 计算二叉树最大的宽度（二叉树的最大宽度是指二叉树所有层中结点个数的最大值）*/
 int get_width(const node * T)
 {
@@ -291,7 +307,8 @@ int get_width(const node * T)
     }
     return max;
 }
-
+```
+```c++
 /** 用按层次顺序遍历二叉树的方法，统计树中具有度为1的结点数目*/
 int get_n1(const node * T)
 {
@@ -312,188 +329,4 @@ int get_n1(const node * T)
     }
     return ct;
 }
-
-/** 非递归中序遍历二叉树*/
-
-/** 求任意二叉树中第一条最长的路径长度，并输出此路径上各结点的值*/
-
-
-/**  第七章 图*/
-/**
- * 邻接矩阵：O(n ** 2)
- * 邻接表：O(n + e)
- * */
-void dfs_traverse(const Graph &G)
-{
-    for (int v = 0; v < G.vexnum(); ++v)
-        if (!visited[v])
-            dfs(G, v, visited);
-}
-void dfs(const Graph &G, int v, bool *visited)
-{
-    visited[v] = true;
-    visit(v);
-    for (auto p = G.first(v); p; p = p.next(v))
-        if (!visited[p->adj(v)])
-            dfs(G, p->adj(v), visited);
-}
-
-/** 广度优先搜索*/
-void bfs(Graph &G)
-{
-    bool visited[MAX_NUM] = {false};
-    int v, w, u;
-    queue q(G.vecnum());
-    for (v = 0; v < G.vexnum; ++v)
-        if (!visited[v])
-        {
-            visited[v] = true;
-            visit(v);
-            q.enqueue(v);
-            while(!q.is_empty())
-            {
-                q.dequeue(w);
-                for(auto p = G.first(w); p; p = p->next(w))
-                {
-                    u = p->adj(w);
-                    if(!visited[u])
-                    {
-                        visit(u);
-                        visited[u] = true;
-                        q.enqueue(u);
-                    }
-                }
-            }
-        }
-}
-
-/** 无向图的联通分量和生成树*/
-void dfs_forest(const Graph &G, cstree &T)
-{
-    bool visited[MAX_NUM] = {false};
-    cstree p = nullptr, q = nullptr;
-    T = nullptr;
-    for (int v = 0; v < G.vexnum(); ++v)
-        if (!visited[v])
-        {
-            p = new cstree();
-            p->data = G.data(v);
-            if (!T)
-                T = p; //第一棵生成树
-            else
-                q->nextsibling = p;
-            q = p; //指示当前生成树的根
-            dfs_tree(G, v, p, visited);
-        }
-}
-void dfs_tree(const Graph &G, int v, cstree &t, bool *visited)
-{/** 第v个顶点出发深度优先遒历图G，建立以T为根的生成树*/
-    bool fisrt = true;
-    int w, u;
-    visited[v] = true;
-    cstree p = nullptr, q = nullptr;
-
-    for (auto arc = G.first(v); arc; arc = arc->next(v))
-    {
-        w = arc->adj(v);
-        if (!visited[w])
-        {
-            p = new cstree();
-            p->data = G.data(w);
-            if (first)
-            {
-                first = tree;
-                t->firstchild = p;
-            }
-            else
-                q->nextsibling = p;
-            q = p;
-            dfs_tree(G, w, p, visited);
-        }
-    }
-}
-
-/** 有向图的强连通分量 : kosaraju*/
-/** 从顶点v进行DFS*/
-void DFS(const graph &G, int v, bool *visited, stack &finished, bool r)
-{
-    int w;
-    visited[v] = true;
-    finished.push(v);
-    if (r)
-    {//逆向深度优先搜索
-        for (auto p = G.rfirst(v); p; p = p->rnext(v))
-        {
-            w = p->radj(v);
-            if (!visited[w]) DFS(G, w, visited, finished, true);
-        }
-    }
-    else
-    {//正向深度优先搜索
-        for (auto p = G.first(v); p; p = p->next(v))
-        {
-            w = p->adj(v);
-            if (!visited[w]) DFS(G, w, visited, finished, false);
-        }
-    }
-}
-/** DFS*/
-void DFS(const graph &G, stack &finished, bool r = false)
-{
-    bool visited[MAX_NODE_NB] = {false};
-    for (int v = 0; v < G.vexnum(); ++v)
-        if (!visited[v])
-            DFS(G, v, visited, finished, r);
-}
-void kosaraju(const graph &G)
-{
-    bool visited[MAX_NODE_NB] = false;
-    stack finished(G.vexnum());
-    DSF(G, finished);
-    int v;
-    while (finished.pop(v))
-    {
-        if (!visited[v]) 
-        {
-            finish.clear();
-            DFS(G, v, visited, finished, true);
-            finish.show();
-        }
-    }
-}
-
-/**  
- * 最小生成树
- * O(n * n)边数无关，因此适用于求边稠密的网的最小生成树
- */
-int prime(const graph & G, int u)
-{
-    int nb = G.vexnum(), ct = 0, min_vex;
-    G::cost_t min_cost, cost = 0;
-    closege * closeges  = new closege[nb];
-    /** 进入初态*/
-    closeges[u].lowcost = 0;
-    ++ct;
-    for(int v = 0; v < nb; ++v)
-        if(v != u) closeges[v] = {u, G.cost(u,v)};
-
-    for(int v = 0; v < nb && ct < nb; ++v)
-    {
-        min_cost = INI_MAX;
-        for(int w = 0 ; w < nb; ++w)//搜寻V-U和U之间最小
-            if(closeges[w].lowcost != 0 && min_cost > closeges[w].lowcost)
-            {
-                min_cost = closeges[w].lowcost;
-                min_vex = w;
-            }
-        cost += min_cost;
-        closeges[min_vex].lowcost = 0;//并入U
-        ++ct;
-        for(int w = 0; w < nb; ++w)//更新closedges
-            if(G.cost(min_vex, w) < closeges[w].lowcost)
-                closeges[w] = {min_vex, G.cost(min_vex, w)};
-    }
-    print(closeges);
-    delete [] closeges;
-    return cost;
-}
+```
