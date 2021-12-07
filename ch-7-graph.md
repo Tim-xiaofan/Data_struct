@@ -71,7 +71,7 @@
 ### <a href="#7">7.4 图的连通性问题</a> <a id="74"></a>
 >>#### 7.4.1 无向图的连通分量<a id="741"></a>
 >>```c++
->>/** 无向图的联通分量和生成树*/
+>>/** 无向图的连通分量和生成树*/
 >>void dfs_forest(const Graph &G, cstree &T)
 >>{
 >>    bool visited[MAX_NUM] = {false};
