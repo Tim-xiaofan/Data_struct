@@ -13,6 +13,7 @@
 >>    * <a href="#752">7.5.2 关键路径</a><br>
 >>* <a href="#76">7.6 最短路径</a><br>
 >>    * <a href="#761">7.6.1 从某个源点到其余各顶点的最短路径</a><br>
+>>    * <a href="#762">7.6.2 每一对顶点之词的最短路径</a><br>
 >><!--te-->
 ### <a href="#7">7.3 图的遍历<a> <a id="73"></a>
 >>#### 7.3.1 DFS <a id="731"></a>
@@ -373,3 +374,37 @@
 >>    }
 >>}
 >>```
+>>#### 7.6.2 每一对顶点之词的最短路径 <a id="762"></a>
+>>```c++
+>>void floyd(const graph & G, array3 & paths, matrix & D)
+>>{
+>>    int nb = G.vexnum();
+>>    /** enter start state*/
+>>    for(int v = 0; v < nb; ++v)
+>>        for(int w = 0; w < nb; ++w)
+>>        {
+>>            for(int i = 0; i <nb; ++i)
+>>                paths[v][w][i] = false;
+>>            D[v][w] = G.cost(v, w);
+>>            if(D[v][w] < INF)
+>>            {//{v, w} has direct connectiong 
+>>                path[v]v[w][w] = true;
+>>                path[v][w][v] = true;
+>>            }
+>>        }
+>>    for(int u = 0; u < nb; ++u)
+>>        for(int v = 0; v < nb; ++v)
+>>            for(int w = 0; w < nb; ++w)
+>>            {
+>>                if(D[v][u] < INF && D [u][w] < INF 
+>>                    && D[v][u] + D[u][w] < D[v][w])
+>>                {//shorter one after adding a middle vertex
+>>                    D[v][w] = D[v][u] + D[u][w];
+>>                    /** add vertexs in su-path(v...u or u...w) into path[v][w] */
+>>                    for(int i = 0; i < nb; ++i)
+>>                        paths[v][w][i] = (paths[v][u][i] || paths[u][w][i]);
+>>                    paths[v][w][v] = paths[v][w][w] = true;
+>>                }
+>>            }
+>>}
+>>```c

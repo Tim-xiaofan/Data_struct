@@ -663,7 +663,7 @@ void floyd(const Graph & G , a3 & P,
 			  P.at(v, w, w) = true;
 		  }
 	  }
-	cout << "------------" << -1 << "---------------" << endl;
+	cout << "------------" << "start state" << "---------------" << endl;
 	show_path(P, D);
 
 	/* shorter one?*/
@@ -678,7 +678,8 @@ void floyd(const Graph & G , a3 & P,
 			  {
 				  D[v][w] = D[v][u] + D[u][w];
 				  for(i = 0; i < vexnum; ++i)
-					P.at(v, w, u) = (P.at(v, u, i) || P.at(u, w, i));
+					P.at(v, w, i) = (P.at(v, u, i) || P.at(u, w, i));
+                  P.at(v, w, w) = P.at(v, w, v) = true;
 			  }
 		  }
 		cout << "------------" << u << "---------------" << endl;
