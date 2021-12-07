@@ -17,26 +17,53 @@
 >><!--te-->
 ### <a href="#7">7.3 图的遍历<a> <a id="73"></a>
 >>#### 7.3.1 DFS <a id="731"></a>
->>```c++
->>/**
->> * 邻接矩阵：O(n ** 2)
->> * 邻接表：O(n + e)
->> * */
->>void dfs_traverse(const Graph &G)
->>{
->>    for (int v = 0; v < G.vexnum(); ++v)
->>        if (!visited[v])
->>            dfs(G, v, visited);
->>}
->>void dfs(const Graph &G, int v, bool *visited)
->>{
->>    visited[v] = true;
->>    visit(v);
->>    for (auto p = G.first(v); p; p = p.next(v))
->>        if (!visited[p->adj(v)])
->>            dfs(G, p->adj(v), visited);
->>}
->>```
+>>>>##### 递归实现
+>>>>```c++
+>>>>/**
+>>>> * 邻接矩阵：O(n ** 2)
+>>>> * 邻接表：O(n + e)
+>>>> * */
+>>>>void DFS_traverse(const Graph &G)
+>>>>{
+>>>>    for (int v = 0; v < G.vexnum(); ++v)
+>>>>        if (!visited[v])
+>>>>            dfs(G, v, visited);
+>>>>}
+>>>>void DFS(const Graph &G, int v, bool *visited)
+>>>>{
+>>>>    visited[v] = true;
+>>>>    visit(v);
+>>>>    for (auto p = G.first(v); p; p = p.next(v))
+>>>>        if (!visited[p->adj(v)])
+>>>>            dfs(G, p->adj(v), visited);
+>>>>}
+>>>>```
+>>>>##### 非递归实现
+>>>>```c++
+>>>>void DFS(const graph & G)
+>>>>{
+>>>>    int nb = G.vexnum(), v, w, u;
+>>>>    array<bool> visited(nb, false);
+>>>>    stack<int> s(nb);
+>>>>    for(u = 0; u < nb; ++u)
+>>>>    {
+>>>>        s.push(u);
+>>>>        while(!s.empty())
+>>>>        {
+>>>>            s.pop(v);
+>>>>            if(!visited[v])
+>>>>            {
+>>>>                visited[v] = true;cout << v;
+>>>>                for(auto p = G.firstarc(v); p; p = p->nextarc)
+>>>>                {
+>>>>                    w = p->adj();
+>>>>                    if(!visited[w]){s.push(w); break;}
+>>>>                }
+>>>>            }
+>>>>        }
+>>>>    }
+>>>>}
+>>>>```
 >>#### 7.3.1 BFS <a id="732"></a>
 >>```c++
 >>/** 广度优先搜索*/
@@ -72,7 +99,7 @@
 >>#### 7.4.1 无向图的连通分量<a id="741"></a>
 >>```c++
 >>/** 无向图的连通分量和生成树*/
->>void dfs_forest(const Graph &G, cstree &T)
+>>void DFS_forest(const Graph &G, cstree &T)
 >>{
 >>    bool visited[MAX_NUM] = {false};
 >>    cstree p = nullptr, q = nullptr;
@@ -90,7 +117,7 @@
 >>            dfs_tree(G, v, p, visited);
 >>        }
 >>}
->>void dfs_tree(const Graph &G, int v, cstree &t, bool *visited)
+>>void DFS_tree(const Graph &G, int v, cstree &t, bool *visited)
 >>{/** 第v个顶点出发深度优先遒历图G，建立以T为根的生成树*/
 >>    bool fisrt = true;
 >>    int w, u;
