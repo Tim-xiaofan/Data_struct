@@ -607,15 +607,15 @@ void dijkstra(const Graph & G,
 			P[v][v] = true;//终点
 		}
 	}
-	D[v0] = 0; 
+	D[v0] = 0;//vi到v0的最短路径 
 	_final[v0] = true; //v0加入集合S
-	for(i = 1; i < vexnum; ++i)
+	for(i = 0; i < vexnum; ++i)
 	{
 		cout << "---- i = " << i  << " ------"<< endl;
 		show_S(_final, vexnum);
 		cout << "D : ";
 		show_array(D, vexnum);
-		min = Graph::INF;//V-S中，当前离v0最近的距离
+		min = Graph::INF;//V-S中，当前离v0最近的距离节点vj
 		for(w = 0; w < vexnum; ++w)
 		  if(!_final[w] && D[w] < min) //V-S中的w离v0更近
 		  {
@@ -623,7 +623,7 @@ void dijkstra(const Graph & G,
 			  min = D[w];
 		  }
 		_final[v] = true; //加入S
-		for(w = 0; w < vexnum; ++w)
+		for(w = 0; w < vexnum; ++w)//更新V-S到v0的最短路径
 		  if(!_final[w] && (G.cost(v, w) != Graph::INF)
 					  && (G.cost(v, w) + min < D[w]))
 		  {

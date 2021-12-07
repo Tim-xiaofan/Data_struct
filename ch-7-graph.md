@@ -1,19 +1,21 @@
-## 第七章 图
+## 第七章 图<a id="7"></a>
 >><!--ts-->
->>* [7.4 图的遍历](#none)
->>    * [7.4.1 DFS](#none)
->>    * [7.4.2 BFS](#none)
->>* [7.4 图的连通性问题](#none)
->>    * [7.4.1 无向图的连通分量](#none)
->>    * [7.4.2 有向图的强连通分量](#none)
->>    * [7.4.3 最小生成树](#none)
->>    * [7.4.4 连通图关节点](#none)
->>* [7.5 有向无环图及其应用](#none)
->>    * [7.5.1 拓扑排序](#none)
->>    * [7.5.2 关键路径](#none)
+>>* <a href="#73">7.3 图的遍历</a><br>
+>>   * <a href="#731">7.3.1 DFS</a><br>
+>>   * <a href="#732">7.3.2 BFS</a><br>
+>>* <a href="#74">7.4 图的连通性问题</a><br>
+>>   * <a href="#741">7.4.1 无向图的连通分量</a><br>
+>>   * <a href="#742">7.4.2 有向图的强连通分量</a><br>
+>>   * <a href="#743">7.4.3 最小生成树</a><br>
+>>   * <a href="#744">7.4.4 连通图关节点</a><br>
+>>* <a href="#75">7.5 有向无环图及其应用</a><br>
+>>    * <a href="#751">7.5.1 拓扑排序</a><br>
+>>    * <a href="#752">7.5.2 关键路径</a><br>
+>>* <a href="#76">7.6 最短路径</a><br>
+>>    * <a href="#761">7.6.1 从某个源点到其余各顶点的最短路径</a><br>
 >><!--te-->
-### 7.4 图的遍历
->>#### 7.4.1 DFS
+### <a href="#7">7.3 图的遍历<a> <a id="73"></a>
+>>#### 7.3.1 DFS <a id="731"></a>
 >>```c++
 >>/**
 >> * 邻接矩阵：O(n ** 2)
@@ -34,7 +36,7 @@
 >>            dfs(G, p->adj(v), visited);
 >>}
 >>```
->>#### 7.4.1 BFS
+>>#### 7.3.1 BFS <a id="732"></a>
 >>```c++
 >>/** 广度优先搜索*/
 >>void bfs(Graph &G)
@@ -65,8 +67,8 @@
 >>        }
 >>}
 >>```
-### 7.4 图的连通性问题
->>#### 7.4.1 无向图的连通分量
+### <a href="#7">7.4 图的连通性问题</a> <a id="74"></a>
+>>#### 7.4.1 无向图的连通分量<a id="741"></a>
 >>```c++
 >>/** 无向图的联通分量和生成树*/
 >>void dfs_forest(const Graph &G, cstree &T)
@@ -113,7 +115,7 @@
 >>    }
 >>}
 >>```
->>#### 7.4.2 有向图的强连通分量
+>>#### 7.4.2 有向图的强连通分量<a id="742"></a>
 >>```c++
 >>/** 有向图的强连通分量 : kosaraju*/
 >>/** 从顶点v进行DFS*/
@@ -164,7 +166,7 @@
 >>    }
 >>}
 >>```
->>#### 7.4.3 最小生成树
+>>#### 7.4.3 最小生成树 <a id="743"></a>
 >>```c++
 >>/**  
 >> * 最小生成树
@@ -202,7 +204,7 @@
 >>    return cost;
 >>}
 >>```
->>#### 7.4.4 关节点
+>>#### 7.4.4 关节点 <a id="744"></a>
 >>```c++
 >> /** 时间复杂度仍O(n+e)：进行了一次DFS*/
 >>int DFS_artical(const graph & G, 
@@ -244,8 +246,8 @@
 >>      }
 >>}
 >>```
-### 7.5 有向无环图及其应用
->>#### 7.5.1 拓扑排序
+### <a href="#7">7.5 有向无环图及其应用</a> <a id="75"></a>
+>>#### 7.5.1 拓扑排序 <a id="751"></a>
 >><b>算法描述</b>：<br>
 >>（1）在有向图中选一个没有前驱的顶点且输出之。</br>
 >>（2）从图中删除该顶点和所有以它为尾的弧。</br>
@@ -277,7 +279,7 @@
 >>    return (ct == G.vexnum());
 >>}
 >>```
->>### 7.5.2 关键路径
+>>### 7.5.2 关键路径 <a id="752"></a>
 >>$e(i)= ve(i)$ --活动最早开始时间<br>
 >>$l(i) = vl(k) - dut<j, k>$ --活动最晚开始时间<br>
 >>$ve[j] = max\{v[j] + dut<i,j>\}, <i, j> \in edges$ <br>
@@ -331,5 +333,43 @@
 >>    }
 >>}
 >>```
-### 7.6 最短路径
-#### 7.6.1 从某个源点到其余各顶点的最短路径
+>>### 7.6 最短路径 <a id="76"></a>
+>>#### 7.6.1 从某个源点到其余各顶点的最短路径 <a id="761"></a>
+>><img src="./image/dijkstra.jpg" alt="dijkstra algorithm" width="350"><br>
+>>```c++
+>>void dijkstra(const graph & G, 
+>>              int start, //源点
+>>              matrix & paths, //start到vi的路径
+>>              array & D)//start到vi的路径长度
+>>{
+>>    graph::cost_t min;
+>>    array<bool> _final(G.vexnum(), false);//belong to S
+>>    int v, w, nb = G.vexnum(), min_vex;
+>>    /** enter start state*/
+>>    for(v = 0; v< nb; ++v)
+>>        D[v] = G.cost(start, v);
+>>    D[start] = 0; _final[start] = true;
+>>    for(v = 0; v < nb; ++v)
+>>    {
+>>        /** find vertex in V-S which closest to start*/
+>>        min = INF;//infinite
+>>        for(w = 0; w < nb; ++w)
+>>            if(!_final[w] && D[w] < min)
+>>            {
+>>                min = D[w];
+>>                min_vex  = w;
+>>            }
+>>        /** add into S*/
+>>        _final[min_vex] = true;
+>>        /** update current min paths and distances*/
+>>        for(w = 0; w < nb; ++w)
+>>            if(D[w] > G.cost(min_vex, w) + min)
+>>            {
+>>                D[w] = G.cost(min_vex, w) + min;
+>>                for(int x = 0; x < nb; ++x)
+>>                    paths[x][w] = paths[min_vex][w];
+>>                paths[w][w] = true;
+>>            }
+>>    }
+>>}
+>>```
