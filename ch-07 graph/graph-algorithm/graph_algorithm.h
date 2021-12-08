@@ -624,14 +624,15 @@ void dijkstra(const Graph & G,
 		  }
 		_final[v] = true; //加入S
 		for(w = 0; w < vexnum; ++w)//更新V-S到v0的最短路径
-		  if(!_final[w] && (G.cost(v, w) != Graph::INF)
-					  && (G.cost(v, w) + min < D[w]))
+        {
+		  if(!_final[w] && G.cost(v, w) < Graph::INF && (G.cost(v, w) + min < D[w]))
 		  {
 			  D[w] = min + G.cost(v, w);
 			  for(j = 0; j < vexnum; ++j)
 				P[w][j] = P[v][j];//j在Path(v0...v)-->j在Path(v0...w)
 			  P[w][w] = true;
 		  }
+        }
 	}
 }
 
