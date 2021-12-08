@@ -111,7 +111,7 @@ class bitree
             cout << endl;
         }
 		static int count(int n) {return fact(2 * n) / fact(n) /fact(n + 1);}
-		/** 构造次优查找树的*/
+		/** 从有序序列和对应权值构建次优查找树*/
 		void second_optimal(const Data * table, float * w, int size);
         /** 输出所有节点的层次*/
         int get_levels(int *level) const;
@@ -223,17 +223,18 @@ inorder_traversex(node *root, const UnaryOperator & op)
 template<typename Data>
 void bitree<Data>::
 second_optimal(const Data * table, float * w, int size)
-{
+{/** 从有序序列和对应权值构建次优查找树*/
 	if(size == 0) return;
 	int i;
 	float *sw = new float[size];
 
-	sw[0] = w[0];
+	sw[0] = w[0];//累计权值
 	for(i = 1; i < size; ++i)
 	  sw[i] = sw[i -1] + w[i];
 
 	second_optimal(_root, table, sw, 0, size - 1);
     _node_num = size;
+    delete [] sw;
 }
 
 template<typename T>
@@ -248,29 +249,22 @@ void bitree<Data>::
 second_optimal(node * & T, const Data * table,  
             float * sw, int low, int high)
 {
-	int i = low, j;
+    int i = low, j;
 	float dw, min = abs(sw[high] - sw[low]);
 	if(low == 0)  dw = sw[high] + 0;
 	else  dw = sw[high] + sw[low -1];
 
 	//min(Pi), i is current root
-	cout << "\n-----------------------------------" << endl;
-	cout << "low = " << low << ", high = " << high << endl;
-	cout << table[low] << " ";
 	for(j = low + 1; j <= high; ++j)
 	{
-		cout << table[j] << " ";
 	  if(abs(dw - sw[j] - sw[j - 1]) < min)
 	  {
 		  min = abs(dw - sw[j] - sw[j -1]);
 		  i = j;
 	  }
 	}
-	cout << endl;
 	T = new node();
 	T->data = table[i];
-	cout << "min = " << min << endl;
-	cout << "i = " << i << endl;
 	if(i != low)//create left child
 	  second_optimal(T->lchild, table, sw, low, i - 1);
 	if(i != high)//create right child

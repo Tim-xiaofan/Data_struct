@@ -77,7 +77,7 @@ test_so(char *table, float *w, int size)
 	bitree<char> tree;
     int * levels = new int[size], ret, i;
     float PH = 0;
-
+    /** 从有序序列和对应权值构建次优查找树*/
 	tree.second_optimal(table, w, size);
     cout << "preorder_traverse : ";
 	tree.preorder_traverse();
@@ -114,10 +114,10 @@ int main(int ac, char * av[])
 #endif
 #ifdef SECOND_OPTIMAL
 	char table[9] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'};
-	//float w[9] = {1, 1, 2, 5, 3, 4, 4, 3, 5};
-	float w1[5] = {1, 30, 2, 29, 3};
-    //test_so(table, w, 9);
-    test_so(table, w1, 5);
+	float w[9] = {1, 1, 2, 5, 3, 4, 4, 3, 5};
+	//float w1[5] = {1, 30, 2, 29, 3};
+    test_so(table, w, 9);
+    //test_so(table, w1, 5);
 #endif
     cout << "done." << endl;
 	return 0;
