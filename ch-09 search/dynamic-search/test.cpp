@@ -34,7 +34,7 @@ show_tree(Tree & tree)
 	tree.level_traverse();
 }
 
-//#define BST 1
+#define BST 1
 #ifdef BST
 
 static void
@@ -83,7 +83,7 @@ test_BST(void)
 }
 #endif
 
-#define EDGE 1
+//#define EDGE 1
 #ifdef EDGE
 static void 
 test_edge(void)
