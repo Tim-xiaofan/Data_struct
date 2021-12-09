@@ -6,7 +6,7 @@
 >>      * <a href="#9121">折半查找</a><br>
 >>      * <a href="#9122">其他：斐波那契查找、插值查找</a><br>
 >>   * <a href="#913">9.1.3 静态树的查找</a><br>
->>      * <a href="#9121">次优查找树</a><br>
+>>      * <a href="#9131">次优查找树</a><br>
 >>   * <a href="#914">9.1.4 索引顺序表的查找</a><br>
 >>* <a href="#92">9.2 动态查找表</a><br>
 >>   * <a href="#921">9.2.1 二叉排序树和平衡二叉树</a><br>
@@ -66,3 +66,34 @@ $$\underset{j = l}{\overset{i -1}{\sum}}w_j = sw_{i -1} - sw_{l -1}$$
 $$\underset{j = i + 1}{\overset{h}{\sum}}w_j = sw_{h} - sw{i}$$
 $$\Delta P_i = \lvert (sw_{h} - sw_{i}) - (sw_{i -1} - sw_{l -1})\rvert = 
 \lvert (sw_{h} + sw_{l - 1}) - (sw_{i} + sw_{i -1})\rvert$$
+<b>构造次优查找树</b>
+
+```c++
+void second_optimal(bitree & t, array<char> & tab, array<float> w)
+{
+    array<float> sw(tab.size());
+    if(tab.size() != w.size()) return;
+    sw[0] = w[0];//计算累计权值
+    for(int i = 0; i < sw.size(); ++i)
+        sw[i] = w[i] + sw[i - 1];
+    second_optimal(t, tab, sw, 0, tab.size() -1);
+}
+void second_optimal(bitree & t, array<char> & tab, array<float> sw, int low, int high)
+{
+    float min = adb(sw[high] - sw[low]), dw;
+    int min_i = low;
+    if(low == 0) dw = sw[high] + 0;
+    else dw = sw[low - 1] + sw[high];
+    for(int i = low + 1; i <= high; ++i)//寻找最小Pi
+        if(dw - sw[i] -sw[i - 1])
+        {
+            min = dw - sw[i] -sw[i - 1];
+            min_i = i;
+        }
+    t = new bitree(tab[min_i], nullptr, nullptr);
+    /** create left sub tree*/
+    if(min_i != low) second_optimal(t, tab, sw, low, min_i - 1)
+    /** create right sub tree*/
+    if(min_i != high) second_optimal(t, tab, sw, i + 1, high)
+}
+```

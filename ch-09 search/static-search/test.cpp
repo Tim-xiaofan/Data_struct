@@ -101,6 +101,12 @@ test_so(char *table, float *w, int size)
     for(i = 0; i < size; ++i)
       PH += tree.get_level(table[i]) * w[i];
     cout << "PH                : " << PH << endl;
+    cout << "edges :";
+    bitree<char>::edge edges[64];
+    ret = tree.get_edges(edges, 64);
+    for(int i = 0; i < ret; ++i)
+      cout << ""<<edges[i] << " ";
+    cout << endl;
 }
 #endif
 

@@ -59,7 +59,7 @@ class bitree
             friend std::ostream & operator<<(std::ostream & os, 
                         const Edge & e)
             {
-                os << e.tail << " " << e.head;
+                os << "("<< e.tail << "," << e.head << ")";
                 return os;
             }
         };
