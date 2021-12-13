@@ -1,3 +1,6 @@
+---
+mainfont: Noto Sans Mono CJK TC
+---
 ## 第九章 查找<a id="9"></a>
 >><!--ts-->
 >>* <a href="#91">9.1 静态查找表</a><br>
@@ -13,6 +16,8 @@
 >>      * <a href="#9211">1. 二叉排序树及其查找过程</a><br>
 >>      * <a href="#9212">2. 二叉排序树的插入和删除</a><br>
 >>      * <a href="#9213">3. 二叉排序树的查找分析</a><br>
+>>      * <a href="#9214">4. 平衡二叉树</a><br>
+>>      * <a href="#9215">5. 平衡二叉树的查找分析</a><br>
 >>   * <a href="#922">9.2.2 B-树和B+树</a><br>
 >>   * <a href="#923">9.2.3 键树</a><br>
 >>* <a href="#93">9.3 哈希表</a><br>
@@ -224,3 +229,159 @@ void bstree_delete(bstree & p)
 (2) 当先后插入的关键字有序时，构成的二叉排序树蜕变为单支树。<br>
 (3) 在随机的情况下，二叉排序树的平均查找长度和<b>logn是等数量级的</b> <br>
 <img src="./image/不同形态的排序二叉树.png" alt="不同形态的排序二叉树" width="600"><br>
+<a id="9214"> <b>4.平衡二叉树</b></a><br>
+<img src="./image/二叉排序树的平衡旋转.png" alt="二叉排序树的平衡旋转" width="500"><br>
+
+```c++
+#define LH 1
+#define EH 0
+#define RH -1 
+struct bsnode
+{
+    data_t data;
+    struct bsnode * lchild, * rchild;
+    short bf;//balance factor
+};
+typedef bsnode * bstree;
+
+void r_rotate(bstree & p)
+{//右旋
+    bstree lc =  p->lchild;
+    p->lchild = lc->rchild;
+    lc->rchild = p;
+    p = lc; 
+}
+
+void l_rotate(bstree & p)
+{//左旋
+    bstree rc = p->rchild;
+    p->rchild = rc->lchild;
+    rc->lchild = p;
+    p = rc;
+}
+
+void r_balance(bstree & A)
+{//调整：右子树插入节点导致失去平衡
+    bstree * B = root->rchild, * C = nullptr;
+    switch (B->bf)
+    {   
+        case RH:
+            A->bf = EH;B->bf = EH;l_rotate(root);
+            break;
+        case LH:
+            C = B->rchild;
+            switch(C->bf)
+            {
+                case RH:
+                    A->bf = LH;B->bf = EH;
+                    break;
+                case LH:
+                    A->bf = EH;B->bf = RH;
+                    break;
+                case EH:A->bf = B->bf = EH;
+                break;
+                default:
+                    cerr << "r_balance error" << endl;
+                    abort();
+                    break;
+
+            }
+            C->bf = EH;r_rotate(B);l_rotate(A);
+            break;
+        default:
+            cerr << "r_blance error" << endl;
+            abort();
+            break;
+    }
+}
+
+void l_balance(bstree & A)
+{//调整：左子树插入节点导致失去平衡
+    bstree * B = root->lchild, * C = nullptr;
+    switch (B->bf)
+    {   
+        case LH:
+            A->bf = EH;B->bf = EH;r_rotate(root);
+            break;
+        case RH:
+            C = B->lchild;
+            switch(C->bf)
+            {
+                case LH:
+                    A->bf = RH;B->bf = EH;
+                    break;
+                case RH:
+                    A->bf = EH;B->bf = LH;
+                    break;
+                case EH:A->bf = B->bf = EH;
+                break;
+                default:
+                    cerr << "r_balance error" << endl;
+                    abort();
+                    break;
+
+            }
+            C->bf = EH;l_rotate(B);r_rotate(A);
+            break;
+        default:
+            cerr << "l_blance error" << endl;
+            abort();
+            break;
+    }
+}
+
+bool insert_avl(bstree & T, const key_t & k, bool & taller)
+{
+    if(!T)
+    {
+        T = new bsnode(k, nullptr, nullptr);
+        taller = true; return true;
+    }
+
+    if(k == T->data) return false;
+    else if(k < T->data)
+    {
+        if(!insert_avl(T->lchild, k, taller)) return false;
+        if(taller)
+        {
+            switch(T->bf)
+            {
+                case LH://原本左子树比右子树高，需要作左平衡处理
+                    r_balance(T);taller = false;
+                    break;
+                case EH://原本左、右子树等高，现因左子树增高而使树增高
+                    taller = true;
+                    break;
+                case RH://原本右子树比左子树高，现左、右子树等高
+                    T->bd = EH;taller = false;
+                    break;
+            }
+        }
+    }
+    else(k > < T->data)
+    {
+        if(!insert_avl(T->rchild, k, taller)) return false;
+        if(taller)
+        {
+            switch(T->bf)
+            {
+                case RH:
+                    l_balance(T);taller = false;
+                    break;
+                case EH:
+                    taller = true;
+                    break;
+                case LH:
+                    T->bd = EH;taller = false;
+                    break;
+            }
+        }
+    }
+    return true;
+}
+```
+<a id="9215"> <b>4.平衡二叉树</b></a><br>
+(1)因为 AVL 树上任何结点的左右子树的深度之差都不超过1，则可以证明它的深度和logn 是同数量级的（其中n 为结点个数）。<br>
+(2)由此，它的平均查找长度也和logn同数量级。<br>
+(3)在平衡树上进行查找的时间复杂度为 O(logn)<br>
+<b><span style="color:red">注意：上述对二叉排序树和二叉平衡树的查找性能的讨论都是在等概率的前提下进行的</spane><b>

@@ -20,25 +20,28 @@ class bs_bitree : public sorted_bitree<Data>
 		typedef typename base::node node;
 		typedef typename base::edge edge;
 	private:
-		enum {LH = 1, EH = 0, RH = -1};
+		enum {LH = 1, EH = 0, RH = -1};//左高，等高，右高
 		void l_rotate(node * & p);
 		void r_rotate(node * & p);
 		template<typename cmp_t>
-		bool insert_alv(node * & root, const Data & e, const cmp_t & cmp, bool & taller);
+		bool insert_alv(node * & root, const Data & e, 
+                    const cmp_t & cmp, bool & taller);
 		void l_balance(node * & root);
 		void r_balance(node * & root);
 	public:
 		bs_bitree():base(){}
 		template<typename cmp_t = Data (*)(const Data &, const Data &)>
-		bool insert_alv(const Data & e, const cmp_t & cmp = base::default_cmp); 
+		bool insert_alv(const Data & e, 
+                    const cmp_t & cmp = base::default_cmp); 
 		/** 构造*/
 		template<typename cmp_t = Data (*)(const Data &, const Data &)>
-		int bs_construct(const Data * ds, int size, const cmp_t & cmp = base::default_cmp); 
+		int bs_construct(const Data * ds, int size, 
+                    const cmp_t & cmp = base::default_cmp); 
 };
 
 /*
-   对以*p为根(失衡)的二叉排序树作右旋处理，处理之后p指向新的树根结点，即旋转
-   处理之前的左子树的根结点
+   对以*p为根(失衡)的二叉排序树作右旋处理，
+   处理之后p指向新的树根结点，即旋转处理之前的左子树的根结点
  */
 template <typename Data>
 void bs_bitree<Data>::
@@ -64,17 +67,19 @@ l_rotate(node * & p)
 	p = rc;
 }
 		
+/** @return true for inserted and false for not inserted*/
 template<typename Data>
 template<typename cmp_t>
 bool bs_bitree<Data>::
-insert_alv(node * & root, const Data & e, const cmp_t & cmp, bool & taller)
+insert_alv(node * & root, const Data & e, 
+            const cmp_t & cmp, bool & taller)
 {
 	if(root == nullptr)
-	{
+	{//插入
 		root = new node();
 		root->data = e;
 		_node_num++;
-		taller = true;
+		taller = true;//树发生生长
 		return true;
 	}
 	else
@@ -88,7 +93,7 @@ insert_alv(node * & root, const Data & e, const cmp_t & cmp, bool & taller)
 			{
 				switch(root->bf)
 				{
-					case LH:// 原本左子树比右子树高，需要作左平衡处理
+					case LH://原本左子树比右子树高，需要作左平衡处理
 						l_balance(root);
 						taller = false;
 						break;
@@ -143,7 +148,7 @@ void bs_bitree<Data>::
 l_balance(node * & root)
 {
 	node * lc = root->lchild, *rd; 
-	switch(lc->bf)
+	switch(lc->bf)//左孩子的平衡因子
 	{
 		case LH: //LL
 			root->bf = EH;
@@ -153,13 +158,13 @@ l_balance(node * & root)
 		case RH: //LR
 			rd = lc->rchild;// 指向*T的左孩子的右子树根
 			switch(rd->bf)
-			{
+			{//修改平衡因子
 				case LH: 
 					root->bf = RH;
 					lc->bf = EH;
 					break;
 				case EH:
-					root->bf =EH;
+					root->bf = EH;
 					lc->bf = EH;
 					break;
 				case RH:

@@ -53,7 +53,8 @@ test_BST(void)
     cout << "node_num          : " << tree.node_num() << endl;
 	cout << "levels            : ";
     for(i = 0; i < size; ++i)
-      cout << "("<< table[i] << ", level=" << tree.get_level(table[i]) << ")";
+      cout << "("<< table[i] << ", level=" 
+          << tree.get_level(table[i]) << ")";
     cout << endl;
 
 	cout << "new node : ";
@@ -63,7 +64,8 @@ test_BST(void)
 		show_tree(tree);
 		cout << "levels            :";
         for(i = 0; i < size; ++i)
-          cout << "(" << table[i] << ", level=" << tree.get_level(table[i]) << ")";
+          cout << "(" << table[i] << ", level=" 
+              << tree.get_level(table[i]) << ")";
         cout <<"(" <<d << ", l=" << tree.get_level(d) << ")";
 		cout << endl;
 	}
