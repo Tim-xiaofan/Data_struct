@@ -35,9 +35,11 @@ class b_tree
 		int _node_num;
 
 		/** function defines*/
-		static key_t default_cmp(const key_t & a, const key_t & b) { return (a - b);}
+		static key_t default_cmp(const key_t & a, const key_t & b) 
+            { return (a - b);}
 		template<typename cmp_t>
-		int search(const Node<key_t> * p, const key_t & key, const cmp_t & cmp);
+		int search(const Node<key_t> * p, const key_t & key, 
+                    const cmp_t & cmp);
 		
 	public :
 		typedef Node<key_t> node;
@@ -68,8 +70,10 @@ search(const node * p, const key_t & key, const cmp_t & cmp)
 }
 
 /**
-  在m阶B-树上查找关键字k，返回结果（pt，i，tag）。若查找成功，则特征值 tag=1，指针 pt
-  所指结点中第i个关键字等于k;否则特征值 tag=0，等于K的关键字应插入在指针pt所指
+  在m阶B-树上查找关键字k，返回结果（pt，i，tag）。
+  若查找成功，则特征值 tag=1，指针 pt
+  所指结点中第i个关键字等于k;
+  否则特征值 tag=0，等于K的关键字应插入在指针pt所指
   结点中第i和第 i+1个关键字之间
  */
 template<typename key_t, int m>

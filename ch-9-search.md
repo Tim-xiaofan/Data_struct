@@ -19,6 +19,9 @@ mainfont: Noto Sans Mono CJK TC
 >>      * <a href="#9214">4. 平衡二叉树</a><br>
 >>      * <a href="#9215">5. 平衡二叉树的查找分析</a><br>
 >>   * <a href="#922">9.2.2 B-树和B+树</a><br>
+>>      * <a href="#9221">1. B-树及其查找</a><br>
+>>      * <a href="#9222">2. B-树查找分析</a><br>
+>>      * <a href="#9223">3. B-树的插入和删除</a><br>
 >>   * <a href="#923">9.2.3 键树</a><br>
 >>* <a href="#93">9.3 哈希表</a><br>
 >>    * <a href="#932">9.3.2 哈希函数的构造方法</a><br>
@@ -384,4 +387,97 @@ bool insert_avl(bstree & T, const key_t & k, bool & taller)
 (1)因为 AVL 树上任何结点的左右子树的深度之差都不超过1，则可以证明它的深度和logn 是同数量级的（其中n 为结点个数）。<br>
 (2)由此，它的平均查找长度也和logn同数量级。<br>
 (3)在平衡树上进行查找的时间复杂度为 O(logn)<br>
-<b><span style="color:red">注意：上述对二叉排序树和二叉平衡树的查找性能的讨论都是在等概率的前提下进行的</spane><b>
+<span style="color:red">注意：上述对二叉排序树和二叉平衡树的查找性能的讨论都是在等概率的前提下进行的</spane><br>
+
+<a id="922"> <b>9.2.2 B-树和 B+树</b></a><br>
+<a id="9221"><b>1. B-树及其查找</b></a><br>
+B-树是一种平衡的多路查找树，它在文件系统中很有用。在此先介绍这种树的结构及其查找算法。\
+一棵m阶的B-树，或为空树，或为满足下列特性的 m 又树∶\
+（1）树中每个结点至多有m棵子；\
+（2）若根结点不是叶子结点，则至少有两棵子树；\
+（3）除根之外的所有非终端结点至少有$\lceil \frac{m}{2} \rceil$牌子树；\
+（4）所有的非终端结点中包含下列信息数据；
+$$ (n,A_0,K_1,A_1,K_2,A_2,…,K_n,A_n) $$
+（5）所有的叶子结点都出现在同一层次上，并且不带信息。
+
+```c++
+#define m 3
+struct bnode
+{
+    int keynum;
+    struct bnode * parent;// 指向双亲结点
+    key_t K[m + 1];//关键字向量，0号单元未用
+    struct node *A[m + 1];// 子树指针向量
+};
+typedef bnode * btree;
+
+struct result
+{
+    bnode * ptr;
+    int i;
+    bool found;
+    result(bnode * p = nullptr, int _i = 0, bool f = false):
+        ptr(p), i(_i), found(f){}
+};
+
+result btree_search(btree T, const key_t & k)
+{
+    bnode * p = T, *q = nullptr;//初始化，p指向待查结点，q指向p的双亲
+    int i; bool found = false;
+    while(p && !found)
+    {
+        i = search(p, k);// p->K[i] <= k < p->K[i + 1]
+        if(i > 0 && p->K[i] == k) found = true;
+        else {q = p; p = p->ptr[i];}
+    }
+    if(found) return result(p, i, true);
+    else return result(q, i, false);//查找不成功，返回k的插人位置信息
+}
+```
+<a id="9222"><b>2. B-树查找分析</b></a><br>
+（1）待查关键字所在结点在B-树上的层次数，是决定B-树查找效率的首要因素。\
+（2）第一层至少有1个结点；第二层至少有2个结点；第$l+1$层至少有$2\lceil \frac{m} {2} \rceil ^{l -1}$个结点 \
+（3）而 $l+1$ 层的结点为叶子结点，若m阶B-树中具有N个关键字，则叶子结点即查找不成功的结点为N+1:
+$$ N + 1 \leq 2 \lceil \frac{m}{2} \rceil ^{l -1} $$
+推导出：
+$$ l \leq log_{\lceil \frac{m}{2} \rceil}(\frac{N + 1}{2}) + 1  $$
+
+<a id="9223"><b>3. B-树的插入和删除</b></a><br>
+（1）插入：\
+关键操作：分裂，当插入后$keynum > m-1$<br>
+<img src="./image/B-树分裂操作.png" alt="B-树分裂操作" width="500"><br><br>
+示例：<br>
+<img src="./image/B-树插入操作.png" alt="B-树插入操作" width="500"><br>
+<img src="./image/B-树插入操作-1.png" alt="B-树插入操作-1" width="500"><br>
+
+```c++
+/*在m阶B-树T上结点*q的key[i]与key[i+1]之间播入关键字k。若引起结点过大（keynum>m-1），则沿双亲链进行必要的结点分裂调整，使T仍是m阶B树。*/
+void btree_insert(btree & T, key_t k, btree q, int i)
+{
+    bool finished = false;
+    btree ap = nullptr;//分裂出来的新节点
+    key_t x;
+    while(q && !finished)
+    {
+        insert(q, x, ap, i);//插入q->key[i + 1]和q->ptr[i + 1]
+        if(q->keynum < m) finished = true;
+        else
+        {
+            int s = up_int(m / 2);
+            split(q, s, ap);// 分裂
+            x = q->key[s];
+            q = q->parent;
+            if(q) i = search(q, x);//在双亲结点*q中查找x的插入位置
+        }
+    }
+    if(!finished)//T是空树或者根结点已分裂为结点*q和*ap
+        new_root(T, q, x, ap);//生成含信息（T，x，ap）的新的根结点*T，原T和ap为子树指针
+}
+```
+
+（2）删除：\
+关键操作：合并，当非最下层节点删除后$keynum < \lceil \frac{m}{2} \rceil$\
+（a）被删关键字所在结点中的关键字数目不小于$\lceil \frac{m}{2} \rceil$ <br>
+（b）被删关键字所在结点中的关键字数目等于$\lceil \frac{m}{2} \rceil$且兄弟有富余（关键字数目不小于$\lceil \frac{m}{2} \rceil$）<br>
+（c）被删关键字所在结点中的关键字数目等于$\lceil \frac{m}{2} \rceil$且兄弟无富余<br>
+<img src="./image/B-树删除操作.png" alt="B-树删除操作" width="500"><br>
