@@ -406,8 +406,8 @@ struct bnode
 {
     int keynum;
     struct bnode * parent;// 指向双亲结点
-    key_t K[m + 1];//关键字向量，0号单元未用
-    struct node *A[m + 1];// 子树指针向量
+    key_t key[m + 1];//关键字向量，0号单元未用
+    struct node *ptr[m + 1];// 子树指针向量
 };
 typedef bnode * btree;
 
@@ -451,8 +451,8 @@ $$ l \leq log_{\lceil \frac{m}{2} \rceil}(\frac{N + 1}{2}) + 1  $$
 <img src="./image/B-树插入操作-1.png" alt="B-树插入操作-1" width="500"><br>
 
 ```c++
-/*在m阶B-树T上结点*q的key[i]与key[i+1]之间播入关键字k。若引起结点过大（keynum>m-1），则沿双亲链进行必要的结点分裂调整，使T仍是m阶B树。*/
-void btree_insert(btree & T, key_t k, btree q, int i)
+/* 在m阶B-树T上结点*q的key[i]与key[i+1]之间播入关键字k。若引起结点过大（keynum>m-1），则沿双亲链进行必要的结点分裂调整，使T仍是m阶B树。*/
+void btree_insert(btree & T, const key_t & k, btree q, int i)
 {
     bool finished = false;
     btree ap = nullptr;//分裂出来的新节点
@@ -476,8 +476,38 @@ void btree_insert(btree & T, key_t k, btree q, int i)
 ```
 
 （2）删除：\
-关键操作：合并，当非最下层节点删除后$keynum < \lceil \frac{m}{2} \rceil$\
-（a）被删关键字所在结点中的关键字数目不小于$\lceil \frac{m}{2} \rceil$ <br>
-（b）被删关键字所在结点中的关键字数目等于$\lceil \frac{m}{2} \rceil$且兄弟有富余（关键字数目不小于$\lceil \frac{m}{2} \rceil$）<br>
-（c）被删关键字所在结点中的关键字数目等于$\lceil \frac{m}{2} \rceil$且兄弟无富余<br>
+关键操作：合并，当非最下层节点删除后$keynum < \lceil \frac{m}{2} \rceil - 1$\
+（a）被删关键字所在结点中的关键字数目大于$\lceil \frac{m}{2} \rceil$ - 1<br>
+（b）被删关键字所在结点中的关键字数目等于$\lceil \frac{m}{2} \rceil - 1$且兄弟有富余（关键字数目大于$\lceil \frac{m}{2} \rceil - 1$）<br>
+（c）被删关键字所在结点中的关键字数目等于$\lceil \frac{m}{2} \rceil - 1$且兄弟无富余<br>
 <img src="./image/B-树删除操作.png" alt="B-树删除操作" width="500"><br>
+<a id="9224"><b>3. $B^+$树的插入和删除</b></a><br>
+与B-树的差异在于∶
+（1）有n棵子树的结点中含有n 个关键字。<br>
+（2）所有的叶子结点中包含了全部关键字的信息，及指向含这些关键字记录的指针，
+且叶子结点本身依关键字的大小自小而大顺序链接。<br>
+（3）所有的非终端结点可以看成是索引部分，结点中仅含有其子树（根结点）中的最
+大（或最小）关键字。<br>
+（4）进行两种查找运算：—种是从最小关键字起顺序查找，另一种是从根结点开始，进行随机查找。<br>
+（5）在$B^+$树，不管查找成功与否，每次查找都是走了一条从根到叶子结点的路径
+<img src="./image/3阶B+树.png" alt="3阶B+树" width="500"><br>
+<a id="923"><b>9.2.3 键树</b></a><br>
+（1）双链树：以树的孩子兄弟链表来表示键树
+
+```c++
+ enum {LEAF, BRANCH};//叶子节点，分支节点
+ struct dlnode
+ {
+     symbol_t symbol;
+     int kind;
+     struct dlnode * nextsibling;
+     union
+     {
+         record_t * info;
+         struct dlnode * firstchild;
+     };
+ };
+ typedef dlnode * dltree;
+```
+查找：
+从双链树的根指针出发，顺first指针找到第一棵子树的根结点，以K[0]和此结点的symbol域比较，若相等，则顺first域再比较下一字符，否则沿next城顺序查找。若直至"空"仍比较不等，则查找不成功。
