@@ -23,7 +23,10 @@ mainfont: Noto Sans Mono CJK TC
 >>      * <a href="#9222">2. B-树查找分析</a><br>
 >>      * <a href="#9223">3. B-树的插入和删除</a><br>
 >>   * <a href="#923">9.2.3 键树</a><br>
+>>      * <a href="#9231">1. 双链树</a><br>
+>>      * <a href="#9232">2. Trie树</a><br>
 >>* <a href="#93">9.3 哈希表</a><br>
+>>    * <a href="#932">9.3.1 什么是哈希表</a><br>
 >>    * <a href="#932">9.3.2 哈希函数的构造方法</a><br>
 >>    * <a href="#933">9.3.3 处理冲突的方法</a><br>
 >>    * <a href="#934">9.3.4 哈希表的查找及其分析</a><br>
@@ -389,7 +392,7 @@ bool insert_avl(bstree & T, const key_t & k, bool & taller)
 (3)在平衡树上进行查找的时间复杂度为 O(logn)<br>
 <span style="color:red">注意：上述对二叉排序树和二叉平衡树的查找性能的讨论都是在等概率的前提下进行的</spane><br>
 
-<a id="922"> <b>9.2.2 B-树和 B+树</b></a><br>
+#### <a id="922"> <b>9.2.2 B-树和 B+树</b></a><br>
 <a id="9221"><b>1. B-树及其查找</b></a><br>
 B-树是一种平衡的多路查找树，它在文件系统中很有用。在此先介绍这种树的结构及其查找算法。\
 一棵m阶的B-树，或为空树，或为满足下列特性的 m 又树∶\
@@ -489,10 +492,11 @@ void btree_insert(btree & T, const key_t & k, btree q, int i)
 （3）所有的非终端结点可以看成是索引部分，结点中仅含有其子树（根结点）中的最
 大（或最小）关键字。<br>
 （4）进行两种查找运算：—种是从最小关键字起顺序查找，另一种是从根结点开始，进行随机查找。<br>
-（5）在$B^+$树，不管查找成功与否，每次查找都是走了一条从根到叶子结点的路径
+（5）在$B^+$树，不管查找成功与否，每次查找都是走了一条从根到叶子结点的路径<br>
 <img src="./image/3阶B+树.png" alt="3阶B+树" width="500"><br>
 <a id="923"><b>9.2.3 键树</b></a><br>
-（1）双链树：以树的孩子兄弟链表来表示键树
+（1）双链树：以树的孩子兄弟链表来表示键树<a id = "9231"></a><br>
+<img src="./image/9-20双链树.png" alt="9-20双链树" width="350"><br>
 
 ```c++
  enum {LEAF, BRANCH};//叶子节点，分支节点
@@ -500,14 +504,104 @@ void btree_insert(btree & T, const key_t & k, btree q, int i)
  {
      symbol_t symbol;
      int kind;
-     struct dlnode * nextsibling;
+     struct dlnode * next;// 指向兄弟结点的指针
      union
      {
-         record_t * info;
-         struct dlnode * firstchild;
+         record_t * info;//叶于结点的记录指针
+         struct dlnode * first;//分支结点的孩子链指针
      };
  };
  typedef dlnode * dltree;
 ```
-查找：
-从双链树的根指针出发，顺first指针找到第一棵子树的根结点，以K[0]和此结点的symbol域比较，若相等，则顺first域再比较下一字符，否则沿next城顺序查找。若直至"空"仍比较不等，则查找不成功。
+查找：<br>
+从双链树的根指针出发，顺first指针找到第一棵子树的根结点，以K[0]和此结点的symbol域比较，
+若相等，则顺first域再比较下一字符，否则沿next域顺序查找。若直至"空"仍比较不等，则查找不成功。
+
+```c++
+record_t * dltree_search(dltree T, const key_t & k)
+{
+    int i = 0;
+    dltree p = T->first;
+    while(p && i < k.size())
+    {
+        for( ; p && p->symbol != k[i]; p = p->next);
+        if(!p) return nullptr;//not found
+        ++i;p = p->fisrt;
+    }
+    if(!p) return nullptr;
+    else return p->info;
+}
+```
+查找性能：<br>
+ >>（a）每个结点的最大度d和关键字的"基"有关：d = 基 + 1 <br>
+ >>（b）键树的深度h则取决于关键字中字符或数位的个数<br>
+ >>（c）查找每一位的平均查找长度为 $\frac{1+d}{2}$<br>
+ >>（d）又假设关键字中字符（或数位）的个数都相等，则在双链树中进行查找的平均查找长度为∶$\frac{h}{2}(1 + d)$。<br>
+
+ （2）Trie树：多重链表表示键树，树的每个结点中应含有d个指针域<a id = "9232"></a><br>
+<img src="./image/9-21Trie树.png" alt="9-21Trie树" width="500"><br>
+
+```c++
+enum {LEAF, BRANCH};
+struct trienode
+{
+    int kind;
+    union
+    {
+        struct {struct trienode * ptr[27];int num;} bh;// 分支节点
+        struct {key_t k; record_t * info;} lf;//叶子节点
+    };  
+};
+typedef trienode * trietree;
+```
+
+查找的过程为：<br>
+>> 从根结点出发，沿和给定值相应的指针逐层向下，直至叶子结点，若叶子结点中的关键字和给定值相等，则查找成功，
+>> 若分支结点中和给定值相应的指针为空，或叶结点中的关键字和给定值不相等，则查找不成功<br>
+
+```c++
+record_t *trietree_search(trietree T, const key_t & k)
+{
+    for(trietree p = T, int i =0; 
+        p && p->kind == BRANCH && i < k.size();
+        p = p->bh.ptr[ord[k[i]]], ++i);
+    if(p && p->kind = LEAF && p->lf.k == k) return p->info;
+    else return nullptr;
+} 
+```
+
+查找分析：<br>
+（1）查找成功时走了一条从根到叶子结点的路径<br>
+（2）其查找的时间依赖于树的深度
+
+### <a href="#9">9.3 哈希表<a> <a id="93"></a>
+#### <a href="#9">9.3.1 什么是哈希表<a> <a id="931"></a>
+（1）希望不经过任何比较，一次存取便能得到所查记录，那就必须在记录的存储位置和它的关键字之间建立一个确定的对应关系<br>
+（2）哈希函数：k——>位置<br>
+（3）key1≠key2，而f(key1)=f(key2)，这种现象称冲突（collision）<br>
+（4）好的哈希函数：关键字经过哈希函数得到—个"随机的地址"，以便使一组关键字的哈希地址均匀分布在整个地址区间中，从而减少冲突。<br>
+#### <a href="#9">9.3.2 哈希函数的构造方法<a> <a id="932"></a>
+1.直接定址法<a id = "9321"></a><br>
+$$H(key)=key或H(key) =a * key + b$$
+由于直接定址所得地址集合和关键字集合的大小相同。因此，对于不同的关键字不会发生冲突<br>
+<br>
+2.数字分析法<a id = "9322"></a><br>
+假设关镜字是以r为基的数（如∶以10为基的十进制数），并且哈希表中可能出现的
+关键字都是事先知道的，则可取关键字的若干数位组成哈希地址（100：取两位，1000：取三位）。<br>
+<br>
+3.平方取中法<a id = "9323"></a><br>
+关键字平方后的中间几位为哈希地址.通常在选定哈希函数时不—定能知道关键字的全部惰况，<br>
+取其中哪几位也不一定合适，而—个数平方后的中间几位数和数的每—位都相关，<br>
+由此，使随机分布的关键字得到的哈希地址也是随机的。取的位数由表长决定。<br>
+<br>
+4.折叠法<a id = "9324"></a><br>
+将关键学分割成位数相同的几部分（最后—部分的位数可以不同），然后取这几部分<br>
+的叠加和（舍去进位作为）哈希地址，这方法称为折叠法（folding）。关键字位数很多，而且<br>
+关键字中每一位上数字分布大致均匀时，可以采用折叠法得到哈希地址。<br>
+如国际标准图书编号 0-442-20586-4 的哈希地址分别如图 9.24（a）和（b）所示 <br>
+<img src="./image/9-24折叠法求hash地址.png" alt="9-24折叠法求hash地址" width="400"><br>
+5.除留余数法<a id = "9325"></a><br>
+取关键字被某个不大于哈希表表长m的数p除后所得余数为哈希地址。即
+$$H(key)= key\quad mod \quad p,\quad p≤m$$
+这是一种最简单，也最常用的构造哈希函数的方法。它不仅可以对关键字直接取模<br>
+（MOD），也可在折叠、平方取中等运算之后取模。一般情况下，可以选p为质数或不包含小于20 的质因数的合数。<br>
