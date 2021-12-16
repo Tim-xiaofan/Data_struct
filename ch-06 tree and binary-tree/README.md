@@ -5,3 +5,5 @@
 # huffman-tree huffman树
 # power-set 集合的幂集(集合全部子集为元素构成的集合)
 # bstree 平衡二叉树
+# dl-tree 键树：双链树
+# trie-tree 键树：trie树

@@ -1,6 +1,8 @@
 /** 20210911, zyj GuangDong*/
 #include <iostream>
 #include "bs_bitree.h"
+#include <string>
+#include <cstring>
 
 using std::cin;
 
@@ -34,23 +36,37 @@ show_tree(Tree & tree)
 	tree.level_traverse();
 }
 
+int compare(const string & a, const string & b)
+{
+    return strcmp(a.c_str(), b.c_str());
+}
+
 static void
 test_bs(void)
 {
+    using std::string;
 	const int size  = 9, size1  = 6;
 	int table[size] = {16, 3, 7, 11, 9, 26, 18, 14, 15};
     int table1[size1] = {24, 37, 45, 53, 93, 12};
+    string table2[12] = {"Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	bs_bitree<int> tree;
 	bs_bitree<int> tree1;
+	bs_bitree<string> tree2;
 
 	tree.bs_construct(table, size);
-	show_tree(tree);
+	//show_tree(tree);
 	tree.show_edges();
 	
     tree1.bs_construct(table1, size1);
-	show_tree(tree1);
+	//show_tree(tree1);
 	tree1.show_edges();
 
+
+    tree2.bs_construct(table2, 12, compare);
+	//show_tree(tree1);
+	tree2.show_edges();
+
+    return;
     int d;
     cout << "node search : ";
     cin >> d;
