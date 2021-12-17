@@ -14,10 +14,6 @@ void test_select(void)
 	cout << "origin : ";
 	li.show();
 
-	//cout << "low : " << quick_partition(li, 0, size - 1) << endl;
-	//cout << "partition: ";
-	//li.show();
-
 	select_sort(li);
 	cout << "sorted : ";
 	li.show();
@@ -31,10 +27,6 @@ void test_heap(void)
 	li.append_bulk(A, size);
 	cout << "origin : ";
 	li.show();
-
-	//cout << "low : " << quick_partition(li, 0, size - 1) << endl;
-	//cout << "partition: ";
-	//li.show();
 
 	heap_sort(li);
 	cout << "sorted : ";

@@ -2,6 +2,10 @@
 #ifndef _SELECT_SORT
 #define _SELECT_SORT
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 template <typename sqtable_t>
 void select_sort(sqtable_t & table, bool up = true)
 {
@@ -31,21 +35,19 @@ void select_sort(sqtable_t & table, bool up = true)
   已知中记录的H[s...m]关键字除H[s]之外均满足堆的定义，本函数调整H[s]
   的关键字，使H[s...m]成为一个大顶堆（对其中记录的关键字而言）
  **/
-
 template <typename sqtable_t>
-void heap_adjust(sqtable_t & H, int s, int m, bool up = true)
+void heap_adjust(sqtable_t & H, int s, int m)
 {
     typename sqtable_t::elem_type rc;
     int j;
-    if(!up) return;//TODO : for descending
 
-    rc = H[s];
+    rc = H[s];//备份
     for(j = 2 * s + 1; j <= m; j = 2 * j + 1)//key较大的孩子结点向下筛选
     {
         if(j < m && H[j] < H[j + 1])//左孩子不如右孩子大 
           ++j;
         if(rc >= H[j]) break;//rc是三个节点最大的
-        H[s] = H[j];
+        H[s] = H[j];//直接赋值
         s = j;
     }
     H[s] = rc;
@@ -55,18 +57,19 @@ void heap_adjust(sqtable_t & H, int s, int m, bool up = true)
   O(nlogn)
  */
 template <typename sqtable_t>
-void heap_sort(sqtable_t & H, bool up = true)
+void heap_sort(sqtable_t & H)
 {
     int i, len = H.length();
     typename sqtable_t::elem_type tmp;
     
-    if(!up) return;//TODO : for descending
-
-    /** 建立大顶堆*/
+    /** [0, 1, ..., len - 1]建立大顶堆*/
     for(i = len / 2 -1; i >= 0; --i)
-      heap_adjust(H, i, len -1);
+      heap_adjust(H, i, len -1);//从第一个非叶子结点从下至上，从右至左调整结构
 
-    for(i = len -1; i >= 0; --i)
+    cout << "state x:";
+    H.show();
+
+    for(i = len - 1; i >= 0; --i)
     {
         /** 将堆顶记录和当前未经排序子序列H[0...i]中最后一个记录相互交换*/
         tmp = H[0];
@@ -74,6 +77,8 @@ void heap_sort(sqtable_t & H, bool up = true)
         H[i] = tmp;
         /** 将H[0...i-1]重新调整为大顶堆(i之后的节点不用调整) */
         heap_adjust(H, 0, i - 1);
+        cout << "state " << i << ":";
+        H.show();
     }
 }
 
