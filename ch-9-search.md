@@ -1,6 +1,3 @@
----
-mainfont: Noto Sans Mono CJK TC
----
 ## 第九章 查找<a id="9"></a>
 >><!--ts-->
 >>* <a href="#91">9.1 静态查找表</a><br>
