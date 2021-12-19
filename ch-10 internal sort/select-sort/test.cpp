@@ -43,7 +43,7 @@ void test_heap(void)
 
 int main(int ac, char *av[])
 {
-	test_select();
-	//test_heap();
+	//test_select();
+	test_heap();
 	return 0;
 }

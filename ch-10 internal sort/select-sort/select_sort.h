@@ -28,7 +28,6 @@ void select_sort(sqtable_t & table, bool up = true)
   大顶堆：arr[i] >= arr[2i+1] && arr[i] >= arr[2i+2]
   小顶堆：arr[i] <= arr[2i+1] && arr[i] <= arr[2i+2]  
   最后一个非终端结点是第n/2 - 1个元素(向下取整)
-
   已知中记录的H[s...m]关键字除H[s]之外均满足堆的定义，本函数调整H[s]
   的关键字，使H[s...m]成为一个大顶堆（对其中记录的关键字而言）
  **/
