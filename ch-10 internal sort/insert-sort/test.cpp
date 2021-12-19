@@ -71,7 +71,7 @@ int main(int ac, char *av[])
 	//test_binsert();
 	//cout << "---------\n";
 	//test_2way();
-	cout << "---------\n";
+	//cout << "---------\n";
 	test_shell();
 	return 0;
 }
