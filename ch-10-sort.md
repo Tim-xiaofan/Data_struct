@@ -16,6 +16,7 @@
 >>* <a href="#106">10.6 基数排序</a><br>
 >>    * <a href="#1061">10.6.1 多关键字的排序</a><br>
 >>    * <a href="#1062">10.6.2 链式基数排序</a><br>
+>>* <a href="#107">10.7 各种内部排序方法的比较讨论</a><br>
 >><!--te-->
 ### <a href="#10">10.1 概述<a> <a id="101"></a>
 （1）了查找方便，通常希望计算机中的表是按关键字有序的<br>
@@ -311,8 +312,12 @@ $$
 （3）堆排序在最坏的情况下，其时间复杂度也为 $O(nlogn)$
 
 ```c++
+/**
+ * 已知[s...m]中记录的关键字除[s]之外均满足堆的定义，本函教调整[s]的关键字，
+ * 使[s...m]成为一个大顶堆（对其中记录的关键字而言）
+ * */
 void heap_adjust(sqtable &a, int s, int m)
-{
+{//筛选：应沿关键字较大的孩子结点向下进行
     data_t rc = a[s];
     for (int i = s * 2 + 1; i <= m; i = i * 2 + 1)
     {
@@ -323,12 +328,12 @@ void heap_adjust(sqtable &a, int s, int m)
     }
     h[s] = rc;
 }
-
 void heap_sort(sqtable &a)
 {
     int len = a.length();
+    /** 把[0...len-1]建成大顶堆*/
     for (int i = len / 2 - 1; i >= 0; --i)
-        heap_adjust(a, i, len - 1);//从第一个非叶子结点从下至上，从右至左调整结构
+        heap_adjust(a, i, len - 1);
     for (int i = len - 1; i >= 0; == i)
     {
         swap(H[0], H[i]);
@@ -336,3 +341,67 @@ void heap_sort(sqtable &a)
     }
 }
 ```
+
+### <a href="#10">10.5 归并排序<a> <a id="105"></a>
+（1）"归并"的含义是将两个或两个以上的有序表组合成一个新的有序表。<br>
+（2）实现归并排序需和待排记录等数量的辅助空间，其时间复杂度为O(nlogn)<br>
+（3）快速排序和堆排序相比，归并排序的最大特点是，它是—种稳定的排序方法<br>
+<img src="./image/10-13归并排序.png" alt="10-13归并排序" width="450"><br>
+
+```c++
+void merge(sqtable & a, int low, int mid, int high)
+{//合并有序子序列[low...mid]和[mid + 1...high]
+    data_t tmp = new data_t[low - high + 1];
+    int i, j, k;
+    for(i = low, j = mid + 1, k = 0; i <= mid && j <= high;)
+    {
+        if(a[i] < a[j]) tmp[k++] = a[i++];
+        else if(a[i] == a[j]) {tmp[k++] = a[i++]; tmp[k++] = a[j++];}
+        else tmp[k++] = a[j++];
+    }
+    while(i <= mid) tmp[k++] = a[i++];//处理剩余
+    while(j <= high) tmp[k++] = a[j++];
+    for(i = 0; i < k; ++i) a[low + i] = tmp[i];
+    delete [] tmp;
+}
+void merge_sort(sqtable & a, int low, int high)
+{
+    if(low < high)
+    {
+        int mid = (low + high) / 2;
+        merge_sort(a, low, mid);
+        merge_sort(a, mid + 1, high);
+        merge(a, low, mid, high);
+    }
+}
+void merger_sort(sqtable & a)
+{
+    merge_sort(a, 0, a.length() - 1);
+}
+```
+
+### <a href="#10">10.6 基数排序<a> <a id="106"></a>
+#### <a href="#10">10.6.1 多关键字的排序<a> <a id="1061"></a>
+（1）最高位优先: 逐层分割成若干子序列，然后对各子序列分别进行排序。<br>
+（2）最低位优先：不必分成子序列，对每个关键字都是整个序列参加排序。<br>
+（3）可以不利用前几节所述各种通过关键字间的比较来实现排序的方法，而是通过
+若干次"分配"和"收集"来实现排序。<br>
+（4）仍需要n个记录和 2*RADIX 个计数单元的辅助空间<br>
+
+#### <a href="#10">10.6.2 链式基数排序<a> <a id="1062"></a>
+<img src="./image/10-14链式计数排序.png" alt="10-14链式计数排序" width="450"><br>
+
+### <a href="#10">10.7 各种内部排序方法的比较讨论<a> <a id="107"></a>
+| 排序方法   | 平均时间  | 最坏情况 | 辅助存储 |稳定性|具体算法|
+|  :----    | :----    |:----    |:----   | :---- | :---- |
+| 简单排序   | $O(n_2)$ | $O(n_2)$ | $O(1)$ |稳定|<a href="#1021">直接插入</a>、<a href="#1022">折半插入</a>、<a href="#1023">2-路插入</a>、<a href="#1031">起泡</a>、<a href="#1041">简单选择</a>|
+| <a href="#1032">快速排序</a>  | $O(nlogn)$ | $O(n_2)$ | $O(logn)$ |不稳定||a
+| <a href="#1043">堆排序 </a>| $O(nlogn)$ | $O(nlogn)$ | $O(1)$ |不稳定||
+| <a href="#105">归并排序</a> | $O(nlogn)$ | $O(nlogn)$ | $O(n)$ |稳定||
+| <a href="#106">基数排序</a>| $O((n + rd)d)$ | $O((n + rd)d)$| $O(rd)$|稳定||
+
+
+（1）记录很大（即每个记录所占空间较多）时，移动时间耗费很大，此时可采用静态链表作存储结构：如表插入排序、链式基数排序，以修改指针代替移动记录。<br>
+（2）快速排序和堆排序，无法实现表排序。在这种情况下可以进行"地址排一个地址向量指示相应记录。同时在排序过程中不移动记录而移动地址向量中相应分量的内容<br>
+<img src="./image/10-15地址排序.png" alt="10-15地址排序" width="500"><br>
+（3）借助于"比较"进行排序的算法在最坏情况下能达到的最好的时间复杂度为 $O(nlogn)$。

@@ -18,34 +18,27 @@ void show_array(const T * a, int start, int end)
 
 /**
   O(m + n)
-  将有序的sr[i...m]和sr[m+1...n]归并为有序的tr[i...n]
+  将有序的sr[i...m]和sr[m+1...n]归并为有序的sr[i...n]
  */
 template <typename T>
-void merge(T * arr, int begin, int mid, int end, bool up = true)
+void merge(T * arr, int begin, int mid, int end)
 {
     int i, j, k = 0;
-    if(!up) return;
-    T *tmp = new T[end - begin];
+    T *tmp = new T[end - begin + 1];
 
     for(i = begin, j = mid + 1; i <= mid && j <= end;)
     {
-        if(arr[i] < arr[j])
-        {
-            tmp[k++] = arr[i++];
-        }
+        if(arr[i] < arr[j]) tmp[k++] = arr[i++];
         else if(arr[i] == arr[j])
         {
             tmp[k++] = arr[i++];
             tmp[k++] = arr[j++];
         }
-        else
-        {
-            tmp[k++] = arr[j++];
-        }
+        else tmp[k++] = arr[j++];
     }
     
-    for(; i <= mid; ++i) tmp[k++] = arr[i++];
-    for(; j <= mid; ++j) tmp[k++] = arr[j++];
+    for(; i <= mid; ++i) tmp[k++] = arr[i];
+    for(; j <= end; ++j) tmp[k++] = arr[j];
 
     for(i = 0; i < k; ++i)
       arr[begin + i] = tmp[i];
@@ -54,28 +47,17 @@ void merge(T * arr, int begin, int mid, int end, bool up = true)
 }
 
 template<typename T>
-void merge_sort(T  *arr, int begin, int end, bool up = true)
+void merge_sort(T  *arr, int begin, int end)
 {
     int mid;
-    //cout << "***before : begin = " << begin << ", end = " << end << endl; 
-    //cout << "tr : ";
-    //show_array(tr, 0, end);
     if(begin >= end) return;
     else
     {
         mid = (begin + end) / 2;
-        merge_sort(arr, begin, mid, up);
-        //cout << "arr1 :";
-        //show_array(arr, begin, mid);
-        merge_sort(arr, mid + 1, end, up);
-        //cout << "arr2 :";
-        //show_array(arr, mid + 1, end);
-        merge(arr, begin, mid, end, up);
-        //cout << "arr3 : ";
-        //show_array(arr, begin, end);
+        merge_sort(arr, begin, mid);
+        merge_sort(arr, mid + 1, end);
+        merge(arr, begin, mid, end);
     }
-    //cout << "###after : begin = " << begin << ", end = " << end << endl; 
-    //cout << endl;
 }
 
 
@@ -83,12 +65,12 @@ void merge_sort(T  *arr, int begin, int end, bool up = true)
   O(nlogn) --> O(2nlogn)
  */
 template<typename T>
-void merge_sort(T & table, bool up = true)
+void merge_sort(T & table)
 {
     typedef typename T::elem_type elem_type;
     elem_type  *arr;
     arr = table.get_base();
 
-    merge_sort(arr, 0, table.length() -1, up);
+    merge_sort(arr, 0, table.length() -1);
 }
 #endif

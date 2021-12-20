@@ -63,12 +63,15 @@ void heap_sort(sqtable_t & H)
     typename sqtable_t::elem_type tmp;
     
     /** [0, 1, ..., len - 1]建立大顶堆*/
+    cout << "*******build a big top heap*******\n";
     for(i = len / 2 -1; i >= 0; --i)
-      heap_adjust(H, i, len -1);//从第一个非叶子结点从下至上，从右至左调整结构
+    {
+        heap_adjust(H, i, len -1);
+        cout << "state " << i << ":";
+        H.show();
+    }
 
-    cout << "state x:";
-    H.show();
-
+    cout << "*******heap sort*******\n";
     for(i = len - 1; i >= 0; --i)
     {
         /** 将堆顶记录和当前未经排序子序列H[0...i]中最后一个记录相互交换*/
