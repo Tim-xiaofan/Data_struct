@@ -6,7 +6,7 @@ template<typename T, int k = 5>
 class k_merge
 {
     public:
-        typedef int loser_tree[k];//败者树是宪全二叉树且不含叶子，可采用顺序存储结构
+        typedef int loser_tree[k];//败者树是万全二叉树且不含叶子，可采用顺序存储结构
         typedef T external[k + 1];//叶结点，只存放待归并记录的关键字
     private:
         loser_tree _ls;
