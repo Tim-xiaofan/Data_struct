@@ -46,10 +46,7 @@ power(int i, const List<Data> & A, List<Data> & B)
 {
 	int k, deta, j;
 	Data x, y;
-	if(i >= _n) 
-	{
-		B.show();
-	}
+	if(i >= _n) B.show();
 	else
 	{
 		A.get_n(i, x);
@@ -58,10 +55,8 @@ power(int i, const List<Data> & A, List<Data> & B)
 
 		power(i + 1, A, B);
 		deta = B.length() - k;
-		for(j = 0; j < deta; ++j)
-		{//移除余下的元素
+		for(j = 0; j < deta; ++j)//移除余下的元素
 			B.del_n(B.length() - 1, y);
-		}
 		power(i + 1, A, B);//不取第i个元素
 	}
 }

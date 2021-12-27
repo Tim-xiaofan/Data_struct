@@ -25,7 +25,8 @@ class bithrtree
 			Node *lchild, *rchild;
 			pointer_tag ltag, rtag;
 			Node():lchild(nullptr),rchild(nullptr),ltag(LINK),rtag(LINK){}
-			friend std::ostream & operator<<(std::ostream & os, const Node & nd)
+			friend std::ostream & operator<<(std::ostream & os, 
+                        const Node & nd)
 			{
 				os << "data = " << nd.data
 					<< ", lchild = " << nd.lchild

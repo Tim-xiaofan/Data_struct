@@ -1,5 +1,7 @@
 ## 第七章 图<a id="7"></a>
 >><!--ts-->
+>>
+>>* <a href="#72">7.2 图的存储结构</a><br>
 >>* <a href="#73">7.3 图的遍历</a><br>
 >>   * <a href="#731">7.3.1 DFS</a><br>
 >>   * <a href="#732">7.3.2 BFS</a><br>
@@ -15,6 +17,61 @@
 >>    * <a href="#761">7.6.1 从某个源点到其余各顶点的最短路径</a><br>
 >>    * <a href="#762">7.6.2 每一对顶点之词的最短路径</a><br>
 >><!--te-->
+### <a href="#7">7.2 图的存储结构<a> <a id="72"></a>
+```c++
+/** 
+ * 邻接表：有向图，无向图
+ * 利于遍历每个节点的所有邻接点
+ * 不利于判断两个节点是否右弧或边
+ * 不利于求有向图的度
+ * 不利于边的插入，删除，标记
+ * */
+struct arcnode
+{//表节点
+    int adjvex;
+    struct arcnode * nextarc;
+};
+struct vexnode
+{//头节点
+    vex_t data;
+    struct arcnode * firstarc;
+};
+/** O(e + n) 或 O(e * n)*/
+void construct(adjlist_graph & G);
+
+/** 
+ * 十字链表：有向图
+ * 中既容易找到以vi为尾的弧，也容易找到以vi为头的弧，
+ * 因而容易求得顶点的出度和人度
+ * */
+struct arcbox
+{//表节点
+    int tvex, hvex;
+    struct arxbox * tlink, * hlink;
+};
+struct vexnode
+{//头节点
+    vex_t data;
+    struct arcbox * fisrtout, * firstout;
+};
+
+/** 
+ * 多重邻接表：无向图
+ * 对边进行某种操作，如对已被搜索过的边作记号
+ * 或删除一条边等，此时需要找到表示同一条边的两个结点
+ * */
+struct arcbox
+{
+    int ivex, jvex;
+    struct arcbox * ilink, * jlink;
+    bool mark;
+};
+struct vexbox
+{
+    vex_t data;
+    struct arclink * firstlink;
+};
+```
 ### <a href="#7">7.3 图的遍历<a> <a id="73"></a>
 >>#### 7.3.1 DFS <a id="731"></a>
 >>>>##### 递归实现
@@ -109,10 +166,8 @@
 >>        {
 >>            p = new cstree();
 >>            p->data = G.data(v);
->>            if (!T)
->>                T = p; //第一棵生成树
->>            else
->>                q->nextsibling = p;
+>>            if (!T) T = p; //第一棵生成树
+>>            else q->nextsibling = p;//是上一邻接顶点的右兄弟结点
 >>            q = p; //指示当前生成树的根
 >>            dfs_tree(G, v, p, visited);
 >>        }
@@ -133,12 +188,12 @@
 >>            p->data = G.data(w);
 >>            if (first)
 >>            {
->>                first = tree;
->>                t->firstchild = p;
+>>                first = false;
+>>                t->firstchild = p;//根的左孩子结点
 >>            }
->>            else q->nextsibling = p;
->>            q = p;
->>            dfs_tree(G, w, p, visited);
+>>            else q->nextsibling = p;//是上一邻接顶点的右兄弟结点
+>>            q = p;//q指向上一生成树
+>>            DFS_tree(G, w, p, visited);
 >>        }
 >>    }
 >>}
