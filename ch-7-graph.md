@@ -236,15 +236,16 @@ struct vexbox
 >>{
 >>    bool visited[MAX_NODE_NB] = false;
 >>    stack finished(G.vexnum());
+>>    stack finished1(G.vexnum());
 >>    DSF(G, finished);
 >>    int v;
 >>    while (finished.pop(v))
 >>    {
 >>        if (!visited[v]) 
 >>        {
->>            finish.clear();
->>            DFS(G, v, visited, finished, true);
->>            finish.show();
+>>            finished1.clear();
+>>            DFS(G, v, visited, finished1, true);
+>>            finished1.show();
 >>        }
 >>    }
 >>}
