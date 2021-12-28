@@ -169,7 +169,7 @@ struct vexbox
 >>            if (!T) T = p; //第一棵生成树
 >>            else q->nextsibling = p;//是上一邻接顶点的右兄弟结点
 >>            q = p; //指示当前生成树的根
->>            dfs_tree(G, v, p, visited);
+>>            DFS_tree(G, v, p, visited);
 >>        }
 >>}
 >>void DFS_tree(const Graph &G, int v, cstree &t, bool *visited)
