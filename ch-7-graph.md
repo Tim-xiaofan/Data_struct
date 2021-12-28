@@ -256,6 +256,11 @@ struct vexbox
 >> * 最小生成树
 >> * O(n * n)边数无关，因此适用于求边稠密的网的最小生成树
 >> */
+>>struct closege
+>>{
+>>    int adjvex;//属于U
+>>    int lowcost;//Min{cost(u,vi)9|u∈U, vi u∈V -U}
+>>};
 >>int prime(const graph & G, int u)
 >>{
 >>    int nb = G.vexnum(), ct = 0, min_vex;
@@ -297,7 +302,7 @@ struct vexbox
 >>                int * low, 
 >>                int & ct)
 >>{
->>    int mim = ++ct, w;
+>>    int min = ++ct, w;
 >>    visited[v] = min;
 >>    bool fisrt = true;
 >>    for(auto p = G.fisrt(v); p; p = p->next(v))
@@ -307,7 +312,7 @@ struct vexbox
 >>        {
 >>            DFS_artical(G, w, visited, low, ct);
 >>            if(low[w] < min) min = low[w];
->>            if(low[w] > visited[v] && first)
+>>            if(low[w] >= visited[v] && first)
 >>            {//没有到v祖先的回边
 >>                cout << v;
 >>                first = false;
@@ -366,11 +371,11 @@ struct vexbox
 >>### 7.5.2 关键路径 <a id="752"></a>
 >>$e(i)= ve(i)$ --活动最早开始时间<br>
 >>$l(i) = vl(k) - dut<j, k>$ --活动最晚开始时间<br>
->>$ve[j] = max\{v[j] + dut<i,j>\}, <i, j> \in edges$ <br>
+>>$ve[j] = max\{v[i] + dut<i,j>\}, <i, j> \in edges$ <br>
 >>$vl[j] = min\{v[k] - dut<j,k>\}, <j, k> \in edges$ <br>
 >>```c++
 >>bool topo_sort(const graph & G, stack & T, array & ve)
->>{/** 排序并计算每个活动的最早开始时间ve[j]*/
+>>{/** 拓扑排序并计算每个活动的最早开始时间ve[j]*/
 >>    int indegree[graph::MAX_NODE_NB], ct = 0, v, w;
 >>    stack s(G.vexnum());
 >>    G.get_indegrees(indegree, G.vexnum());
@@ -384,7 +389,7 @@ struct vexbox
 >>            w = p->adj(v);
 >>            if((--indegree[w]) == 0)s.push(w);
 >>            if(ve[v] + p->cost(v) > ve[w]) 
->>                ve[w] = ve[v] + p->cost(v) > ve[w]
+>>                ve[w] = ve[v] + p->cost(v) > ve[w];
 >>        }
 >>    }
 >>}
@@ -394,7 +399,7 @@ struct vexbox
 >>    graph::cost_t ee, el, ve[MAX_NODE_NB] = {0}, vl[MAX_NODE_NB], dut;
 >>    int v, w;
 >>    if(!topo_sort(G, T, ve)) return false;
->>    for(v = 0; v < G.vexnum(); ++v) vl[v] = vl[G.vexnum() -1];
+>>    for(v = 0; v < G.vexnum(); ++v) vl[v] = ve[G.vexnum() -1];
 >>    while(!T.is_empty())
 >>    {//逆拓扑序列求vl[j]
 >>        T.pop(v);
@@ -471,19 +476,19 @@ struct vexbox
 >>            D[v][w] = G.cost(v, w);
 >>            if(D[v][w] < INF)
 >>            {//{v, w} has direct connectiong 
->>                path[v]v[w][w] = true;
+>>                path[v][w][w] = true;
 >>                path[v][w][v] = true;
 >>            }
 >>        }
 >>    for(int u = 0; u < nb; ++u)
 >>        for(int v = 0; v < nb; ++v)
 >>            for(int w = 0; w < nb; ++w)
->>            {
+>>            {//考虑(v...w)添加u节点
 >>                if(D[v][u] < INF && D [u][w] < INF 
->>                    && D[v][u] + D[u][w] < D[v][w])
+>>                    && D[v][u] + D[u][w] < D[v][w])//从v经u到w的一条路径更短
 >>                {//shorter one after adding a middle vertex
 >>                    D[v][w] = D[v][u] + D[u][w];
->>                    /** add vertexs in su-path(v...u or u...w) into path[v][w] */
+>>                    /** add vertexs in sub-path(v...u or u...w) into path[v][w] */
 >>                    for(int i = 0; i < nb; ++i)
 >>                        paths[v][w][i] = (paths[v][u][i] || paths[u][w][i]);
 >>                    paths[v][w][v] = paths[v][w][w] = true;

@@ -16,6 +16,7 @@ using std::cerr;
 typedef array<int, 2> a2;
 typedef array<char, 1> a1;
 
+//#define PRIME 1
 #ifdef PRIME
 static void
 test_prime(void)
@@ -162,7 +163,7 @@ test_criticalpath(void)
 }
 #endif
 
-#define DIJ 1
+//#define DIJ 1
 #ifdef DIJ
 static void
 test_dijkstra(void)
@@ -205,7 +206,7 @@ test_dijkstra(void)
 }
 #endif
 
-//#define FLOYD 1
+#define FLOYD 1
 #ifdef FLOYD
 static void
 test_floyd(void)

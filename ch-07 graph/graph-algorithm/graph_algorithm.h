@@ -399,18 +399,18 @@ void find_articul(const Graph & G, const OP & op = print)
         vexnum = G.vexnum();
 	int low[MAX_NB_VEX] = {0};//深度优先搜索树中顶点w所能回溯到的最浅层的点
 
-    for(v = 0; v < vexnum;++v)
+    for(v = 0; v < vexnum; ++v)
       if(!visited[v])
       {
           DFS_articul(G, v, visited, low, count, print);
-          if(count < vexnum)
+          if(count < vexnum)//生成树的根有至少两棵子树
             op(v);
       }
 	cout << endl;
 }
 
 /**
-  从v开始做深度优先遍历, 并输出关键点
+  从v开始做深度优先遍历, 并输出关节点
  */
 template<typename Graph, typename OP>
 void DFS_articul(const Graph & G, 
@@ -442,10 +442,6 @@ void DFS_articul(const Graph & G,
 		  min = visited[w];//w已访问，w是v的祖先
 	}
 	low[v] = min;
-	//cout << "\nvisited : ";
-	//show_array(visited, G.vexnum());
-	//cout << "low     : ";
-	//show_array(low, G.vexnum());
 }
 
 /** 
@@ -534,7 +530,6 @@ bool cricticalpath(const Graph & G)
 	typename Graph::cost_type ve[MAX_NB_VEX] = {0},//最早发生时
 			 vl[MAX_NB_VEX], //最迟发生时间
              dut, ee, el;
-	const typename Graph::anode * p;
 	char tag;
 
 	if(!cricticalpath_topologicalsort(G, T, ve)) 
@@ -550,7 +545,7 @@ bool cricticalpath(const Graph & G)
 	while(!T.is_empty())
 	{//vl:向后递推
 		T.pop(v);
-		for(p = G.first(v); p; p = p->next(v))
+		for(auto p = G.first(v); p; p = p->next(v))
 		{
 			w = p->adj(v);
 			dut = p->cost(v);
@@ -563,7 +558,7 @@ bool cricticalpath(const Graph & G)
 
 	for(v = 0; v < vexnum; ++v)
 	{
-		for(p = G.first(v); p ; p = p->next(v))
+		for(auto p = G.first(v); p ; p = p->next(v))
 		{
 			w = p->adj(v);
 			dut = p->cost(v);
@@ -623,9 +618,10 @@ void dijkstra(const Graph & G,
 			  min = D[w];
 		  }
 		_final[v] = true; //加入S
-		for(w = 0; w < vexnum; ++w)//更新V-S到v0的最短路径
+		for(w = 0; w < vexnum; ++w)//更新V-S中节点到v0的最短路径
         {
-		  if(!_final[w] && G.cost(v, w) < Graph::INF && (G.cost(v, w) + min < D[w]))
+		  if(!_final[w] && G.cost(v, w) < Graph::INF 
+                      && (G.cost(v, w) + min < D[w]))
 		  {
 			  D[w] = min + G.cost(v, w);
 			  for(j = 0; j < vexnum; ++j)
