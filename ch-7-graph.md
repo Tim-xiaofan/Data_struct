@@ -173,7 +173,7 @@ struct vexbox
 >>        }
 >>}
 >>void DFS_tree(const Graph &G, int v, cstree &t, bool *visited)
->>{/** 第v个顶点出发深度优先遒历图G，建立以T为根的生成树*/
+>>{/** 第v个顶点出发深度优先遍历图G，建立以T为根的生成树*/
 >>    bool fisrt = true;
 >>    int w, u;
 >>    visited[v] = true;
