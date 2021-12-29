@@ -490,7 +490,7 @@ void btree_insert(btree & T, const key_t & k, btree q, int i)
 大（或最小）关键字。<br>
 （4）进行两种查找运算：—种是从最小关键字起顺序查找，另一种是从根结点开始，进行随机查找。<br>
 （5）在$B^+$树，不管查找成功与否，每次查找都是走了一条从根到叶子结点的路径<br>
-<img src="./image/3阶B+树.png" alt="3阶B+树" width="500"><br>
+<img src="./image/3阶B+树.PNG" alt="3阶B+树" width="500"><br>
 <a id="923"><b>9.2.3 键树</b></a><br>
 （1）双链树：以树的孩子兄弟链表来表示键树<a id = "9231"></a><br>
 <img src="./image/9-20双链树.png" alt="9-20双链树" width="350"><br>
