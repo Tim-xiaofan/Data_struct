@@ -30,7 +30,7 @@
 >><!--te-->
 ### <a href="#9">9.1 静态查找表<a> <a id="91"></a>
 #### <a href="#9">9.1.1 顺序表的查找<a> <a id="911"></a>
-查找操作的性能衡量-均查找长度ASL：<br>
+查找操作的性能衡量-平均查找长度ASL：<br>
 <!--\overset{顶部内容}{正常内容}, \underset{底部内容}{正常内容}-->
 ASL = $\underset{i = 1}{\overset{n}{\sum}}P_iC_i$ $\qquad$
 $\underset{i = 1}{\overset{n}{\sum}}P_i = 1$ <br>
@@ -66,6 +66,7 @@ int bin_search(const sqtable & tab, const key_t & k)
 $h_i$为第i个结点在二叉树上的层次数,结点的权，$w_i=cp_i$（i=1，2，…，n），其中$p_i$为结点的查找概率，c 为某个常量。称 PH 值取最小的二叉树为<b>静态最优查找树</b>
 
 #### <b>次优查找树</b><a id="9131"></a>
+当有序表中各记录的查找概率不等时<br>
 l -- low<br>
 h -- high<br>
 取最小值$\Delta P_i = \underset{l \leq j \leq h}{min}\Delta P_j$
@@ -96,12 +97,12 @@ void second_optimal(bitree & t, array<char> & tab, array<float> sw, int low, int
     if(low == 0) dw = sw[high] + 0;
     else dw = sw[low - 1] + sw[high];
     for(int i = low + 1; i <= high; ++i)//寻找最小Pi
-        if(dw - sw[i] -sw[i - 1])
+        if(abs(dw - sw[i] -sw[i - 1]) < min)
         {
-            min = dw - sw[i] -sw[i - 1];
+            min = abs(dw - sw[i] -sw[i - 1]);
             min_i = i;
         }
-    t = new bitree(tab[min_i], nullptr, nullptr);
+    t = new bitree(tab[min_i], nullptr, nullptr);//min作为分割点
     /** create left sub tree*/
     if(min_i != low) second_optimal(t, tab, sw, low, min_i - 1)
     /** create right sub tree*/
@@ -124,6 +125,8 @@ s为每块含有的记录数目, $s = \sqrt{n}$时，ASL最小，为$\sqrt{n} + 
 $ASL_{bs} \approx log_2(\frac{n}{s} + 1) + \frac{s}{2}$<br>
 
 ### <a href="#9">9.2 动态查找表<a> <a id="92"></a>
+动态查找表的特点是，表结构本身是在查找过程中动态生成的，即对于给定值key，若表中存在其关键字等于
+key的记录，则查找成功返回，否则插人关键字key<br>
 #### <a href="#9">9.2.1 叉排序树和平衡二叉树<a> <a id="921"></a>
 <a id="9211"><b>1. 二叉排序树及其查找过程</b></a><br>
 <b>二叉排序树</b>（Binary Sort Tree）或者是一棵空树;或者是具有下列性质的二叉树:<br>
@@ -177,8 +180,7 @@ bool bstree_insert(bstree & t, const key_t & k)
 }
 ```
 删除<br>
-(1)若\*p结点为叶子结点，即$P_L$和$P_R$均为空树。由于删去叶子结点不破坏整棵
-树的结构，则只需修改其双亲结点的指针即可。<br>
+(1)若\*p结点为叶子结点，即$P_L$和$P_R$均为空树。由于删去叶子结点不破坏整棵树的结构，则只需修改其双亲结点的指针即可。<br>
 (2)若\*p结点只有左子树$P_L$或者只有右子树$P_R$，此时只要令$P_L$或$P_R$。直接成为其双亲结点\*f的左子树即可。<br>
 (3)若\*p结点的左子树和右子树均不空。为保特其他元素之间的相对位置不变，可以有两种做法:<br>
 >>其一是令\*p的左子树为*f的左子树，而\*p的右子树为\*s的右子树<br>
@@ -612,7 +614,7 @@ $$H(key)= key\quad mod \quad p,\quad p≤m$$
 #### <a href="#9">9.3.3 处理冲突的方法<a> <a id="933"></a>
 1.开放定址法<a id = "9331"></a><br>
 $$H=(H(key)＋d_i)\quad MOD \quad m \quad i= 1,2,…,k(k≤m-1) \qquad(9-25)$$
-其中∶H（key为哈希函数;m 为哈希表表长;d;为增量序列，可有下列3 种取法∶
+其中∶H（key为哈希函数;m 为哈希表表长;d;为增量序列，可有下列3 种取法∶<br>
 （1）$d_i=1，2，3，…，m-1$，称线性探测再散列;<br>
 （2）$d_i=1^2，-1^2，2^2，-2^2，3^2，…，\underset{-}{+}k$，（k≤m/2）称二次探测再散列;<br>
 （3）$d_i=伪随机数序列$，称伪随机探测再散列。<br>
@@ -624,7 +626,7 @@ $RH_i$均是不同的哈希函数，即在同义词产生地址冲突时计算�
 冲突不再发生。这种方法不易产生"聚集"，但增加了计算的时间。<br>
 
 3.链地址法<a id = "9333"></a><br>
-将所有关键字为<b>同义词</b>的记录存储在同一线性链表中:
+将所有关键字为<b>同义词</b>的记录存储在同一线性链表中:<br>
 <img src="./image/9-26链地址法处理哈希冲突.png" alt="9-26链地址法处理哈希冲突" width="400"><br>
 
 4.建立一个公共溢出区<a id = "9334"></a><br>
