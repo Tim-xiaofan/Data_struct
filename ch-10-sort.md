@@ -19,14 +19,14 @@
 >>* <a href="#107">10.7 各种内部排序方法的比较讨论</a><br>
 >><!--te-->
 ### <a href="#10">10.1 概述<a> <a id="101"></a>
-（1）了查找方便，通常希望计算机中的表是按关键字有序的<br>
+（1）为了查找方便，通常希望计算机中的表是按关键字有序的<br>
 （2）排序方法是否稳定<br>
 （3）内部排序：内存<br>
 （3）外部排序：内存 + 外存<br>
 （4）依据的不同原则： 插入排序、交换排序、选择排序，归并排序和计数排序<br>
-（5）工作量：简单的排序方法$O(n^2)$，先进的排序$O(nlogn)$，计数排序$O(d * n)$<br>
+（5）工作量：简单的排序方法$O(n^2)$，先进的排序$O(nlogn)$，基数数排序$O(d * n)$<br>
 （6）操作：比较和移动<br>
-### <a href="#10">10.2 插入排序<a> <a id="101"></a>
+### <a href="#10">10.2 插入排序<a> <a id="102"></a>
 #### <a href="#10">10.2.1 直接插入排序<a> <a id="1021"></a>
 <b>基本操作:</b> 将一个记录插入到已排好序的有序表中，从而得到一个新的、记录数增1的有序表
 
@@ -55,7 +55,7 @@ void insert_sort(sqtable & a)
 ```c++
 int bin_locate(const sqtable & a const key_t & k, int start, int end)
 {
-    int l= start, h= end, mid;
+    int l = start, h = end, mid;
     while(l <= h)
     {
         mid = (l + h) / 2;
@@ -73,7 +73,7 @@ void binsert_sort(sqtable & a)
     for(; i < len; ++i)
     {
         if(a[i] >= a[i - 1]) continue;//已经是正确位置
-        j = bin_locate(a, a[i], 0, i - 1);//折半查找a[i]插入0...i-1位置
+        j = bin_locate(a, a[i], 0, i - 1);//折半查找a[i]插入0...i-1的位置
         tmp = a[i];
         for(k = i - 1; k >= j; --k) a[k + 1] = a[k];//移动
         a[j] = tmp;//插入
@@ -85,6 +85,7 @@ void binsert_sort(sqtable & a)
 （1）其目的是减少排序过程中移动记录的次数，但为此需要n个记录的辅助空间<br>
 （2）时间复杂度仍是$O(n^2)$。<br>
 （3）当table[0]是待排序记录中关键字最小或最大的记录时，2-路插入排序就完全失去它的优越性<br>
+（4）移动记录的次数约为$\frac{n^2}{8}$<br>
 <img src="./image/10-2二路插入排序.png" alt="10-2二路插入排序" width="400"><br>
 <b>[算法描述]</b><br>
 并将d[0]看成是在排好序的序列中处于中间位置的记录，然后从第2个记录起依次插入到d[0]之前或之后的有序序列中
@@ -112,7 +113,7 @@ void towway_insert(sqtable & tab)
                 for(j = len - 1; j >= first; --j)
                     if(tmp > d[j]) break;
                 /** first...j序列左移*/
-                for(k = fisrt; k <= j; ++k) d[k -1] = d[k];
+                for(k = fisrt; k <= j; ++k) d[k - 1] = d[k];
                 d[j] = tmp; --first;
             }
         }
@@ -188,9 +189,9 @@ void shell_insert(sqtable & tab, int start, int dk)
 一类藉助"交换"进行排序的方法
 #### <a href="#10">10.3.1 起泡排序<a> <a id="1031"></a>
 <b>[基本思路]</b><br>
-（1）趟：若相邻两个元素逆序，则交换<br>
+（1）趟：若相邻两个元素逆序，则交换。最多$n-1$轮（逆序）<br>
 （2）结束的条件应该是"在一趟排序过程中没有进行过交换记录的操作"<br>
-（3）总的时间复杂度为$O(n^2)$。<br>
+（3）最差情况（逆序）：$\frac{n(n - 1)}{2}$，总的时间复杂度为$O(n^2)$。<br>
 
 ```c++
 void bubble_sort(sqtable & a)
@@ -200,7 +201,7 @@ void bubble_sort(sqtable & a)
     for(int i = 0; i < len - 1; ++i)
     {//第i轮排序, 最多n-1轮
         swapped = false;
-        for(j = 0; j < len - 1 - i; j++)
+        for(j = 0; j < len - 1 - i; ++j)
             if(a[i] > a[i + 1])
             { 
                 swap(a[i], a[i + 1]);
@@ -218,43 +219,43 @@ void bubble_sort(sqtable & a)
 附设两个指针 low 和 high，它们的初值分别为 low 和 high，设枢轴记录的关键字为 pivotkey，则首先从 high 所指位置起向前搜索找到第一个关健字小于 pivotkey 的记录和枢轴记录互相交换，然后从 low 所指位置起向后搜索，找到第一个关键字大于 pivotkey 的记录和枢轴记录互相交换，重复这两步直至 low=high为止。
 
 ```c++
-void quick_sort(sqtable & a, int low, int high)
+void quick_sort(sqlist & a, int low, int high)
 {
-    int privot;
+    int pivot;
     if(low < high)
     {
-        privot = quick_partition(a, low, high);
-        quick_sort(a, low, privot - 1);
-        quick_sort(a, privot + 1, high);
+        pivot = quick_partition(a, low, high);
+        quick_sort(a, low, pivot - 1);
+        quick_sort(a, pivot + 1, high);
     }
 }
 
-int quick_partition(sqtable & a, int low, int hign)
+int quick_partition(sqlist & a, int low, int hign)
 {
-    int privot = a[low];
+    int pivot = a[low];
     while(low < high)
     {
-        while(low < high && a[high] >= privot) --high;
-        a[low] = a[high];// 将比枢轴记量小的记最移到低端
-        while(low < high && a[low] <= privot) --low;
-        a[high] = a[low];// 将比枢轴记录大的记录移到高
+        while(low < high && a[high] >= pivot) --high;
+        a[low] = a[high];// 将比枢轴记量小的记录移到低端
+        while(low < high && a[low] <= pivot) --low;
+        a[high] = a[low];// 将比枢轴记录大的记录移到高端
     }
-    a[low] = private;
+    a[low] = pivot;
     return low;
 }
 ```
 <b>[性能]</b><br>
-（1）所有同数量级$O(nlogn)$的排序方法中，其平均性能最好<br>
+（1）所有同数量级$O(nlogn)$的排序方法中，其<b>平均性能</b>最好<br>
 （2）最坏情况：若初始记录序列按关键字有序或基本有序时，快速排序将蜕化为起泡排序，其时间复杂度为 $O(n^2)$
 
 ### <a href="#10">10.4 选择排序<a> <a id="104"></a>
 选择排序（Selection Sort）的基本思想是∶每一趟在 n-i+1（i=1，2，…，n-1）个记录
 中选取关键字最小的记录作为有序序列中第i个记录。
 #### <a href="#10">10.4.1 简单选择排序<a> <a id="1041"></a>
-一趟简单选择排序的操作为∶通过 n-i次关键字间的比较，从 n-i＋1个记录中选
-出关键字最小的记录，并和第 i（1≤is≤n）个记录交换之
+一趟简单选择排序的操作为∶通过$n-i$次关键字间的比较，从$n-i+1$个记录中选
+出关键字最小的记录，并和第 i（1≤i≤n）个记录交换之
 ```c++
-void select_sort(sqtable & a)
+void simple_select(sqtable & a)
 {
     int min;
     for(int i = 0; i < a.length() -1; ++i)
@@ -341,6 +342,7 @@ void heap_sort(sqtable &a)
     }
 }
 ```
+<img src="./image/10-xx堆排序.png" alt="10-xx堆排序" width="700"><br>
 
 ### <a href="#10">10.5 归并排序<a> <a id="105"></a>
 （1）"归并"的含义是将两个或两个以上的有序表组合成一个新的有序表。<br>
@@ -351,7 +353,7 @@ void heap_sort(sqtable &a)
 ```c++
 void merge(sqtable & a, int low, int mid, int high)
 {//合并有序子序列[low...mid]和[mid + 1...high]
-    data_t tmp = new data_t[low - high + 1];
+    data_t tmp = new data_t[low - high + 1];//辅助空间
     int i, j, k;
     for(i = low, j = mid + 1, k = 0; i <= mid && j <= high;)
     {
@@ -361,7 +363,7 @@ void merge(sqtable & a, int low, int mid, int high)
     }
     while(i <= mid) tmp[k++] = a[i++];//处理剩余
     while(j <= high) tmp[k++] = a[j++];
-    for(i = 0; i < k; ++i) a[low + i] = tmp[i];
+    for(i = 0; i < k; ++i) a[low + i] = tmp[i];//保存合并后序列
     delete [] tmp;
 }
 void merge_sort(sqtable & a, int low, int high)
@@ -374,15 +376,11 @@ void merge_sort(sqtable & a, int low, int high)
         merge(a, low, mid, high);
     }
 }
-void merger_sort(sqtable & a)
-{
-    merge_sort(a, 0, a.length() - 1);
-}
 ```
 
 ### <a href="#10">10.6 基数排序<a> <a id="106"></a>
 #### <a href="#10">10.6.1 多关键字的排序<a> <a id="1061"></a>
-（1）最高位优先: 逐层分割成若干子序列，然后对各子序列分别进行排序。<br>
+（1）最高位优先：逐层分割成若干子序列，然后对各子序列分别进行排序。<br>
 （2）最低位优先：不必分成子序列，对每个关键字都是整个序列参加排序。<br>
 （3）可以不利用前几节所述各种通过关键字间的比较来实现排序的方法，而是通过
 若干次"分配"和"收集"来实现排序。<br>

@@ -201,4 +201,5 @@ void shell_sort(sqtable_t & table, int dlta[], int t)
 		table.show();
 	}
 }
+
 #endif

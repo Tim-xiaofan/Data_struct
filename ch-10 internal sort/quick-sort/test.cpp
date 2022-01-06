@@ -39,7 +39,7 @@ void test_qsort(void)
 
 int main(int ac, char *av[])
 {
-	test_bubble();
-	//test_qsort();
+	//test_bubble();
+	test_qsort();
 	return 0;
 }

@@ -72,7 +72,7 @@ void heap_sort(sqtable_t & H)
     }
 
     cout << "*******heap sort*******\n";
-    for(i = len - 1; i >= 0; --i)
+    for(i = len - 1; i > 0; --i)
     {
         /** 将堆顶记录和当前未经排序子序列H[0...i]中最后一个记录相互交换*/
         tmp = H[0];
