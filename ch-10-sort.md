@@ -342,6 +342,7 @@ void heap_sort(sqtable &a)
     }
 }
 ```
+从大顶堆开始排序\
 <img src="./image/10-xx堆排序.png" alt="10-xx堆排序" width="700"><br>
 
 ### <a href="#10">10.5 归并排序<a> <a id="105"></a>
