@@ -335,7 +335,7 @@ void heap_sort(sqtable &a)
     /** 把[0...len-1]建成大顶堆*/
     for (int i = len / 2 - 1; i >= 0; --i)
         heap_adjust(a, i, len - 1);
-    for (int i = len - 1; i >= 0; == i)
+    for (int i = len - 1; i >= 0; --i)
     {
         swap(H[0], H[i]);
         heap_adjust(a, 0, i - 1);
