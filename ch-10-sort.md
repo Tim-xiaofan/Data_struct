@@ -31,7 +31,8 @@
 <b>基本操作:</b> 将一个记录插入到已排好序的有序表中，从而得到一个新的、记录数增1的有序表
 
 ```c++
-void insert_sort(sqtable & a)
+// 有序表
+void insertion_sort(sqtable & a)
 {//O(n ** 2)
     int len = a.length(), i = 1, j, k;
     data_t tmp;
@@ -47,6 +48,28 @@ void insert_sort(sqtable & a)
         a[j] = tmp;//插入
     }
 }
+//链表
+void insertion_sort(list l)
+{
+    if(!l || !l->next) return;
+
+    list loc;
+    for(list cur = l->next->next, last = l->next; cur; cur = last->next)
+    {
+        if(cur->data >= last->data)
+        {//已经在正确位置
+            last = cur;
+            continue;
+        }
+        /** 搜寻插入位置*/
+        for(loc = l; loc->next != last; loc=loc->next)
+            if(cur->data < loc->next->data) break;
+        last->next = cur->next; //移除cur
+        cur->next = loc->next; //插入cur
+        loc->next = cur;
+    }
+}
+
 ```
 #### <a href="#10">10.2.2 其他插入排序<a> <a id="1022"></a>
 <b>1.折半插入排序</b><br>
