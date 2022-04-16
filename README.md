@@ -109,19 +109,14 @@ conversion(T t) const
 	{
 		quotient = t / _mode;
 		remainder = t % _mode;
-		//std::cout << "push : " << remainder << std::endl;
-		//stack.push('0' + remainder);
 		stack.push(elements[remainder]);
 		t = quotient;
 	}
 
-	//stack.show();
-	//std::cout << "length = " << stack.length() << std::endl;
 	int len = stack.length();
 	for(i = 0; i < len; i++)
 	{
 		stack.pop(ch);
-		//std::cout << "pop : " << ch << std::endl;
 		result.push_back(ch);
 	}
 	return result;
@@ -148,7 +143,6 @@ match(const std::string & bkts)
 	for(i = 0; i < len; i++)
 	{
 		cur  = bkts[i];
-		//std::cout << "cur = " << cur << std::endl;
 		if(is_right(cur))
 		{/** check if matches top one*/
 			stack.pop(top);
@@ -157,8 +151,6 @@ match(const std::string & bkts)
 		}
 		else/** just push into stcak*/
 		  stack.push(cur);
-		//std::cout << "stack : ";
-		//stack.show();
 	}
 	return stack.is_empty();
 }
@@ -211,7 +203,6 @@ bool maze_path(Maze & maze)
 		{
 			if(!path.push(cur))
 			{
-				//std::cout << "path is full\n";
 				return false;
 			}
 			maze.in_path(cur, true);/** marked*/
@@ -221,47 +212,31 @@ bool maze_path(Maze & maze)
 				path.show();
 				return true;
 			}
-			//std::cout << cur << " is room\n";
 			maze.get_next(cur, next);
 			cur = next;
-			//std::cout << next << " is next\n";
 		}
 		else
 		{
-			//std::cout << cur << " is not room\n";
-			
 			if(path.get_top(top)&&maze.has_other(top))/** there are other direction to explore*/
 			{
-				//std::cout << "there are other direction in top : "<< top << "\n";
 				maze.get_next(top, next);
 				cur =next;
-				//std::cout << next << " is next\n";
 			}
 			else
 			{/** there are not other direction to explore in top */
-				//path.get_top(top);
 				while(path.get_top(top)&&!maze.has_other(top))
 				{
 					maze.reset_status(top);
 					path.pop(top);
-					//std::cout << "no other, pop : " << top << std::endl;
-					//path.get_top(top);
 				}
 				if(!path.is_empty()) 
 				{/** found one that has other direction to explore*/
 					path.get_top(top);
-					//std::cout << "found one in stack"<< top <<"\n";
 					maze.get_next(top, next);
 					cur =next;
-					//std::cout << next << " is next\n";
 				}
 			}
 		}
-		//std::cout << "current path : ";
-		//path.show();
-		//std::cout << "current maze : \n";
-		//maze.show();
-		//std::cout << "\n";
 	}while(!path.is_empty());
 	std::cout << "no path found : " << loop <<"\n";
 	return false;
@@ -330,21 +305,14 @@ hanoi tower
 ============
 ##### 算法描述（书）
 如何实现移动圆盘的操作呢?<br>
-当 n=1 时，问题比较简单，只要将编号为1 的圆盘从塔座 X直接移至塔座 乙 上即可∶<br>
+当 n=1 时，问题比较简单，只要将编号为1 的圆盘从塔座 X直接移至塔座乙上即可∶<br>
 当 n>1 时，需利用塔座 Y 作辅助塔座，若能设法将压在<br>
-编号为 n 的圆盘之上的n—1 个圆盘从塔座 X（依照上述法则）移至塔座 Y 上，则可先将编号为n 的圆盘从塔座X移至塔座Z上，然后再将塔座 Y 上的 n—1个圆盘（依照上述法则）移至塔座Z上。而如何将n—1个圆盘从一个塔座移至另一个塔座的问题是一个和原问题具有相同特征属性的问题，只是问题的规模小1，因此可以用同样的方法求解。<br>
+编号为n的圆盘之上的 n—1 个圆盘从塔座X（依照上述法则）移至塔座Y上，则可先将编号为 n 的圆盘从塔座X移至塔座Z上，然后再将塔座 Y 上的 n-1个圆盘（依照上述法则）移至塔座Z上。而如何将n—1个圆盘从一个塔座移至另一个塔座的问题是一个和原问题具有相同特征属性的问题，只是问题的规模小1，因此可以用同样的方法求解。<br>
 ##### [c++实现（未OJ）](https://github.com/Tim-xiaofan/Data_struct/blob/9418349b2c18d6c7ca961db596d942d1e988cbb0/ch-03%20stack%20and%20queue/hanio/hanoi.cpp#L17)
 ```c++
 template <typename Tower>
 void hanoi(int n, Tower & x, Tower & y, Tower & z, int & mv_ct)
 {
-	//std::cout << "----------------\n";
-	//std::cout << "ct : " << mv_ct << std::endl;
-	//std::cout << "x : ";x.show();
-	//std::cout << "y : ";y.show();
-	//std::cout << "z : ";z.show();
-	//std::cout << "\n----------------\n";
-
 	if(n == 1)
 	{
 		move(x, 1, z);
@@ -613,7 +581,6 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 			nrow = M[mpos].j;/** get row of corresponding in N*/
 			nfirst = N.row_first(nrow);
 			nlast = N.row_last(nrow);
-			//std::cout << "N : [" << nfirst << ", "<< nlast << ")\n";
 			for(npos = nfirst; npos < nlast; ++npos)
 			{
 				std::cout << "{" << M[mpos] << " * " << N[npos] << "} "; 
@@ -623,7 +590,6 @@ bool muti_smatrix(const SMatrix & M, const SMatrix & N, Array & a2)
 		}/** get non-zero elemets of Q's mrow-th row*/
 		for(ccol = 0; ccol < n2; ++ccol)
 		{
-			//std::cout << triple<int>(mrow, ccol, ctemp[ccol]) << " ";
 			a2.set_value(ctemp[ccol], mrow, ccol);
 		}
 		a2_show(a2);
@@ -651,14 +617,9 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 	if(pre == nullptr || in == nullptr || ct <= 0)
 	  return true;
 
-	//cout << "pre:";
-	//show_ds(pre, ct);
-	//cout << "in:";
-	//show_ds(in, ct);
 	/** create root*/
 	if(root == nullptr) root = new node;
 	root->data = pre[0]; 
-	//cout << "root data = " << root->data << endl;
 
 	/** look left and right in inorder*/
 	int lct = 0, rct = 0, root_pos;
@@ -667,8 +628,6 @@ preinorder_construct(node * & root, const Data * pre, const Data *in, int ct)
 		break;
 	lct = root_pos;
 	rct = ct - lct - 1;
-	//cout << "lct = " << lct << endl;
-	//cout << "rct = " << rct << endl;
 
 	/** create lchild*/
 	preinorder_construct(root->lchild, &pre[1], in, lct);
@@ -770,17 +729,11 @@ inorder_thrtraverse(const UnaryOperator & op)
 	{
 		while(p->ltag == LINK)
 		{
-#ifdef DEBUG
-			cout << "(" << p << " : " << *p << ")";
-#endif
 			p = p->lchild;
 		}
 		op(p->data);
 		while(p->rtag == THREAD && p->rchild != _thrt)
 		{
-#ifdef DEBUG
-			cout << "(" << p << " : " << *p << ")";
-#endif
 			p = p->rchild;
 			op(p->data);
 		}

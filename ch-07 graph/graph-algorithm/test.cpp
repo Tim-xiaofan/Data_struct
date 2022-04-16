@@ -238,6 +238,8 @@ test_floyd(void)
 
 int main(int ac, char * av[])
 {
+	for(int i = 0, j = 0; i < 0; ++i)
+		;
 #ifdef PRIME
 	test_prime();
 #endif
