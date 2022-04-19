@@ -80,19 +80,19 @@ struct vexbox
 >>>> * 邻接矩阵：O(n ** 2)
 >>>> * 邻接表：O(n + e)
 >>>> * */
->>>>void DFS_traverse(const Graph &G)
+>>>>void DFS(const Graph &G, bool * visited)
 >>>>{
 >>>>    for (int v = 0; v < G.vexnum(); ++v)
 >>>>        if (!visited[v])
->>>>            dfs(G, v, visited);
+>>>>            DFS(G, v, visited);
 >>>>}
 >>>>void DFS(const Graph &G, int v, bool *visited)
 >>>>{
 >>>>    visited[v] = true;
 >>>>    visit(v);
->>>>    for (auto p = G.first(v); p; p = p.next(v))
+>>>>    for (auto p = G.first(v); p; p = p->next(v))
 >>>>        if (!visited[p->adj(v)])
->>>>            dfs(G, p->adj(v), visited);
+>>>>            DFS(G, p->adj(v), visited);
 >>>>}
 >>>>```
 >>>>##### 非递归实现
@@ -124,7 +124,7 @@ struct vexbox
 >>#### 7.3.1 BFS <a id="732"></a>
 >>```c++
 >>/** 广度优先搜索*/
->>void bfs(Graph &G)
+>>void BFS(Graph &G)
 >>{
 >>    bool visited[MAX_NUM] = {false};
 >>    int v, w, u;
