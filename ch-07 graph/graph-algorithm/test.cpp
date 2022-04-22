@@ -15,8 +15,8 @@ using std::endl;
 using std::cerr;
 typedef array<int, 2> a2;
 typedef array<char, 1> a1;
-
 //#define PRIME 1
+
 #ifdef PRIME
 static void
 test_prime(void)

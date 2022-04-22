@@ -343,9 +343,9 @@ struct vexbox
 >>重复上述两步，直至全部顶点均已输出，或者当前图中不存在无前驱的顶点为止。后</br>
 >>一种情况则说明有向图中存在环。</br>
 >>针对上述两步操作，我们可采用邻接表作有向图的存储结构，<br>
->>且在头结点中增加一个存放顶点入度的数组（indegree）。<b>入度为零的顶点即为没有前驱</b><br>
->>的顶点，删除顶点及以它为尾的弧的操作，则可换以<b>弧头顶点的入度减1来实现</b><br>
->>为了避免重复检测入度为零的顶点，可另设一<b>栈</b>暂存所有入度为零的顶点<br>
+>>且在头结点中增加一个存放顶点入度的数组（indegree）。**入度为零的顶点即为没有前驱**<br>
+>>的顶点，删除顶点及以它为尾的弧的操作，则可换以**弧头顶点的入度减1来实现**<br>
+>>为了避免重复检测入度为零的顶点，可另设一**栈**暂存所有入度为零的顶点<br>
 >>```c++
 >>bool topo_sort(const graph & G)
 >>{
@@ -430,17 +430,24 @@ struct vexbox
 >>              int start, //源点
 >>              matrix & paths, //start到vi的路径
 >>              array & D)//start到vi的路径长度
->>{
+>>{//O(n ** 2)
 >>    graph::cost_t min;
->>    array<bool> _final(G.vexnum(), false);//belong to S
+>>    array<bool> _final(G.vexnum(), false);//Belong to S
 >>    int v, w, nb = G.vexnum(), min_vex;
->>    /** enter start state*/
+>>    /** Enter start state*/
 >>    for(v = 0; v< nb; ++v)
+>>    {
 >>        D[v] = G.cost(start, v);
+>>        if(D[v] < INF)
+>>        {
+>>            paths[v][start] = true;
+>>            paths[v][v] = true;
+>>        }
+>>    }
 >>    D[start] = 0; _final[start] = true;
 >>    for(v = 0; v < nb; ++v)
 >>    {
->>        /** find vertex in V-S which closest to start*/
+>>        /** Find vertex in V-S which closest to start*/
 >>        min = INF;//infinite
 >>        for(w = 0; w < nb; ++w)
 >>            if(!_final[w] && D[w] < min)
@@ -448,9 +455,9 @@ struct vexbox
 >>                min = D[w];
 >>                min_vex  = w;
 >>            }
->>        /** add into S*/
+>>        /** Add into S*/
 >>        _final[min_vex] = true;
->>        /** update current min paths and distances*/
+>>        /** Update current min paths and distances*/
 >>        for(w = 0; w < nb; ++w)
 >>            if(D[w] > G.cost(min_vex, w) + min)
 >>            {
@@ -495,4 +502,4 @@ struct vexbox
 >>                }
 >>            }
 >>}
->>```c
+>>```

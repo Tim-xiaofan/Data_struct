@@ -69,8 +69,7 @@
 >>```c++
 >>int visited[MAXSIZE];
 >>int exist_path_len(ALGraph G, int i, int j, int k)
->>//判断邻接表方式存储的有向图G的顶点i到j是否存在长度为k的简单路径
->>{
+>>{//判断邻接表方式存储的有向图G的顶点i到j是否存在长度为k的简单路径
 >>    if (i == j && k == 0)
 >>        return 1; //找到了一条路径,且长度符合要求
 >>    else if (k > 0)
