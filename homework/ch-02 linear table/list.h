@@ -1,7 +1,7 @@
 #ifndef _HOMEWORK_LIST_H_
 #define _HOMEWORK_LIST_H_
-#include <initializer_list>
-#include <iostream>
+
+#include <vector>
 
 namespace HOMEWORK_NS
 {
@@ -18,28 +18,9 @@ struct node
 
 using list = node*;
 
-list create_list(const std::initializer_list<int> & il)
-{
-	list head = new node;
-	list cur = head;
-	for(const int& e: il)
-	{
-		cur->next = new node(e, nullptr);
-		cur = cur->next;
-	}
-	return head;
-}
-
-void print_list(const list& l)
-{
-	list p = l->next;
-	while(p)
-	{
-		std::cout << p->data << " ";
-		p = p->next;
-	}
-	std::cout << std::endl;
-}
+list create_list(const std::vector<int> & il);
+void print_list(const list& l);
+void assert_list(const list& l, const std::vector<int>& v);
 
 }
 
