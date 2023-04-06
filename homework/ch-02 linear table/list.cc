@@ -53,4 +53,49 @@ void assert_list(const list& l, const std::vector<int>& il)
 	}
 }
 
+static void list_remove_and_next(node* &p)
+{
+	list tmp = p;
+	p = p->next;
+	delete tmp;
+}
+
+list reuse_delete_mix_list(list& A, list& B)
+{
+	list pa = A->next;
+	list pb = B->next;
+	list C = A;
+	list pc = C;
+	while(pa && pb)
+	{
+		if(pa->data > pb->data)
+		{
+			list_remove_and_next(pb);
+		}
+		else if(pa->data < pb->data)
+		{
+			list_remove_and_next(pa);
+		}
+		else
+		{
+			pc->next = pa;
+			pc = pc->next;
+
+			list_remove_and_next(pb);
+		}
+	}
+	while(pa)
+	{
+		list_remove_and_next(pa);
+	}
+
+	while(pb)
+	{
+		list_remove_and_next(pb);
+	}
+
+	delete B;
+	return C;
+}
+
 }

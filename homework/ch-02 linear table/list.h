@@ -22,6 +22,9 @@ list create_list(const std::vector<int> & il);
 void print_list(const list& l);
 void assert_list(const list& l, const std::vector<int>& v);
 
+//algorithm on list
+list reuse_delete_mix_list(list& A, list& B);
+
 }
 
 #endif
