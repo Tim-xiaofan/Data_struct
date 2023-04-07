@@ -123,4 +123,35 @@ list reuse_delete_mix_list(list& A, list& B)
 	return C;
 }
 
+
+list reuse_delete_difference_list(list& A, const list& B)
+{
+	list pa = A->next;
+	list pre = A;
+	list pb = B->next;
+
+	while(pa && pb)
+	{
+		if(pa->data < pb->data)
+		{
+			pre = pa;
+			pa = pa->next;
+		}
+		else if(pb->data < pa->data)
+		{
+			pb = pb->next;
+		}
+		else
+		{
+			list tmp = pa;
+			pre->next = pa->next;
+			pa = pa->next;
+			delete tmp;
+			
+			pb = pb->next;
+		}
+	}
+	return A;
+}
+
 }

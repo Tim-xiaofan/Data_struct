@@ -26,6 +26,7 @@ bool equal_list(const list& A, const list& B);
 
 //algorithm on list
 list reuse_delete_mix_list(list& A, list& B);
+list reuse_delete_difference_list(list& A, const list& B);
 
 }
 
