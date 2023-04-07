@@ -26,7 +26,7 @@ int main(void)
 {
 	using namespace HOMEWORK_NS;
 	{
-		initializer_list<int> il1 = {0, 1, 4, 4, 9, 10, 11, 22, 22, 34};
+		initializer_list<int> il1 = {0, 1, 4, 4, 9, 10, 11, 22, 34};
 		initializer_list<int> il2 = {1, 3, 7, 9, 22, 23};
 		list A = create_list(il1);
 		list B = create_list(il2);
