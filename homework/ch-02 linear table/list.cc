@@ -17,8 +17,20 @@ list create_list(const std::vector<int> & il)
 	return head;
 }
 
-void print_list(const list& l)
+void destroy_list(list& l)
 {
+	list tmp;
+	while(l)
+	{
+		tmp = l;
+		l = l->next;
+		delete tmp;
+	}
+}
+
+void print_list(const list& l, const char* info)
+{
+	std::cout << info;
 	list p = l->next;
 	while(p)
 	{
@@ -53,6 +65,23 @@ void assert_list(const list& l, const std::vector<int>& il)
 	}
 }
 
+bool equal_list(const list& A, const list& B)
+{
+	list pa = A->next;
+	list pb = B->next;
+	while(pa && pb)
+	{
+		if(pa->data != pb->data)
+		{
+			return false;
+		}
+		pa = pa->next;
+		pb = pb->next;
+	}
+
+	return !pa && !pb;
+}
+
 static void list_remove_and_next(node* &p)
 {
 	list tmp = p;
@@ -82,18 +111,14 @@ list reuse_delete_mix_list(list& A, list& B)
 			pc = pc->next;
 
 			list_remove_and_next(pb);
+			pa = pa->next;
 		}
 	}
+	pc->next = nullptr;
 	while(pa)
 	{
 		list_remove_and_next(pa);
 	}
-
-	while(pb)
-	{
-		list_remove_and_next(pb);
-	}
-
 	delete B;
 	return C;
 }
