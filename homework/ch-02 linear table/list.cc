@@ -5,6 +5,9 @@
 namespace HOMEWORK_NS
 {
 
+using std::cout;
+using std::endl;
+
 list create_list(const std::vector<int> & il)
 {
 	list head = new node;
@@ -152,6 +155,31 @@ list reuse_delete_difference_list(list& A, const list& B)
 		}
 	}
 	return A;
+}
+
+void reuse_neg_pos_partition_list(list&A, list& B)
+{
+	B = new node(0, nullptr);
+	list pb = B;
+	list pa = A;
+	list cur = A->next;
+	while(cur)
+	{
+		if(cur->data < 0)
+		{
+			pa->next = cur;
+			pa = pa->next;
+		}
+		else
+		{
+			pb->next = cur;
+			pb = pb->next;
+		}
+		cur = cur->next;
+	}
+	//添加终止标志nullptr
+	if(pa) pa->next = nullptr;
+	if(pb) pb->next = nullptr;
 }
 
 }
