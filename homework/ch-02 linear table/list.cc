@@ -216,4 +216,32 @@ list reverse_list(list& l)
 	return l;
 }
 
+list delete_min_max(list& l, int mink, int maxk)
+{
+	assert(mink <= maxk);
+	list p =  l->next;
+	list pre = l;
+	while(p && p->data <= mink)
+	{
+		pre = p;
+		p = p->next;
+	}
+	if(p)
+	{
+		list q = p;
+		while(q && q->data < maxk)
+		{
+			q = q->next;
+		}
+		pre->next = q;
+		while(p != q && p)
+		{
+			list tmp = p;
+			p = p->next;
+			delete tmp;
+		}
+	}
+	return l;
+}
+
 }
