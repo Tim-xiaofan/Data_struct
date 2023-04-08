@@ -28,6 +28,8 @@ bool equal_list(const list& A, const list& B);
 list reuse_delete_mix_list(list& A, list& B);
 list reuse_delete_difference_list(list& A, const list& B);
 void reuse_neg_pos_partition_list(list&A, list& B);
+int max(const list& l);
+list reverse_list(list& l);
 
 }
 

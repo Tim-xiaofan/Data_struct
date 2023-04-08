@@ -1,6 +1,7 @@
 #include "list.h"
 #include <iostream>
 #include <cassert>
+#include <climits>
 
 namespace HOMEWORK_NS
 {
@@ -180,6 +181,39 @@ void reuse_neg_pos_partition_list(list&A, list& B)
 	//添加终止标志nullptr
 	if(pa) pa->next = nullptr;
 	if(pb) pb->next = nullptr;
+}
+
+
+int max(const list& l)
+{
+	int ret = INT_MIN;
+	list p = l->next;
+	while(p)
+	{
+		if(p->data > ret)
+		{
+			ret = p->data;
+		}
+		p = p->next;
+	}
+	return ret;
+}
+
+list reverse_list(list& l)
+{
+	if(l->next && l->next->next)
+	{
+		list p = l->next->next;
+		l->next->next = nullptr;
+		while(p)
+		{
+			list q = p; // 摘取
+			p = p->next;
+			q->next = l->next;//链接
+			l->next = q;
+		}
+	}
+	return l;
 }
 
 }
