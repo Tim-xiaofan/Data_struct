@@ -15,6 +15,8 @@ class Stack
 		size_t size(void) const { return top_; };
 		bool empty(void) const { return top_ == 0 ;}
 		bool full(void) const { return top_ == capacity_; }
+		T& top() { return data_[top - 1]; }
+		const T& top() const { return data_[top - 1]; }
 	private:
 		size_t top_;
 		size_t capacity_;
