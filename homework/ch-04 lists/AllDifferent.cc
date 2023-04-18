@@ -7,7 +7,6 @@
 
 using std::cout;
 using std::endl;
-using std::vector;
 
 template<typename T, size_t n, size_t m>
 using matrix=std::array<std::array<T, n>, m>;
