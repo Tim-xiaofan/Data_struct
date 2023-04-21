@@ -3,6 +3,7 @@
 *.s
 *.exe
 *.txt
+!CMakeLists.txt
 *.log
 *tags
 *core*
