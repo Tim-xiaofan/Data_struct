@@ -57,6 +57,20 @@ public:
 			sibling->preorderTraversal(op);
 		}
 	}
+
+	template<typename Unary>
+	void postorderTraversal(Unary op) const
+	{
+		if(child)
+		{
+			child->postorderTraversal(op);
+		}
+		op(data);
+		if(sibling)
+		{
+			sibling->postorderTraversal(op);
+		}
+	}
 };
 
 static std::ostream& operator<<(std::ostream& os, const std::vector<int>& v)
@@ -137,6 +151,79 @@ int main() {
         std::vector<int> expected = {1,2};
         assert(expected == results);
 		std::cout << "preorderTraversal: " << results << "\n\n"; 
+	}
+
+	{
+		auto root = std::make_unique<TreeNode<int>>(1);
+		root->addChild(2);
+		root->addChild(3);
+		root->addChild(4);
+
+		auto& node2 = root->child;
+		node2->addChild(5);
+		node2->addChild(6);
+
+		auto& node3 = node2->sibling;
+		node3->addChild(7);
+
+		root->display();
+
+		std::vector<int> results;
+		root->postorderTraversal([&results](int x) { results.push_back(x); });
+		std::vector<int> expected = {5,6,2,7,3,4,1};
+		assert(expected == results);
+		std::cout << "postorderTraversal: " << results << "\n\n"; 
+	}
+
+	{
+		auto root = std::make_unique<TreeNode<int>>(1);
+		root->addChild(2);
+		root->addChild(3);
+		root->addChild(4);
+
+		auto& node2 = root->child;
+		node2->addChild(5);
+		node2->addChild(6);
+
+		auto& node5 = node2->child;
+		node5->addChild(8);
+
+		auto& node3 = node2->sibling;
+		node3->addChild(7);
+
+		root->display();
+
+		std::vector<int> results;
+		root->postorderTraversal([&results](int x) { results.push_back(x); });
+		std::vector<int> expected = {8,5,6,2,7,3,4,1};
+		assert(expected == results);
+		std::cout << "postorderTraversal: " << results << "\n\n"; 
+
+	}
+
+	{
+		auto root = std::make_unique<TreeNode<int>>(1);
+
+        root->display();
+
+        std::vector<int> results;
+        root->postorderTraversal([&results](int x) { results.push_back(x); });
+        std::vector<int> expected = {1};
+        assert(expected == results);
+		std::cout << "postorderTraversal: " << results << "\n\n"; 
+	}
+
+	{
+		auto root = std::make_unique<TreeNode<int>>(1);
+        root->addChild(2);
+
+        root->display();
+
+        std::vector<int> results;
+        root->postorderTraversal([&results](int x) { results.push_back(x); });
+        std::vector<int> expected = {2, 1};
+        assert(expected == results);
+		std::cout << "postorderTraversal: " << results << "\n\n"; 
 	}
 
 	std::cout << "All test passed!\n";
