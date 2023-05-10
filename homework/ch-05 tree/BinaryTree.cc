@@ -65,6 +65,8 @@ class BinaryTreeNode
 		template<typename Unary>
 		void levelorderTraversal(Unary op) const;
 
+		size_t maxWidth() const;
+
 
 	private:
 		T data_;
@@ -392,6 +394,42 @@ void BinaryTreeNode<T>::levelorderTraversal(Unary op) const
 	}
 }
 
+template<typename T>
+size_t BinaryTreeNode<T>::maxWidth() const
+{
+	size_t max = 1;
+	std::deque<const BinaryTreeNode<T>*> q;
+	const BinaryTreeNode<T>* last = this;
+	const BinaryTreeNode<T>* cur = nullptr;
+	q.push_back(this);
+	while(!q.empty())
+	{
+		do
+		{
+			cur = q.front();
+			q.pop_front();
+			if(cur->lchild_)
+			{
+				q.push_back(cur->lchild_);
+			}
+			if(cur->rchild_)
+			{
+				q.push_back(cur->rchild_);
+			}
+		}while(cur != last);
+
+		if(!q.empty())
+		{
+			if(q.size() > max)
+			{
+				max = q.size();
+			}
+			last = q.back();
+		}
+	}
+	return max;
+}
+
 int main(void)
 {
 	{//case 1: full
@@ -472,6 +510,7 @@ int main(void)
 		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
 		cout << "level_results: " << level_results << endl;
 		assert(level_results == expected);
+		assert(4 == tree.maxWidth());
 		cout << endl << endl;
 	}
 	
@@ -487,6 +526,7 @@ int main(void)
 		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
 		cout << "level_results: " << level_results << endl;
 		assert(level_results == expected);
+		assert(3 == tree.maxWidth());
 		cout << endl << endl;
 	}
 
@@ -502,6 +542,7 @@ int main(void)
 		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
 		cout << "level_results: " << level_results << endl;
 		assert(level_results == expected);
+		assert(1 == tree.maxWidth());
 		cout << endl << endl;
 	}
 
@@ -517,6 +558,7 @@ int main(void)
 		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
 		cout << "level_results: " << level_results << endl;
 		assert(level_results == expected);
+		assert(1 == tree.maxWidth());
 		cout << endl << endl;
 	}
 
@@ -533,6 +575,7 @@ int main(void)
 		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
 		cout << "level_results: " << level_results << endl;
 		assert(level_results == expected);
+		assert(1 == tree.maxWidth());
 		cout << endl << endl;
 	}
 
