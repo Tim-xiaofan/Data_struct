@@ -35,6 +35,11 @@ class BinaryTreeNode
 	public:
 		BinaryTreeNode();
 
+		BinaryTreeNode(const BinaryTreeNode&) = delete;
+		BinaryTreeNode& operator=(const BinaryTreeNode&) = delete;
+
+		bool operator==(const BinaryTreeNode& rhs) const;
+
 		void createFromPreorderAndInorder(const std::vector<T>& preList,  const std::vector<T>& inList);
 
 		void display(int level = 0) const;
@@ -321,6 +326,35 @@ static void assertBinaryTreeNode(const std::vector<int>& pre, const std::vector<
 	cout << caseName << " passed\n\n";
 }
 
+template<typename T>
+bool BinaryTreeNode<T>::operator==(const BinaryTreeNode& rhs) const
+{
+	if(this != &rhs && data_ == rhs.data_)
+	{
+		if((lchild_ == nullptr) != (rhs.lchild_ == nullptr))
+		{
+			return false;
+		}
+
+		if((rchild_ == nullptr) != (rhs.rchild_ == nullptr))
+		{
+			return false;
+		}
+
+		if(lchild_ && !(*lchild_ == *rhs.lchild_))
+		{
+			return false;
+		}
+
+		if(rchild_ && !(*rchild_ == *rhs.rchild_))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 int main(void)
 {
 	{//case 1: full
@@ -351,6 +385,44 @@ int main(void)
 		std::vector<int> pre= {1, 2, 3, 4};
 		std::vector<int> in= {1, 2, 3, 4};
 		assertBinaryTreeNode(pre, in, "case5", 1, {1,1,2,2,3,3,4});
+	}
+
+	{// self cmp
+		BinaryTreeNode<int> tree1;
+		tree1.createFromPreorderAndInorder({1,2,4,5,3,6,7}, {4,2,5,1,6,3,7});
+		assert(tree1 == tree1);
+		cout << endl << endl;
+	}
+
+	{// same cmp
+		BinaryTreeNode<int> tree1;
+		tree1.createFromPreorderAndInorder({1,2,4,5,3,6,7}, {4,2,5,1,6,3,7});
+		BinaryTreeNode<int> tree2; 
+		tree2.createFromPreorderAndInorder({1,2,4,5,3,6,7}, {4,2,5,1,6,3,7});
+		
+		cout << "tree1:\n";
+		tree1.display();
+		cout << "tree2:\n";
+		tree2.display();
+		
+		assert(tree1 == tree2);
+		cout << endl << endl;
+	}
+
+	{// diff cmp
+		BinaryTreeNode<int> tree1;
+		tree1.createFromPreorderAndInorder({1,2,4,5,3,6,7}, {4,2,5,1,6,3,7});
+		BinaryTreeNode<int> tree2; 
+		tree2.createFromPreorderAndInorder({1,2,4,3,6,7}, {4,2,1,6,3,7});
+		
+		cout << "tree1:\n";
+		tree1.display();
+		cout << "tree2:\n";
+		tree2.display();
+		
+		assert(!(tree1 == tree2));
+		cout << endl << endl;
+
 	}
 
 	cout << "All test passed\n";
