@@ -53,6 +53,9 @@ class BinaryTreeNode
 
 		int numberOfLeaves(void) const;
 
+		template<typename Unary>
+		void dualorderTraversal(Unary op) const;
+
 	private:
 		T data_;
 		BinaryTreeNode* lchild_;
@@ -247,7 +250,30 @@ int BinaryTreeNode<T>::numberOfLeaves(void) const
 	}
 }
 
-static void assertBinaryTreeNode(const std::vector<int>& pre, const std::vector<int>& in, const std::string& caseName, int numberOfLeaves)
+template<typename T>
+template<typename Unary>
+void BinaryTreeNode<T>::dualorderTraversal(Unary op) const
+{
+	op(data_);
+	if(!lchild_ && !rchild_)
+	{
+		return ;
+	}
+	else
+	{
+		if(lchild_)
+		{
+			lchild_->dualorderTraversal(op);
+		}
+		op(data_);
+		if(rchild_)
+		{
+			rchild_->dualorderTraversal(op);
+		}
+	}
+}
+
+static void assertBinaryTreeNode(const std::vector<int>& pre, const std::vector<int>& in, const std::string& caseName, int numberOfLeaves, const std::vector<int>& dual)
 {
 	cout << "pre: " << pre << endl;
 	cout << "in: " << in << endl;
@@ -285,6 +311,13 @@ static void assertBinaryTreeNode(const std::vector<int>& pre, const std::vector<
 		assert(in_results == in);
 	}
 
+	{
+		std::vector<int> dual_results;
+		root->dualorderTraversal([&dual_results](int i) {dual_results.push_back(i); });
+		cout << "dual_results: " << dual_results << endl;
+		assert(dual_results == dual);
+	}
+
 	cout << caseName << " passed\n\n";
 }
 
@@ -293,31 +326,31 @@ int main(void)
 	{//case 1: full
 		std::vector<int> pre= {1,2,4,5,3,6,7};
 		std::vector<int> in= {4,2,5,1,6,3,7};
-		assertBinaryTreeNode(pre, in, "case1", 4);
+		assertBinaryTreeNode(pre, in, "case1", 4, {1,2,4,2,5,1,3,6,3,7});
 	}
 
 	{// case2: not full
 		std::vector<int> pre= {1,2,4,3,6,7};
 		std::vector<int> in= {4,2,1,6,3,7};
-		assertBinaryTreeNode(pre, in, "case2", 3);
+		assertBinaryTreeNode(pre, in, "case2", 3, {1,2,4,2,1,3,6,3,7});
 	}
 
 	{// case 3: one node
 		std::vector<int> pre= {1};
 		std::vector<int> in= {1};
-		assertBinaryTreeNode(pre, in, "case3", 1);
+		assertBinaryTreeNode(pre, in, "case3", 1, {1});
 	}
 
 	{//case 4: only lchild
 		std::vector<int> pre= {1, 2, 3};
 		std::vector<int> in= {3, 2, 1};
-		assertBinaryTreeNode(pre, in, "case4", 1);
+		assertBinaryTreeNode(pre, in, "case4", 1, {1,2,3,2,1});
 	}
 
 	{//case 5: only rchild
 		std::vector<int> pre= {1, 2, 3, 4};
 		std::vector<int> in= {1, 2, 3, 4};
-		assertBinaryTreeNode(pre, in, "case5", 1);
+		assertBinaryTreeNode(pre, in, "case5", 1, {1,1,2,2,3,3,4});
 	}
 
 	cout << "All test passed\n";
