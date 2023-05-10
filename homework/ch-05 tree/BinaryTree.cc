@@ -51,6 +51,8 @@ class BinaryTreeNode
 		template<typename Unary>
 		void inorderTraversalNotRecursion(Unary op) const;
 
+		int numberOfLeaves(void) const;
+
 	private:
 		T data_;
 		BinaryTreeNode* lchild_;
@@ -223,13 +225,37 @@ void BinaryTreeNode<T>::display(int level) const
 	}
 }
 
-static void assertBinaryTreeNode(const std::vector<int>& pre, const std::vector<int>& in, const std::string& caseName)
+template<typename T>
+int BinaryTreeNode<T>::numberOfLeaves(void) const
+{
+	if(!lchild_ && !rchild_)
+	{
+		return 1;
+	}
+	else
+	{
+		int count = 0;
+		if(lchild_)
+		{
+			count += lchild_->numberOfLeaves();
+		}
+		if(rchild_)
+		{
+			count += rchild_->numberOfLeaves();
+		}
+		return count;
+	}
+}
+
+static void assertBinaryTreeNode(const std::vector<int>& pre, const std::vector<int>& in, const std::string& caseName, int numberOfLeaves)
 {
 	cout << "pre: " << pre << endl;
 	cout << "in: " << in << endl;
 	BinaryTreeNode<int> *root = new BinaryTreeNode<int>();
 	root->createFromPreorderAndInorder(pre, in);
 	root->display();
+
+	assert(root->numberOfLeaves() == numberOfLeaves);
 
 	{
 		std::vector<int> pre_results;
@@ -267,31 +293,31 @@ int main(void)
 	{//case 1: full
 		std::vector<int> pre= {1,2,4,5,3,6,7};
 		std::vector<int> in= {4,2,5,1,6,3,7};
-		assertBinaryTreeNode(pre, in, "case1");
+		assertBinaryTreeNode(pre, in, "case1", 4);
 	}
 
 	{// case2: not full
 		std::vector<int> pre= {1,2,4,3,6,7};
 		std::vector<int> in= {4,2,1,6,3,7};
-		assertBinaryTreeNode(pre, in, "case2");
+		assertBinaryTreeNode(pre, in, "case2", 3);
 	}
 
 	{// case 3: one node
 		std::vector<int> pre= {1};
 		std::vector<int> in= {1};
-		assertBinaryTreeNode(pre, in, "case3");
+		assertBinaryTreeNode(pre, in, "case3", 1);
 	}
 
 	{//case 4: only lchild
 		std::vector<int> pre= {1, 2, 3};
 		std::vector<int> in= {3, 2, 1};
-		assertBinaryTreeNode(pre, in, "case4");
+		assertBinaryTreeNode(pre, in, "case4", 1);
 	}
 
 	{//case 5: only rchild
 		std::vector<int> pre= {1, 2, 3, 4};
 		std::vector<int> in= {1, 2, 3, 4};
-		assertBinaryTreeNode(pre, in, "case5");
+		assertBinaryTreeNode(pre, in, "case5", 1);
 	}
 
 	cout << "All test passed\n";
