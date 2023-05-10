@@ -2,11 +2,12 @@
 #include <iostream>
 #include <vector>
 #include <memory>
-#include <cassert>
 #include <iterator>
 #include <unordered_map>
 #include <exception>
 #include <algorithm>
+#include <deque>
+#include <cassert>
 #include <stack>
 
 using std::endl;
@@ -60,6 +61,10 @@ class BinaryTreeNode
 
 		template<typename Unary>
 		void dualorderTraversal(Unary op) const;
+
+		template<typename Unary>
+		void levelorderTraversal(Unary op) const;
+
 
 	private:
 		T data_;
@@ -355,6 +360,38 @@ bool BinaryTreeNode<T>::operator==(const BinaryTreeNode& rhs) const
 	return true;
 }
 
+template<typename T>
+template<typename Unary>
+void BinaryTreeNode<T>::levelorderTraversal(Unary op) const
+{
+	std::deque<const BinaryTreeNode<T>*> q;
+	const BinaryTreeNode<T>* last = this;
+	const BinaryTreeNode<T>* cur = nullptr;
+	q.push_back(this);
+	while(!q.empty())
+	{
+		do
+		{
+			cur = q.front();
+			op(cur->data_);
+			q.pop_front();
+			if(cur->lchild_)
+			{
+				q.push_back(cur->lchild_);
+			}
+			if(cur->rchild_)
+			{
+				q.push_back(cur->rchild_);
+			}
+		}while(cur != last);
+
+		if(!q.empty())
+		{
+			last = q.back();
+		}
+	}
+}
+
 int main(void)
 {
 	{//case 1: full
@@ -422,7 +459,81 @@ int main(void)
 		
 		assert(!(tree1 == tree2));
 		cout << endl << endl;
+	}
 
+	/** test levelorderTraversal*/
+	{// full
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder({1,2,4,5,3,6,7}, {4,2,5,1,6,3,7});
+		tree.display();
+
+		std::vector<int> level_results;
+		std::vector<int> expected = {1, 2, 3, 4, 5, 6, 7};
+		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
+		cout << "level_results: " << level_results << endl;
+		assert(level_results == expected);
+		cout << endl << endl;
+	}
+	
+	{// not full
+		std::vector<int> pre= {1,2,4,3,6,7};
+		std::vector<int> in= {4,2,1,6,3,7};
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder(pre, in);
+		tree.display();
+
+		std::vector<int> level_results;
+		std::vector<int> expected = {1, 2, 3, 4, 6, 7};
+		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
+		cout << "level_results: " << level_results << endl;
+		assert(level_results == expected);
+		cout << endl << endl;
+	}
+
+	{// one
+		std::vector<int> pre= {1};
+		std::vector<int> in= {1};
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder(pre, in);
+		tree.display();
+
+		std::vector<int> level_results;
+		std::vector<int> expected = {1};
+		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
+		cout << "level_results: " << level_results << endl;
+		assert(level_results == expected);
+		cout << endl << endl;
+	}
+
+	{// only lchild
+		std::vector<int> pre= {1, 2, 3};
+		std::vector<int> in= {3, 2, 1};
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder(pre, in);
+		tree.display();
+
+		std::vector<int> level_results;
+		std::vector<int> expected = {1, 2, 3};
+		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
+		cout << "level_results: " << level_results << endl;
+		assert(level_results == expected);
+		cout << endl << endl;
+	}
+
+	{// only rchild
+
+		std::vector<int> pre= {1, 2, 3, 4};
+		std::vector<int> in= {1, 2, 3, 4};
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder(pre, in);
+		tree.display();
+
+		std::vector<int> level_results;
+		std::vector<int> expected = {1, 2, 3, 4};
+		tree.levelorderTraversal([&level_results](int i) {level_results.push_back(i); });
+		cout << "level_results: " << level_results << endl;
+		assert(level_results == expected);
+		cout << endl << endl;
 	}
 
 	cout << "All test passed\n";
