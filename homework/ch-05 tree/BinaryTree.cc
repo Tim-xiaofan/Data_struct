@@ -9,6 +9,7 @@
 #include <deque>
 #include <cassert>
 #include <stack>
+#include <utility>
 
 using std::endl;
 using std::cout;
@@ -67,6 +68,7 @@ class BinaryTreeNode
 
 		size_t maxWidth() const;
 
+		std::vector<T> maxPath() const;
 
 	private:
 		T data_;
@@ -430,6 +432,44 @@ size_t BinaryTreeNode<T>::maxWidth() const
 	return max;
 }
 
+template<typename T>
+std::vector<T> BinaryTreeNode<T>::maxPath() const
+{
+	std::vector<T> path;
+	std::vector<std::pair<const BinaryTreeNode<T>*, bool>> s;
+	const BinaryTreeNode<T>* p = this;
+	while(!s.empty() || p)
+	{
+		while(p)
+		{
+			s.emplace_back(p, false);
+			p = p->lchild_;
+		}
+
+		if(s.back().second) //右分支已经遍历
+		{
+			if(!s.back().first->lchild_ && !s.back().first->rchild_)
+			{
+				if(path.size() < s.size())
+				{
+					path.clear();
+					for(const auto& e: s)
+					{
+						path.push_back(e.first->data_);
+					}
+				}
+			}
+			s.pop_back();
+		}
+		else
+		{
+			p = s.back().first->rchild_;
+			s.back().second = true;
+		}
+	}
+	return path;
+}
+
 int main(void)
 {
 	{//case 1: full
@@ -577,6 +617,57 @@ int main(void)
 		assert(level_results == expected);
 		assert(1 == tree.maxWidth());
 		cout << endl << endl;
+	}
+
+	/** test max path*/
+	{// full
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder({1,2,4,5,3,6,7}, {4,2,5,1,6,3,7});
+		tree.display();
+		std::vector<int> expected = {1, 2, 4};
+		auto results = tree.maxPath();
+		assert(results.size() == 3);
+		assert(results == expected);
+	}
+
+	{// not full
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder({1,2,4,3,6,7}, {4,2,1,6,3,7});
+		tree.display();
+		std::vector<int> expected = {1, 2, 4};
+		auto results = tree.maxPath();
+		assert(results.size() == 3);
+		assert(results == expected);
+	}
+
+	{// one
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder({1}, {1});
+		tree.display();
+		std::vector<int> expected = {1};
+		auto results = tree.maxPath();
+		assert(results.size() == 1);
+		assert(results == expected);
+	}
+
+	{// ony lchild 
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder({1,2,3}, {3,2,1});
+		tree.display();
+		std::vector<int> expected = {1, 2, 3};
+		auto results = tree.maxPath();
+		assert(results.size() == 3);
+		assert(results == expected);
+	}
+	
+	{// ony rchild 
+		BinaryTreeNode<int> tree;
+		tree.createFromPreorderAndInorder({1,2,3,4}, {1, 2, 3, 4});
+		tree.display();
+		std::vector<int> expected = {1, 2, 3, 4};
+		auto results = tree.maxPath();
+		assert(results.size() == 4);
+		assert(results == expected);
 	}
 
 	cout << "All test passed\n";
