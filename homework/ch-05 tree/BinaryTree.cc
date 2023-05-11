@@ -70,6 +70,8 @@ class BinaryTreeNode
 
 		std::vector<T> maxPath() const;
 
+		std::vector<std::vector<T>> allPathes() const;
+
 	private:
 		T data_;
 		BinaryTreeNode* lchild_;
@@ -470,6 +472,42 @@ std::vector<T> BinaryTreeNode<T>::maxPath() const
 	return path;
 }
 
+
+template<typename T>
+std::vector<std::vector<T>> BinaryTreeNode<T>::allPathes() const
+{
+	std::vector<std::vector<T>> pathes;
+	std::vector<std::pair<const BinaryTreeNode<T>*, bool>> s;
+	const BinaryTreeNode<T>* p = this;
+	while(p || !s.empty())
+	{
+		while(p)
+		{
+			s.emplace_back(p, false);
+			p = p->lchild_;
+		}
+
+		if(s.back().second)
+		{
+			if(!s.back().first->lchild_&& !s.back().first->rchild_)
+			{
+				pathes.push_back(std::vector<T>());
+				for(const auto& e: s)
+				{
+					pathes.back().push_back(e.first->data_);
+				}
+			}
+			s.pop_back();
+		}
+		else
+		{
+			p = s.back().first->rchild_;
+			s.back().second = true;
+		}
+	}
+	return pathes;
+}
+
 int main(void)
 {
 	{//case 1: full
@@ -628,6 +666,10 @@ int main(void)
 		auto results = tree.maxPath();
 		assert(results.size() == 3);
 		assert(results == expected);
+
+		auto pathes = tree.allPathes();
+		std::vector<std::vector<int>> expected_pathes = {{1,2,4}, {1,2,5}, {1,3,6}, {1,3,7}};
+		assert(pathes == expected_pathes);
 	}
 
 	{// not full
@@ -638,6 +680,11 @@ int main(void)
 		auto results = tree.maxPath();
 		assert(results.size() == 3);
 		assert(results == expected);
+
+
+		auto pathes = tree.allPathes();
+		std::vector<std::vector<int>> expected_pathes = {{1,2,4},  {1,3,6}, {1,3,7}};
+		assert(pathes == expected_pathes);
 	}
 
 	{// one
@@ -648,6 +695,10 @@ int main(void)
 		auto results = tree.maxPath();
 		assert(results.size() == 1);
 		assert(results == expected);
+		
+		auto pathes = tree.allPathes();
+		std::vector<std::vector<int>> expected_pathes = {{1}};
+		assert(pathes == expected_pathes);
 	}
 
 	{// ony lchild 
@@ -658,6 +709,10 @@ int main(void)
 		auto results = tree.maxPath();
 		assert(results.size() == 3);
 		assert(results == expected);
+		
+		auto pathes = tree.allPathes();
+		std::vector<std::vector<int>> expected_pathes = {{1,2,3}};
+		assert(pathes == expected_pathes);
 	}
 	
 	{// ony rchild 
@@ -668,6 +723,10 @@ int main(void)
 		auto results = tree.maxPath();
 		assert(results.size() == 4);
 		assert(results == expected);
+		
+		auto pathes = tree.allPathes();
+		std::vector<std::vector<int>> expected_pathes = {{1,2,3,4}};
+		assert(pathes == expected_pathes);
 	}
 
 	cout << "All test passed\n";
