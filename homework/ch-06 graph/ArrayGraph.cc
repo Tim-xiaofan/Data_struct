@@ -70,7 +70,7 @@ void ArrayGraph<T>::addNode(const T& node)
 template<typename T>
 void ArrayGraph<T>::addNodes(const NodeList<T>& nodes)
 {
-    for (const auto& node : nodes_)
+    for (const auto& node : nodes)
         addNode(node);
 }
 
@@ -190,14 +190,25 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
 
 int main(void)
 {
-	ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-	graph.addNode(1);
-	graph.addNode(2);
-	graph.addNode(3);
-	graph.addEdge({0, 1});
-	graph.addEdge({1, 2});
-	graph.addEdge({2, 0});
-	displayNodeList(graph.getNodes());
-	displayMatrix(graph.getEdges());
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addEdge({0, 1});
+		graph.addEdge({1, 2});
+		graph.addEdge({2, 0});
+		displayNodeList(graph.getNodes());
+		displayMatrix(graph.getEdges());
+		cout << endl << endl;
+	}
+
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes({1, 2, 3});
+		graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+		displayNodeList(graph.getNodes());
+		displayMatrix(graph.getEdges());
+	}
 	return 0;
 }
