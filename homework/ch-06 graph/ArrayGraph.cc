@@ -2,6 +2,8 @@
 #include <vector>
 #include <utility>
 #include <queue>
+#include <cassert>
+#include <algorithm>
 
 using std::cout;
 using std::endl;
@@ -59,11 +61,14 @@ ArrayGraph<T>::ArrayGraph(ArrayGraphType type) : type_(type)
 template<typename T>
 void ArrayGraph<T>::addNode(const T& node)
 {
-    nodes_.push_back(node);
-	edges_.push_back(std::vector<int>(nodes_.size(), 0));
-	for(size_t i = 0; i < edges_.size() - 1; ++i)
+	if(std::find(nodes_.begin(), nodes_.end(), node) == nodes_.end())
 	{
-		edges_[i].push_back(0);
+		nodes_.push_back(node);
+		edges_.push_back(std::vector<int>(nodes_.size(), 0));
+		for(size_t i = 0; i < edges_.size() - 1; ++i)
+		{
+			edges_[i].push_back(0);
+		}
 	}
 }
 
@@ -166,7 +171,7 @@ void ArrayGraph<T>::DFS(const Unary& op) const
 {
     std::vector<bool> visited(nodes_.size(), false);
 
-    for (int i = 0; i < nodes_.size(); ++i)
+    for (size_t i = 0; i < nodes_.size(); ++i)
     {
         if (!visited[i])
             DFSUtil(i, visited, op);
@@ -180,7 +185,7 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
     visited[node] = true;
     op(nodes_[node]);
 
-    for (int neighbor = 0; neighbor < nodes_.size(); ++neighbor)
+    for (size_t neighbor = 0; neighbor < nodes_.size(); ++neighbor)
     {
         if (edges_[node][neighbor] == 1 && !visited[neighbor])
             DFSUtil(neighbor, visited, op);
@@ -190,25 +195,95 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
 
 int main(void)
 {
-	{
+	/** test graph constructor */
+	{//empty
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addEdge({0, 1});
-		graph.addEdge({1, 2});
-		graph.addEdge({2, 0});
-		displayNodeList(graph.getNodes());
-		displayMatrix(graph.getEdges());
-		cout << endl << endl;
+		const Matrix<int>& E = graph.getEdges();
+		const NodeList<int>& V = graph.getNodes();
+		assert(V == NodeList<int>({}));
+		assert(E == Matrix<int>({}));
 	}
-
-	{
-		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-		graph.addNodes({1, 2, 3});
-		graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
-		displayNodeList(graph.getNodes());
-		displayMatrix(graph.getEdges());
+	{//one at a time
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+			graph.addNode(1);
+			graph.addNode(2);
+			graph.addNode(3);
+			graph.addEdge({0, 1});
+			graph.addEdge({1, 2});
+			graph.addEdge({2, 0});
+			const Matrix<int>& E = graph.getEdges();
+			const NodeList<int>& V = graph.getNodes();
+			assert(V == NodeList<int>({1, 2, 3}));
+			assert(E[0] == std::vector<int>({0, 1, 1}));
+			assert(E[1] == std::vector<int>({1, 0, 1}));
+			assert(E[2] == std::vector<int>({1, 1, 0}));
+		}
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+			graph.addNode(1);
+			graph.addNode(2);
+			graph.addNode(3);
+			graph.addEdge({0, 1});
+			graph.addEdge({1, 2});
+			graph.addEdge({2, 0});
+			const Matrix<int>& E = graph.getEdges();
+			const NodeList<int>& V = graph.getNodes();
+			assert(V == NodeList<int>({1, 2, 3}));
+			assert(E[0] == std::vector<int>({0, 1, 0}));
+			assert(E[1] == std::vector<int>({0, 0, 1}));
+			assert(E[2] == std::vector<int>({1, 0, 0}));
+		}
 	}
+	{//multiple at a time
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+			graph.addNodes({1, 2, 3});
+			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+			const Matrix<int>& E = graph.getEdges();
+			const NodeList<int>& V = graph.getNodes();
+			assert(V == NodeList<int>({1, 2, 3}));
+			assert(E[0] == std::vector<int>({0, 1, 1}));
+			assert(E[1] == std::vector<int>({1, 0, 1}));
+			assert(E[2] == std::vector<int>({1, 1, 0}));
+		}
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+			graph.addNodes({1, 2, 3});
+			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+			const Matrix<int>& E = graph.getEdges();
+			const NodeList<int>& V = graph.getNodes();
+			assert(V == NodeList<int>({1, 2, 3}));
+			assert(E[0] == std::vector<int>({0, 1, 0}));
+			assert(E[1] == std::vector<int>({0, 0, 1}));
+			assert(E[2] == std::vector<int>({1, 0, 0}));
+		}
+	}
+	{//duplicate vertices
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+			graph.addNodes({1, 1, 2, 3, 3});
+			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+			const Matrix<int>& E = graph.getEdges();
+			const NodeList<int>& V = graph.getNodes();
+			assert(V == NodeList<int>({1, 2, 3}));
+			assert(E[0] == std::vector<int>({0, 1, 1}));
+			assert(E[1] == std::vector<int>({1, 0, 1}));
+			assert(E[2] == std::vector<int>({1, 1, 0}));
+		}
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+			graph.addNodes({1, 1, 2, 3, 3});
+			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+			const Matrix<int>& E = graph.getEdges();
+			const NodeList<int>& V = graph.getNodes();
+			assert(V == NodeList<int>({1, 2, 3}));
+			assert(E[0] == std::vector<int>({0, 1, 0}));
+			assert(E[1] == std::vector<int>({0, 0, 1}));
+			assert(E[2] == std::vector<int>({1, 0, 0}));
+		}
+	}
+	
+	cout << "All test passed\n";
 	return 0;
 }
