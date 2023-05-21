@@ -64,11 +64,11 @@ void ArrayGraph<T>::addNode(const T& node)
 	if(std::find(nodes_.begin(), nodes_.end(), node) == nodes_.end())
 	{
 		nodes_.push_back(node);
-		edges_.push_back(std::vector<int>(nodes_.size(), 0));
-		for(size_t i = 0; i < edges_.size() - 1; ++i)
+		for(size_t i = 0; i < edges_.size(); ++i)
 		{
 			edges_[i].push_back(0);
 		}
+		edges_.push_back(std::vector<int>(nodes_.size(), 0));
 	}
 }
 
@@ -139,7 +139,7 @@ void ArrayGraph<T>::BFS(const Unary& op) const
     std::vector<bool> visited(nodes_.size(), false);
     std::queue<int> queue;
 
-    for (int i = 0; i < nodes_.size(); ++i)
+    for (size_t i = 0; i < nodes_.size(); ++i)
     {
         if (visited[i])
             continue;
@@ -153,7 +153,7 @@ void ArrayGraph<T>::BFS(const Unary& op) const
             queue.pop();
             op(nodes_[current]);
 
-            for (int neighbor = 0; neighbor < nodes_.size(); ++neighbor)
+            for (size_t neighbor = 0; neighbor < nodes_.size(); ++neighbor)
             {
                 if (edges_[current][neighbor] == 1 && !visited[neighbor])
                 {
@@ -218,6 +218,14 @@ int main(void)
 			assert(E[0] == std::vector<int>({0, 1, 1}));
 			assert(E[1] == std::vector<int>({1, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 1, 0}));
+
+			std::vector<int> results;
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({1, 2, 3}));
+
+			std::vector<int> results1;
+			graph.BFS([&results1](int x) { results1.push_back(x); });
+			assert(results1 == std::vector<int>({1, 2, 3}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -233,6 +241,14 @@ int main(void)
 			assert(E[0] == std::vector<int>({0, 1, 0}));
 			assert(E[1] == std::vector<int>({0, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 0, 0}));
+
+			std::vector<int> results;
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({1, 2, 3}));
+			
+			std::vector<int> results1;
+			graph.BFS([&results1](int x) { results1.push_back(x); });
+			assert(results1 == std::vector<int>({1, 2, 3}));
 		}
 	}
 	{//multiple at a time
@@ -246,6 +262,14 @@ int main(void)
 			assert(E[0] == std::vector<int>({0, 1, 1}));
 			assert(E[1] == std::vector<int>({1, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 1, 0}));
+
+			std::vector<int> results;
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({1, 2, 3}));
+			
+			std::vector<int> results1;
+			graph.BFS([&results1](int x) { results1.push_back(x); });
+			assert(results1 == std::vector<int>({1, 2, 3}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -257,6 +281,14 @@ int main(void)
 			assert(E[0] == std::vector<int>({0, 1, 0}));
 			assert(E[1] == std::vector<int>({0, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 0, 0}));
+
+			std::vector<int> results;
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({1, 2, 3}));
+
+			std::vector<int> results1;
+			graph.BFS([&results1](int x) { results1.push_back(x); });
+			assert(results1 == std::vector<int>({1, 2, 3}));
 		}
 	}
 	{//duplicate vertices
@@ -270,6 +302,14 @@ int main(void)
 			assert(E[0] == std::vector<int>({0, 1, 1}));
 			assert(E[1] == std::vector<int>({1, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 1, 0}));
+
+			std::vector<int> results;
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({1, 2, 3}));
+
+			std::vector<int> results1;
+			graph.BFS([&results1](int x) { results1.push_back(x); });
+			assert(results1 == std::vector<int>({1, 2, 3}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -281,6 +321,14 @@ int main(void)
 			assert(E[0] == std::vector<int>({0, 1, 0}));
 			assert(E[1] == std::vector<int>({0, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 0, 0}));
+
+			std::vector<int> results;
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({1, 2, 3}));
+
+			std::vector<int> results1;
+			graph.BFS([&results1](int x) { results1.push_back(x); });
+			assert(results1 == std::vector<int>({1, 2, 3}));
 		}
 	}
 	
