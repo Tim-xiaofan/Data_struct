@@ -4,6 +4,7 @@
 #include <queue>
 #include <cassert>
 #include <algorithm>
+#include <stdexcept>
 
 using std::cout;
 using std::endl;
@@ -43,6 +44,15 @@ public:
 
     template<typename Unary>
     void DFS(const Unary& op) const;
+
+	// only valid in a directed graph
+	int getInDegree(int v) const;
+
+	// only valid in a directed graph
+	int getOutDegree(int v) const;
+
+	//only valid in a undirected graph
+	int getDegree(int v) const;
 
 private:
     ArrayGraphType type_;
@@ -192,6 +202,59 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
     }
 }
 
+template<typename T>
+int ArrayGraph<T>::getInDegree(int v) const
+{
+	if(type_ == DGRAPH)
+	{
+		int ID = 0;
+		for(const auto& row: edges_)
+		{
+			ID += row[v];
+		}
+		return ID;
+	}
+	else
+	{
+		throw std::logic_error("Error: getInDegree() is only valid in a directed graph");
+	}
+}
+
+template<typename T>
+int ArrayGraph<T>::getOutDegree(int v) const
+{
+	if(type_ == DGRAPH)
+	{
+		int ID = 0;
+		for(const auto& e: edges_[v])
+		{
+			ID += e;
+		}
+		return ID;
+	}
+	else
+	{
+		throw std::logic_error("Error: getInDegree() is only valid in a directed graph");
+	}
+}
+
+template<typename T>
+int ArrayGraph<T>::getDegree(int v) const
+{
+	if(type_ == GRAPH)
+	{
+		int ID = 0;
+		for(const auto& e: edges_[v])
+		{
+			ID += e;
+		}
+		return ID;
+	}
+	else
+	{
+		throw std::logic_error("Error: getInDegree() is only valid in a directed graph");
+	}
+}
 
 int main(void)
 {
@@ -226,6 +289,10 @@ int main(void)
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
 			assert(results1 == std::vector<int>({1, 2, 3}));
+
+			assert(2 == graph.getDegree(0));
+			assert(2 == graph.getDegree(1));
+			assert(2 == graph.getDegree(2));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -249,6 +316,13 @@ int main(void)
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
 			assert(results1 == std::vector<int>({1, 2, 3}));
+
+			assert(1 == graph.getInDegree(0));
+			assert(1 == graph.getOutDegree(0));
+			assert(1 == graph.getInDegree(1));
+			assert(1 == graph.getOutDegree(1));
+			assert(1 == graph.getInDegree(2));
+			assert(1 == graph.getOutDegree(2));
 		}
 	}
 	{//multiple at a time
@@ -270,6 +344,10 @@ int main(void)
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
 			assert(results1 == std::vector<int>({1, 2, 3}));
+
+			assert(2 == graph.getDegree(0));
+			assert(2 == graph.getDegree(1));
+			assert(2 == graph.getDegree(2));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -289,6 +367,13 @@ int main(void)
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
 			assert(results1 == std::vector<int>({1, 2, 3}));
+
+			assert(1 == graph.getInDegree(0));
+			assert(1 == graph.getOutDegree(0));
+			assert(1 == graph.getInDegree(1));
+			assert(1 == graph.getOutDegree(1));
+			assert(1 == graph.getInDegree(2));
+			assert(1 == graph.getOutDegree(2));
 		}
 	}
 	{//duplicate vertices
@@ -310,6 +395,10 @@ int main(void)
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
 			assert(results1 == std::vector<int>({1, 2, 3}));
+
+			assert(2 == graph.getDegree(0));
+			assert(2 == graph.getDegree(1));
+			assert(2 == graph.getDegree(2));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -329,6 +418,13 @@ int main(void)
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
 			assert(results1 == std::vector<int>({1, 2, 3}));
+
+			assert(1 == graph.getInDegree(0));
+			assert(1 == graph.getOutDegree(0));
+			assert(1 == graph.getInDegree(1));
+			assert(1 == graph.getOutDegree(1));
+			assert(1 == graph.getInDegree(2));
+			assert(1 == graph.getOutDegree(2));
 		}
 	}
 	
