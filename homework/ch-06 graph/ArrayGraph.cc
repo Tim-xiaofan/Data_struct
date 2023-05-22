@@ -5,6 +5,7 @@
 #include <cassert>
 #include <algorithm>
 #include <stdexcept>
+#include <map>
 
 using std::cout;
 using std::endl;
@@ -16,6 +17,12 @@ template<typename T>
 using NodeList = std::vector<T>;
 
 using Edge = std::pair<int, int>;
+
+
+template<typename T> class ArrayGraph;
+
+template<typename T>
+using CcList = std::vector<ArrayGraph<T>>;
 
 template<typename T>
 class ArrayGraph
@@ -53,6 +60,8 @@ public:
 
 	//only valid in a undirected graph
 	int getDegree(int v) const;
+
+	CcList<T> getConnectedComponents(void) const;
 
 private:
     ArrayGraphType type_;
@@ -256,6 +265,49 @@ int ArrayGraph<T>::getDegree(int v) const
 	}
 }
 
+template<typename T>
+CcList<T> ArrayGraph<T>::getConnectedComponents(void) const
+{
+	if(type_ == GRAPH)
+	{
+		CcList<T> ccList;
+		std::vector<bool> visited(nodes_.size(), 0);
+		std::map<T, size_t> toIndex;
+		for(size_t i = 0; i < nodes_.size(); ++i)
+		{
+			toIndex.emplace(nodes_[i], i);
+		}
+		
+		for(size_t i = 0; i < nodes_.size(); ++i)
+		{
+			if(!visited[i])
+			{
+				NodeList<T> nodeList;
+				DFSUtil(i, visited, [&nodeList](int x) { nodeList.push_back(x); });
+
+				ArrayGraph<T> subGraph(GRAPH);
+				subGraph.addNodes(nodeList);
+				for(size_t k = 0; k < nodeList.size(); ++k)
+				{
+					for(size_t s = 0; s < nodeList.size(); ++s)
+					{
+						if(edges_[toIndex.at(nodes_[k])][toIndex.at(nodes_[s])] == 1)
+						{
+							subGraph.addEdge({k, s});
+						}
+					}
+				}
+				ccList.emplace_back(std::move(subGraph));
+			}
+		}
+		return ccList;
+	}
+	else
+	{
+		throw std::logic_error("Invalid DGRAPH: getConnectedComponents");
+	}
+}
+
 int main(void)
 {
 	/** test graph constructor */
@@ -293,6 +345,14 @@ int main(void)
 			assert(2 == graph.getDegree(0));
 			assert(2 == graph.getDegree(1));
 			assert(2 == graph.getDegree(2));
+
+			// test getConnectedComponents
+			auto cc = graph.getConnectedComponents();
+			assert(cc.size() == 1);
+			assert(cc[0].getNodes() == std::vector<int> ({1, 2, 3}));
+			assert(cc[0].getEdges()[0] == std::vector<int>({0, 1, 1}));
+			assert(cc[0].getEdges()[1] == std::vector<int>({1, 0, 1}));
+			assert(cc[0].getEdges()[2] == std::vector<int>({1, 1, 0}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -426,6 +486,69 @@ int main(void)
 			assert(1 == graph.getInDegree(2));
 			assert(1 == graph.getOutDegree(2));
 		}
+	}
+
+	/** test getConnectedComponents*/
+	{// single node
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNode(1);
+		
+		// test getConnectedComponents
+		auto cc = graph.getConnectedComponents();
+		assert(cc.size() == 1);
+		assert(cc[0].getNodes() == std::vector<int> ({1}));
+	}
+	{// 2 + 1
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addEdge({0, 1});
+		
+		// test getConnectedComponents
+		auto cc = graph.getConnectedComponents();
+		assert(cc.size() == 2);
+		assert(cc[0].getNodes() == std::vector<int> ({1, 2}));
+		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1}));
+		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0}));
+		assert(cc[1].getNodes() == std::vector<int> ({3}));
+		assert(cc[1].getEdges()== Matrix<int>({{0}}));
+
+	}
+	{//2 + 2
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addNode(4);
+		graph.addEdge({0, 1});
+		graph.addEdge({2, 3});
+		
+		// test getConnectedComponents
+		auto cc = graph.getConnectedComponents();
+		assert(cc.size() == 2);
+		assert(cc[0].getNodes() == std::vector<int> ({1, 2}));
+		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1}));
+		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0}));
+		assert(cc[1].getNodes() == std::vector<int> ({3, 4}));
+		assert(cc[1].getEdges()[0] == std::vector<int>({0, 1}));
+		assert(cc[1].getEdges()[1] == std::vector<int>({1, 0}));
+	}
+	{//connected graph
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addEdge({0, 1});
+		graph.addEdge({1, 2});
+		graph.addEdge({2, 0});
+		
+		auto cc = graph.getConnectedComponents();
+		assert(cc.size() == 1);
+		assert(cc[0].getNodes() == std::vector<int> ({1, 2, 3}));
+		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1, 1}));
+		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0, 1}));
+		assert(cc[0].getEdges()[2] == std::vector<int>({1, 1, 0}));
 	}
 	
 	cout << "All test passed\n";
