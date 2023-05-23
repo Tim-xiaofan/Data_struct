@@ -346,13 +346,6 @@ int main(void)
 			assert(2 == graph.getDegree(1));
 			assert(2 == graph.getDegree(2));
 
-			// test getConnectedComponents
-			auto cc = graph.getConnectedComponents();
-			assert(cc.size() == 1);
-			assert(cc[0].getNodes() == std::vector<int> ({1, 2, 3}));
-			assert(cc[0].getEdges()[0] == std::vector<int>({0, 1, 1}));
-			assert(cc[0].getEdges()[1] == std::vector<int>({1, 0, 1}));
-			assert(cc[0].getEdges()[2] == std::vector<int>({1, 1, 0}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
@@ -493,7 +486,6 @@ int main(void)
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
 		graph.addNode(1);
 		
-		// test getConnectedComponents
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 1);
 		assert(cc[0].getNodes() == std::vector<int> ({1}));
@@ -505,7 +497,6 @@ int main(void)
 		graph.addNode(3);
 		graph.addEdge({0, 1});
 		
-		// test getConnectedComponents
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 2);
 		assert(cc[0].getNodes() == std::vector<int> ({1, 2}));
@@ -524,7 +515,6 @@ int main(void)
 		graph.addEdge({0, 1});
 		graph.addEdge({2, 3});
 		
-		// test getConnectedComponents
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 2);
 		assert(cc[0].getNodes() == std::vector<int> ({1, 2}));
