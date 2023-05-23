@@ -62,6 +62,7 @@ public:
 	int getDegree(int v) const;
 
 	CcList<T> getConnectedComponents(void) const;
+	bool isConnected(void) const;
 
 private:
     ArrayGraphType type_;
@@ -308,6 +309,21 @@ CcList<T> ArrayGraph<T>::getConnectedComponents(void) const
 	}
 }
 
+template<typename T>
+bool ArrayGraph<T>::isConnected(void) const
+{
+	if(type_ == GRAPH)
+	{
+		std::vector<bool> visited(nodes_.size(), false);
+		DFSUtil(0, visited, [](int x) {});
+		return static_cast<size_t>(std::count(visited.begin(), visited.end(), true)) == visited.size();
+	}
+	else
+	{
+		throw std::logic_error("Error: isConnected is only valid in a undirected graph");
+	}
+}
+
 int main(void)
 {
 	/** test graph constructor */
@@ -481,7 +497,7 @@ int main(void)
 		}
 	}
 
-	/** test getConnectedComponents*/
+	/** test getConnectedComponents and isConnected*/
 	{// single node
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
 		graph.addNode(1);
@@ -489,6 +505,8 @@ int main(void)
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 1);
 		assert(cc[0].getNodes() == std::vector<int> ({1}));
+
+		assert(graph.isConnected());
 	}
 	{// 2 + 1
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
@@ -505,6 +523,7 @@ int main(void)
 		assert(cc[1].getNodes() == std::vector<int> ({3}));
 		assert(cc[1].getEdges()== Matrix<int>({{0}}));
 
+		assert(!graph.isConnected());
 	}
 	{//2 + 2
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
@@ -523,6 +542,8 @@ int main(void)
 		assert(cc[1].getNodes() == std::vector<int> ({3, 4}));
 		assert(cc[1].getEdges()[0] == std::vector<int>({0, 1}));
 		assert(cc[1].getEdges()[1] == std::vector<int>({1, 0}));
+
+		assert(!graph.isConnected());
 	}
 	{//connected graph
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
@@ -539,6 +560,8 @@ int main(void)
 		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1, 1}));
 		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0, 1}));
 		assert(cc[0].getEdges()[2] == std::vector<int>({1, 1, 0}));
+
+		assert(graph.isConnected());
 	}
 	
 	cout << "All test passed\n";
