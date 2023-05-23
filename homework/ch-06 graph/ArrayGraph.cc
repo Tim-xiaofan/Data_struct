@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <map>
+#include <cassert>
 
 using std::cout;
 using std::endl;
@@ -25,12 +26,31 @@ template<typename T>
 using CcList = std::vector<ArrayGraph<T>>;
 
 template<typename T>
+bool operator==(const Matrix<T>& a, const Matrix<T>& b)
+{
+	if(a.size() == b.size())
+	{
+		for(size_t i = 0; i < a.size(); ++i)
+		{
+			if(a[i] != b[i])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	return false;
+}
+
+template<typename T>
 class ArrayGraph
 {
 public:
     enum ArrayGraphType { DGRAPH, GRAPH };
 
     ArrayGraph(ArrayGraphType type);
+    ArrayGraph(const ArrayGraph&) = default;
+
     void addNode(const T& node);
     void addNodes(const NodeList<T>& nodes);
     void addEdge(const Edge& edge);
@@ -62,6 +82,8 @@ public:
 	int getDegree(int v) const;
 
 	CcList<T> getConnectedComponents(void) const;
+
+	ArrayGraph transpose(void) const;
 
 private:
     ArrayGraphType type_;
@@ -308,6 +330,25 @@ CcList<T> ArrayGraph<T>::getConnectedComponents(void) const
 	}
 }
 
+template<typename T>
+ArrayGraph<T> ArrayGraph<T>::transpose(void) const
+{
+	assert(type_ == DGRAPH);
+	ArrayGraph tGraph(DGRAPH);
+	tGraph.addNodes(nodes_);
+	for(size_t i = 0; i < nodes_.size(); ++i)
+	{
+		for(size_t j = 0; j < nodes_.size(); ++j)
+		{
+			if(edges_[i][j] == 1)
+			{
+				tGraph.addEdge({j, i});
+			}
+		}
+	}
+	return tGraph;
+}
+
 int main(void)
 {
 	/** test graph constructor */
@@ -539,6 +580,53 @@ int main(void)
 		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1, 1}));
 		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0, 1}));
 		assert(cc[0].getEdges()[2] == std::vector<int>({1, 1, 0}));
+	}
+
+	/** test transpose*/
+	{// zero edge
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(1);
+		
+		auto tGraph = graph.transpose();
+		assert(tGraph.getNodes() == NodeList<int>({1}));
+		assert(tGraph.getEdges() == Matrix<int>({{0}}));
+	}
+	{//one
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addEdge({0, 1});
+
+		auto tGraph = graph.transpose();
+		assert(tGraph.getNodes() == NodeList<int>({1,2,3}));
+		assert(tGraph.getEdges() == Matrix<int>({{0,0,0}, {1,0,0}, {0,0,0}}));
+	}
+	{// two
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addNode(4);
+		graph.addEdge({0, 1});
+		graph.addEdge({2, 3});
+		
+		auto tGraph = graph.transpose();
+		assert(tGraph.getNodes() == NodeList<int>({1,2,3,4}));
+		assert(tGraph.getEdges() == Matrix<int>({{0,0,0,0}, {1,0,0,0}, {0,0,0,0}, {0,0,1,0}}));
+	}
+	{// three
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addEdge({0, 1});
+		graph.addEdge({1, 2});
+		graph.addEdge({2, 0});
+		
+		auto tGraph = graph.transpose();
+		assert(tGraph.getNodes() == NodeList<int>({1,2,3}));
+		assert(tGraph.getEdges() == Matrix<int>({{0,0,1},{1,0,0},{0,1,0}}));
 	}
 	
 	cout << "All test passed\n";
