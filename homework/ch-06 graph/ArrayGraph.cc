@@ -8,6 +8,7 @@
 #include <map>
 #include <stack>
 #include <cassert>
+#include <iterator>
 
 using std::cout;
 using std::endl;
@@ -89,16 +90,27 @@ public:
 	bool isConnected(void) const;
 
 	ArrayGraph transpose(void) const;
+	/** Kosaraju*/
 	SccList<T> getStronglyConnectedComponents(void) const;
+	
+	/** tarjan*/
+	SccList<T> getStronglyConnectedComponentsTarjan(void) const;
 
 private:
     ArrayGraphType type_;
     Matrix<int> edges_;
     NodeList<T> nodes_;
 
+	static const int UNDEFINED;
+
     template<typename Unary>
     void DFSUtil(int node, std::vector<bool>& visited, const Unary& op, bool post = false) const;
+
+	void getStronglyConnectedComponentsTarjan(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, std::vector<int>& s, SccList<T>& sccs) const;
 };
+
+template<typename T>
+const int ArrayGraph<T>:: UNDEFINED = -1;
 
 template<typename T>
 ArrayGraph<T>::ArrayGraph(ArrayGraphType type) : type_(type)
@@ -424,6 +436,64 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponents(void) const
 		finished.pop();
 	}
 	return sccList;
+}
+
+
+template<typename T>
+void ArrayGraph<T>::getStronglyConnectedComponentsTarjan(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, std::vector<int>& s, SccList<T>& sccs) const
+{
+
+	dsn[v] = low[v] = index++;
+	s.push_back(v);
+	for(size_t w = 0; w < nodes_.size(); ++w)
+	{
+		if(edges_[v][w] == 1)
+		{
+			if(dsn[w] == UNDEFINED)
+			{// 后继节点未访问
+				getStronglyConnectedComponentsTarjan(w, index, dsn, low, s, sccs);
+				low[v] = std::min(low[v], low[w]);
+
+			}
+			else if(std::find(s.begin(), s.end(), w) != s.end())
+			{//w已在栈S中，则其也在当前的强连通分量中
+				low[v] = std::min(low[v], dsn[w]);
+			}
+		}
+
+	}
+	
+	if(dsn[v] == low[v])
+	{
+		ArrayGraph<T> subGraph(DGRAPH);
+		int w;
+		do
+		{
+			w = s.back();
+			s.pop_back();
+			subGraph.addNode(nodes_[w]);
+		}while(w != v);
+		sccs.push_back(subGraph);
+	}
+}
+
+template<typename T>
+SccList<T> ArrayGraph<T>::getStronglyConnectedComponentsTarjan(void) const
+{
+	assert(type_ == DGRAPH);
+	int index = 0;
+	std::vector<int> dsn(nodes_.size(), UNDEFINED);
+	std::vector<int> low(nodes_.size(), UNDEFINED);
+	std::vector<int> s;
+	SccList<T> sccs;
+	for(size_t v = 0; v < nodes_.size(); ++v)
+	{
+		if(dsn[v] == UNDEFINED)
+		{
+			getStronglyConnectedComponentsTarjan(v, index, dsn, low, s, sccs);
+		}
+	}
+	return sccs;
 }
 
 int main(void)
@@ -850,7 +920,70 @@ int main(void)
 		}
 	}
 
-	
+	/** test getStronglyConnectedComponents tarjan version*/
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(1);
+		
+		auto scc = graph.getStronglyConnectedComponentsTarjan();
+		assert(scc.size() == 1);
+		assert(scc[0].getNodes() == NodeList<int>{1});
+	}
+
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(0);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addNode(4);
+		graph.addNode(5);
+		graph.addNode(6);
+		
+		graph.addEdge({0, 1});
+		graph.addEdge({1, 2});
+		graph.addEdge({1, 4});
+		graph.addEdge({1, 6});
+		graph.addEdge({2, 3});
+		graph.addEdge({3, 2});
+		graph.addEdge({3, 4});
+		graph.addEdge({3, 5});
+		graph.addEdge({4, 5});
+		graph.addEdge({5, 4});
+		graph.addEdge({6, 0});
+		graph.addEdge({6, 2});
+		
+		auto scc = graph.getStronglyConnectedComponentsTarjan();
+		assert(scc.size() == 3);
+		assert(scc[0].getNodes() == NodeList<int>({5, 4}));
+		assert(scc[1].getNodes() == NodeList<int>({3, 2}));
+		assert(scc[2].getNodes() == NodeList<int>({6, 1, 0}));
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNode(1);
+		graph.addNode(2);
+		graph.addNode(3);
+		graph.addNode(4);
+		graph.addNode(5);
+		graph.addNode(6);
+		
+		graph.addEdge({0, 1});
+		graph.addEdge({0, 2});
+		graph.addEdge({1, 3});
+		graph.addEdge({2, 3});
+		graph.addEdge({2, 4});
+		graph.addEdge({3, 0});
+		graph.addEdge({3, 5});
+		graph.addEdge({4, 5});
+		
+		auto scc = graph.getStronglyConnectedComponentsTarjan();
+		assert(scc.size() == 3);
+		assert(scc[0].getNodes() == NodeList<int>({6}));
+		assert(scc[1].getNodes() == NodeList<int>({5}));
+		assert(scc[2].getNodes() == NodeList<int>({3,4,2,1}));
+	}
+
 	cout << "All test passed\n";
 	return 0;
 }

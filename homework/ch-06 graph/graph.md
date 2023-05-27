@@ -185,6 +185,53 @@ function DFS(graph, node, visited):
             DFS(graph, neighbor, visited)
 ```
 * 强连通分量：可以使用**Kosaraju 算法**和 **Tarjan算法**寻找图的强连通分量，两者的时间复杂度都为O(|V| + |E|)
+```sql
+/**
+根节点的性质
+算法的关键在于如何判定某节点是否是强连通分量的根。注意“强连通分量的根”这一说法仅针对此算法，事实上强连通分量是没有特定的“根”的。在这里根节点指深度优先搜索时强连通分量中首个被访问的节点。
+
+为找到根节点，我们给每个节点v一个深度优先搜索标号v.index，表示它是第几个被访问的节点（时间戳）。此外，每个节点v还有一个值v.lowlink，表示从v出发经有向边可到达的所有节点中最小的index（追溯值）。显然v.lowlink总是不大于v.index，且当从v出发经有向边不能到达其他index值更小的节点时，这两个值相等。 v.lowlink在深度优先搜索的过程中求得，v是强连通分量的根当且仅当v.lowlink = v.index
+*/
+algorithm tarjan is
+   input: 图 G = (V, E)
+   output: 以所在的强连通分量划分的顶点集合
+ 
+   index := 0
+   S = empty --// 初始化栈S为空栈
+   for each v in V do
+     if (v.index is undefined)
+       strongconnect(v)
+     end if
+ 
+   function strongconnect(v)
+    --  // 将未使用的最小index值作作为节点v的index
+     v.index := index
+     v.lowlink = index
+     index := index + 1
+     S.push(v)
+ 
+    --  // 考虑节点v的后继节点
+     for each (v, w) in E do
+       if (w.index is undefined) then
+        --  // 后继节点w未访问，递归调用
+         strongconnect(w)
+         v.lowlink = min(v.lowlink, w.lowlink)
+       else if (w is in S) then
+        --  // w已在栈S中，则其也在当前的强连通分量中
+         v.lowlink := min(v.lowlink, w.index)
+       end if
+ 
+    --  // 若v是根则出栈，并得到一个强连通分量
+     if (v.lowlink = v.index) then
+       start a new strongly connected component
+       repeat
+         w = S.pop()
+         add w to current strongly connected component
+       until (w = v)
+       output the current strongly connected component
+     end if
+   end function
+```
 
 ### 7.4.3 最小生成树
 最小生成树问题是指在由m个节点和n条边组成的网络模型中寻找连接所有节点的生成树，使得其所有边的权值之和最小. 最小生成树问题广泛应用于系统设计、选址规划等组合优化问题中. 
