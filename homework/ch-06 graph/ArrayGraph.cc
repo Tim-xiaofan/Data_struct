@@ -56,19 +56,18 @@ public:
     ArrayGraph(ArrayGraphType type);
     ArrayGraph(const ArrayGraph&) = default;
 
-    void addNode(const T& node);
-    void addNodes(const NodeList<T>& nodes);
+    void addNodes(int number);
+	void addNode()
+	{ addNodes(1); }
     void addEdge(const Edge& edge);
     void addEdges(const Matrix<int>& edges);
+
+	int numberOfNodes(void) const
+	{ return numberOfNodes_; }
 
 	const Matrix<int>& getEdges(void) const
 	{
 		return edges_;
-	}
-
-	const NodeList<T>& getNodes(void) const
-	{
-		return nodes_;
 	}
 
     template<typename Unary>
@@ -99,7 +98,7 @@ public:
 private:
     ArrayGraphType type_;
     Matrix<int> edges_;
-    NodeList<T> nodes_;
+    int numberOfNodes_;
 
 	static const int UNDEFINED;
 
@@ -113,29 +112,20 @@ template<typename T>
 const int ArrayGraph<T>:: UNDEFINED = -1;
 
 template<typename T>
-ArrayGraph<T>::ArrayGraph(ArrayGraphType type) : type_(type)
+ArrayGraph<T>::ArrayGraph(ArrayGraphType type) : type_(type), numberOfNodes_(0)
 {
 }
 
+
 template<typename T>
-void ArrayGraph<T>::addNode(const T& node)
+void ArrayGraph<T>::addNodes(int number)
 {
-	if(std::find(nodes_.begin(), nodes_.end(), node) == nodes_.end())
+	for(auto& v: edges_)
 	{
-		nodes_.push_back(node);
-		for(size_t i = 0; i < edges_.size(); ++i)
-		{
-			edges_[i].push_back(0);
-		}
-		edges_.push_back(std::vector<int>(nodes_.size(), 0));
+		std::fill_n(std::back_inserter(v), number, 0);
 	}
-}
-
-template<typename T>
-void ArrayGraph<T>::addNodes(const NodeList<T>& nodes)
-{
-    for (const auto& node : nodes)
-        addNode(node);
+	std::fill_n(std::back_inserter(edges_), number, std::vector<int>(number + numberOfNodes_, 0));
+	numberOfNodes_ += number;
 }
 
 template<typename T>
@@ -177,8 +167,8 @@ void ArrayGraph<T>::addEdge(const Edge& edge)
 {
     int from = edge.first;
     int to = edge.second;
-    if (from < 0 || from >= (int)nodes_.size() ||
-        to < 0 || to >= (int)nodes_.size())
+    if (from < 0 || from >= (int)edges_.size() ||
+        to < 0 || to >= (int)edges_[0].size())
     {
         throw std::out_of_range("Invalid node index");
     }
@@ -206,10 +196,10 @@ template<typename T>
 template<typename Unary>
 void ArrayGraph<T>::BFS(const Unary& op) const
 {
-    std::vector<bool> visited(nodes_.size(), false);
+    std::vector<bool> visited(numberOfNodes_, false);
     std::queue<int> queue;
 
-    for (size_t i = 0; i < nodes_.size(); ++i)
+    for (int i = 0; i < numberOfNodes_; ++i)
     {
         if (visited[i])
             continue;
@@ -221,9 +211,9 @@ void ArrayGraph<T>::BFS(const Unary& op) const
         {
             int current = queue.front();
             queue.pop();
-            op(nodes_[current]);
+            op(current);
 
-            for (size_t neighbor = 0; neighbor < nodes_.size(); ++neighbor)
+            for (int neighbor = 0; neighbor < numberOfNodes_; ++neighbor)
             {
                 if (edges_[current][neighbor] == 1 && !visited[neighbor])
                 {
@@ -239,9 +229,9 @@ template<typename T>
 template<typename Unary>
 void ArrayGraph<T>::DFS(const Unary& op, bool post) const
 {
-    std::vector<bool> visited(nodes_.size(), false);
+    std::vector<bool> visited(numberOfNodes_, false);
 
-    for (size_t i = 0; i < nodes_.size(); ++i)
+    for (int i = 0; i < numberOfNodes_; ++i)
     {
         if (!visited[i])
             DFSUtil(i, visited, op, post);
@@ -255,10 +245,10 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
     visited[node] = true;
 	if(!post)
 	{
-		op({nodes_[node], node});
+		op(node);
 	}
 
-    for (size_t neighbor = 0; neighbor < nodes_.size(); ++neighbor)
+    for (int neighbor = 0; neighbor < numberOfNodes_; ++neighbor)
     {
         if (edges_[node][neighbor] == 1 && !visited[neighbor])
             DFSUtil(neighbor, visited, op, post);
@@ -266,7 +256,7 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
 	
 	if(post)
 	{
-		op({nodes_[node], node});
+		op(node);
 	}
 }
 
@@ -330,15 +320,16 @@ CcList<T> ArrayGraph<T>::getConnectedComponents(void) const
 	if(type_ == GRAPH)
 	{
 		CcList<T> ccList;
-		std::vector<bool> visited(nodes_.size(), 0);
+		std::vector<bool> visited(numberOfNodes_, 0);
 		
-		for(size_t i = 0; i < nodes_.size(); ++i)
+		for(int i = 0; i < numberOfNodes_; ++i)
 		{
 			if(!visited[i])
 			{
 				std::vector<int> indexList;
 				ArrayGraph<T> subGraph(GRAPH);
-				DFSUtil(i, visited, [&indexList, &subGraph](const std::pair<T, int>&x) { indexList.push_back(x.second); subGraph.addNode(x.first);});
+				DFSUtil(i, visited, [&indexList](int x) { indexList.push_back(x);});
+				subGraph.addNodes(indexList.size());
 
 				for(size_t k = 0; k < indexList.size(); ++k)
 				{
@@ -366,10 +357,10 @@ ArrayGraph<T> ArrayGraph<T>::transpose(void) const
 {
 	assert(type_ == DGRAPH);
 	ArrayGraph tGraph(DGRAPH);
-	tGraph.addNodes(nodes_);
-	for(size_t i = 0; i < nodes_.size(); ++i)
+	tGraph.addNodes(numberOfNodes_);
+	for(int i = 0; i < numberOfNodes_; ++i)
 	{
-		for(size_t j = 0; j < nodes_.size(); ++j)
+		for(int j = 0; j < numberOfNodes_; ++j)
 		{
 			if(edges_[i][j] == 1)
 			{
@@ -385,9 +376,9 @@ bool ArrayGraph<T>::isConnected(void) const
 {
 	if(type_ == GRAPH)
 	{
-		std::vector<bool> visited(nodes_.size(), false);
+		std::vector<bool> visited(numberOfNodes_, false);
 		size_t visited_count = 0;
-		DFSUtil(0, visited, [&visited_count](const std::pair<T, size_t>& ) { ++visited_count;});
+		DFSUtil(0, visited, [&visited_count](int) { ++visited_count;});
 		return visited_count == visited.size();
 	}
 	else
@@ -404,12 +395,12 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponents(void) const
 
 	/** DFS on original graph and get finished*/
 	std::stack<int> finished;
-	DFS([&finished](const std::pair<T, size_t>& x) { finished.push(x.second); }, true);
+	DFS([&finished](int x) { finished.push(x); }, true);
 
 	/** Get transpose graph*/
 	auto tGraph = transpose();
 
-	std::vector<bool> visited(nodes_.size(), false);
+	std::vector<bool> visited(numberOfNodes_, false);
 	SccList<T> sccList;
 	/** DFS on the reversed graph according to finished*/
 	while(!finished.empty())
@@ -419,8 +410,9 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponents(void) const
 		{
 			std::vector<size_t> subIndexs;
 			ArrayGraph<T> subGraph(DGRAPH);
-			tGraph.DFSUtil(index, visited, [&subIndexs, &subGraph](const std::pair<T, size_t>& x) 
-						{ subIndexs.push_back(x.second); subGraph.addNode(x.first);});
+			tGraph.DFSUtil(index, visited, [&subIndexs, &subGraph](int x) 
+						{ subIndexs.push_back(x);});
+			subGraph.addNodes(subIndexs.size());
 			for(size_t k = 0; k < subIndexs.size(); ++k)
 			{
 				for(size_t s = 0; s < subIndexs.size(); ++s)
@@ -445,7 +437,7 @@ void ArrayGraph<T>::getStronglyConnectedComponentsTarjan(int v, int& index, std:
 
 	dsn[v] = low[v] = index++;
 	s.push_back(v);
-	for(size_t w = 0; w < nodes_.size(); ++w)
+	for(int w = 0; w < numberOfNodes_; ++w)
 	{
 		if(edges_[v][w] == 1)
 		{
@@ -466,14 +458,26 @@ void ArrayGraph<T>::getStronglyConnectedComponentsTarjan(int v, int& index, std:
 	if(dsn[v] == low[v])
 	{
 		ArrayGraph<T> subGraph(DGRAPH);
+		std::vector<int> subIndexs;
 		int w;
 		do
 		{
 			w = s.back();
 			s.pop_back();
-			subGraph.addNode(nodes_[w]);
+			subIndexs.push_back(w);
 		}while(w != v);
-		sccs.push_back(subGraph);
+		subGraph.addNodes(subIndexs.size());
+		for(size_t i = 0; i < subIndexs.size(); ++i)
+		{
+			for(size_t j = 0; j < subIndexs.size(); ++j)
+			{
+				if(edges_[subIndexs[i]][subIndexs[j]] == 1)
+				{
+					subGraph.addEdge({i, j});
+				}
+			}
+		}
+		sccs.emplace_back(std::move(subGraph));
 	}
 }
 
@@ -482,11 +486,11 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponentsTarjan(void) const
 {
 	assert(type_ == DGRAPH);
 	int index = 0;
-	std::vector<int> dsn(nodes_.size(), UNDEFINED);
-	std::vector<int> low(nodes_.size(), UNDEFINED);
+	std::vector<int> dsn(numberOfNodes_, UNDEFINED);
+	std::vector<int> low(numberOfNodes_, UNDEFINED);
 	std::vector<int> s;
 	SccList<T> sccs;
-	for(size_t v = 0; v < nodes_.size(); ++v)
+	for(int v = 0; v < numberOfNodes_; ++v)
 	{
 		if(dsn[v] == UNDEFINED)
 		{
@@ -501,34 +505,32 @@ int main(void)
 	/** test graph constructor */
 	{//empty
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		assert(graph.numberOfNodes() == 0);
 		const Matrix<int>& E = graph.getEdges();
-		const NodeList<int>& V = graph.getNodes();
-		assert(V == NodeList<int>({}));
 		assert(E == Matrix<int>({}));
 	}
 	{//one at a time
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-			graph.addNode(1);
-			graph.addNode(2);
-			graph.addNode(3);
+			graph.addNode();
+			graph.addNode();
+			graph.addNode();
 			graph.addEdge({0, 1});
 			graph.addEdge({1, 2});
 			graph.addEdge({2, 0});
+			assert(graph.numberOfNodes() == 3);
 			const Matrix<int>& E = graph.getEdges();
-			const NodeList<int>& V = graph.getNodes();
-			assert(V == NodeList<int>({1, 2, 3}));
 			assert(E[0] == std::vector<int>({0, 1, 1}));
 			assert(E[1] == std::vector<int>({1, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 1, 0}));
 
 			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); });
-			assert(results == std::vector<int>({1, 2, 3}));
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({0,1,2}));
 
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
-			assert(results1 == std::vector<int>({1, 2, 3}));
+			assert(results1 == std::vector<int>({0,1,2}));
 
 			assert(2 == graph.getDegree(0));
 			assert(2 == graph.getDegree(1));
@@ -537,30 +539,29 @@ int main(void)
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-			graph.addNode(1);
-			graph.addNode(2);
-			graph.addNode(3);
+			graph.addNode();
+			graph.addNode();
+			graph.addNode();
 			graph.addEdge({0, 1});
 			graph.addEdge({1, 2});
 			graph.addEdge({2, 0});
 			const Matrix<int>& E = graph.getEdges();
-			const NodeList<int>& V = graph.getNodes();
-			assert(V == NodeList<int>({1, 2, 3}));
+			assert(graph.numberOfNodes() == 3);
 			assert(E[0] == std::vector<int>({0, 1, 0}));
 			assert(E[1] == std::vector<int>({0, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 0, 0}));
 
 			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); });
-			assert(results == std::vector<int>({1, 2, 3}));
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({0,1,2}));
 
 			std::vector<int> results2;
-			graph.DFS([&results2](const std::pair<int, int>& x) { results2.push_back(x.first); }, true);
-			assert(results2 == std::vector<int>({3,2,1}));
+			graph.DFS([&results2](int x) { results2.push_back(x); }, true);
+			assert(results2 == std::vector<int>({2,1,0}));
 			
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
-			assert(results1 == std::vector<int>({1,2,3}));
+			assert(results1 == std::vector<int>({0,1,2}));
 
 			assert(1 == graph.getInDegree(0));
 			assert(1 == graph.getOutDegree(0));
@@ -573,22 +574,21 @@ int main(void)
 	{//multiple at a time
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-			graph.addNodes({1, 2, 3});
+			graph.addNodes(3);
 			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+			assert(graph.numberOfNodes() == 3);
 			const Matrix<int>& E = graph.getEdges();
-			const NodeList<int>& V = graph.getNodes();
-			assert(V == NodeList<int>({1, 2, 3}));
 			assert(E[0] == std::vector<int>({0, 1, 1}));
 			assert(E[1] == std::vector<int>({1, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 1, 0}));
 
 			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); });
-			assert(results == std::vector<int>({1, 2, 3}));
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({0,1,2}));
 			
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
-			assert(results1 == std::vector<int>({1, 2, 3}));
+			assert(results1 == std::vector<int>({0,1,2}));
 
 			assert(2 == graph.getDegree(0));
 			assert(2 == graph.getDegree(1));
@@ -596,26 +596,25 @@ int main(void)
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-			graph.addNodes({1, 2, 3});
+			graph.addNodes(3);
 			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
+			assert(graph.numberOfNodes() == 3);
 			const Matrix<int>& E = graph.getEdges();
-			const NodeList<int>& V = graph.getNodes();
-			assert(V == NodeList<int>({1, 2, 3}));
 			assert(E[0] == std::vector<int>({0, 1, 0}));
 			assert(E[1] == std::vector<int>({0, 0, 1}));
 			assert(E[2] == std::vector<int>({1, 0, 0}));
 
 			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); });
-			assert(results == std::vector<int>({1, 2, 3}));
+			graph.DFS([&results](int x) { results.push_back(x); });
+			assert(results == std::vector<int>({0,1,2}));
 
 			std::vector<int> results1;
 			graph.BFS([&results1](int x) { results1.push_back(x); });
-			assert(results1 == std::vector<int>({1, 2, 3}));
+			assert(results1 == std::vector<int>({0,1,2}));
 
 			std::vector<int> results2;
-			graph.DFS([&results2](const std::pair<int, int>& x) { results2.push_back(x.first); }, true);
-			assert(results2 == std::vector<int>({3,2,1}));
+			graph.DFS([&results2](int x) { results2.push_back(x); }, true);
+			assert(results2 == std::vector<int>({2,1,0}));
 
 			assert(1 == graph.getInDegree(0));
 			assert(1 == graph.getOutDegree(0));
@@ -625,105 +624,51 @@ int main(void)
 			assert(1 == graph.getOutDegree(2));
 		}
 	}
-	{//duplicate vertices
-		{
-			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-			graph.addNodes({1, 1, 2, 3, 3});
-			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
-			const Matrix<int>& E = graph.getEdges();
-			const NodeList<int>& V = graph.getNodes();
-			assert(V == NodeList<int>({1, 2, 3}));
-			assert(E[0] == std::vector<int>({0, 1, 1}));
-			assert(E[1] == std::vector<int>({1, 0, 1}));
-			assert(E[2] == std::vector<int>({1, 1, 0}));
 
-			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); });
-			assert(results == std::vector<int>({1, 2, 3}));
-
-			std::vector<int> results1;
-			graph.BFS([&results1](int x) { results1.push_back(x); });
-			assert(results1 == std::vector<int>({1, 2, 3}));
-
-			assert(2 == graph.getDegree(0));
-			assert(2 == graph.getDegree(1));
-			assert(2 == graph.getDegree(2));
-		}
-		{
-			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-			graph.addNodes({1, 1, 2, 3, 3});
-			graph.addEdges({{0, 1}, {1, 2}, {2, 0}});
-			const Matrix<int>& E = graph.getEdges();
-			const NodeList<int>& V = graph.getNodes();
-			assert(V == NodeList<int>({1, 2, 3}));
-			assert(E[0] == std::vector<int>({0, 1, 0}));
-			assert(E[1] == std::vector<int>({0, 0, 1}));
-			assert(E[2] == std::vector<int>({1, 0, 0}));
-
-			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); });
-			assert(results == std::vector<int>({1, 2, 3}));
-
-			std::vector<int> results1;
-			graph.BFS([&results1](int x) { results1.push_back(x); });
-			assert(results1 == std::vector<int>({1, 2, 3}));
-
-			std::vector<int> results2;
-			graph.DFS([&results2](const std::pair<int, int>& x) { results2.push_back(x.first); }, true);
-			assert(results2 == std::vector<int>({3,2,1}));
-
-			assert(1 == graph.getInDegree(0));
-			assert(1 == graph.getOutDegree(0));
-			assert(1 == graph.getInDegree(1));
-			assert(1 == graph.getOutDegree(1));
-			assert(1 == graph.getInDegree(2));
-			assert(1 == graph.getOutDegree(2));
-		}
-	}
 
 	/** test getConnectedComponents and isConnected*/
 	{// single node
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-		graph.addNode(1);
+		graph.addNode();
 		
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 1);
-		assert(cc[0].getNodes() == std::vector<int> ({1}));
+		assert(cc[0].numberOfNodes() == 1);
 
 		assert(graph.isConnected());
 	}
 	{// 2 + 1
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
 		graph.addEdge({0, 1});
 		
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 2);
-		assert(cc[0].getNodes() == std::vector<int> ({1, 2}));
+		assert(cc[0].numberOfNodes() == 2);
 		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1}));
 		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0}));
-		assert(cc[1].getNodes() == std::vector<int> ({3}));
+		assert(cc[1].numberOfNodes() == 1);
 		assert(cc[1].getEdges()== Matrix<int>({{0}}));
 
 		assert(!graph.isConnected());
 	}
 	{//2 + 2
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addNode(4);
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
 		graph.addEdge({0, 1});
 		graph.addEdge({2, 3});
 		
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 2);
-		assert(cc[0].getNodes() == std::vector<int> ({1, 2}));
+		assert(cc[0].numberOfNodes() == 2);
 		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1}));
 		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0}));
-		assert(cc[1].getNodes() == std::vector<int> ({3, 4}));
+		assert(cc[0].numberOfNodes() == 2);
 		assert(cc[1].getEdges()[0] == std::vector<int>({0, 1}));
 		assert(cc[1].getEdges()[1] == std::vector<int>({1, 0}));
 
@@ -731,16 +676,16 @@ int main(void)
 	}
 	{//connected graph
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
 		graph.addEdge({0, 1});
 		graph.addEdge({1, 2});
 		graph.addEdge({2, 0});
 		
 		auto cc = graph.getConnectedComponents();
 		assert(cc.size() == 1);
-		assert(cc[0].getNodes() == std::vector<int> ({1, 2, 3}));
+		assert(cc[0].numberOfNodes() == 3);
 		assert(cc[0].getEdges()[0] == std::vector<int>({0, 1, 1}));
 		assert(cc[0].getEdges()[1] == std::vector<int>({1, 0, 1}));
 		assert(cc[0].getEdges()[2] == std::vector<int>({1, 1, 0}));
@@ -751,81 +696,76 @@ int main(void)
 	/** test transpose*/
 	{// zero edge
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
+		graph.addNode();
 		
 		auto tGraph = graph.transpose();
-		assert(tGraph.getNodes() == NodeList<int>({1}));
+		assert(tGraph.numberOfNodes() == 1);
 		assert(tGraph.getEdges() == Matrix<int>({{0}}));
 	}
 	{//one
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
 		graph.addEdge({0, 1});
 
 		auto tGraph = graph.transpose();
-		assert(tGraph.getNodes() == NodeList<int>({1,2,3}));
+		assert(tGraph.numberOfNodes() == 3);
 		assert(tGraph.getEdges() == Matrix<int>({{0,0,0}, {1,0,0}, {0,0,0}}));
 	}
 	{// two
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addNode(4);
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
 		graph.addEdge({0, 1});
 		graph.addEdge({2, 3});
 		
 		auto tGraph = graph.transpose();
-		assert(tGraph.getNodes() == NodeList<int>({1,2,3,4}));
+		assert(tGraph.numberOfNodes() == 4);
 		assert(tGraph.getEdges() == Matrix<int>({{0,0,0,0}, {1,0,0,0}, {0,0,0,0}, {0,0,1,0}}));
 	}
 	{// three
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
+		graph.addNode();
+		graph.addNode();
+		graph.addNode();
 		graph.addEdge({0, 1});
 		graph.addEdge({1, 2});
 		graph.addEdge({2, 0});
 		
 		auto tGraph = graph.transpose();
-		assert(tGraph.getNodes() == NodeList<int>({1,2,3}));
+		assert(tGraph.numberOfNodes() == 3);
 		assert(tGraph.getEdges() == Matrix<int>({{0,0,1},{1,0,0},{0,1,0}}));
 	}
 
 	/** test getStronglyConnectedComponents*/
 	{// single node
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
+		graph.addNode();
 		
 		auto scc = graph.getStronglyConnectedComponents();
 		assert(scc.size() == 1);
-		assert(scc[0].getNodes() == NodeList<int>({1}));
+		assert(scc[0].numberOfNodes() == 1);
 		assert(scc[0].getEdges() == Matrix<int>({{0}}));
 	}
 	{// 2 + 1
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
+		graph.addNodes(3);
 		graph.addEdge({0, 1});
 		graph.addEdge({1, 0});
 		
 		auto scc = graph.getStronglyConnectedComponents();
 		assert(scc.size() == 2);
-		assert(scc[1].getNodes() == std::vector<int> ({1, 2}));
+		assert(scc[1].numberOfNodes() == 2);
 		assert(scc[1].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
-		assert(scc[0].getNodes() == std::vector<int> ({3}));
+		assert(scc[0].numberOfNodes() == 1);
 		assert(scc[0].getEdges() == Matrix<int>({{0}}));
 	}
 	{// 2 + 2
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addNode(4);
+		graph.addNodes(4);
 		graph.addEdge({0, 1});
 		graph.addEdge({1, 0});
 		graph.addEdge({2, 3});
@@ -834,9 +774,9 @@ int main(void)
 
 			auto scc = graph.getStronglyConnectedComponents();
 			assert(scc.size() == 2);
-			assert(scc[1].getNodes() == std::vector<int> ({1, 2}));
+			assert(scc[1].numberOfNodes() == 2);
 			assert(scc[1].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
-			assert(scc[0].getNodes() == std::vector<int> ({3, 4}));
+			assert(scc[0].numberOfNodes() == 2);
 			assert(scc[0].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
 		}
 
@@ -844,30 +784,21 @@ int main(void)
 			graph.addEdge({1, 2});
 
 			std::vector<int> results;
-			graph.DFS([&results](const std::pair<int, int>& x) { results.push_back(x.first); }, true);
-			assert(results == std::vector<int>({4, 3, 2, 1}));
+			graph.DFS([&results](int x) { results.push_back(x); }, true);
+			assert(results == std::vector<int>({3,2,1,0}));
 
 			auto scc = graph.getStronglyConnectedComponents();
 			assert(scc.size() == 2);
-			assert(scc[0].getNodes() == std::vector<int> ({1, 2}));
+			assert(scc[0].numberOfNodes() == 2);
 			assert(scc[0].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
-			assert(scc[1].getNodes() == std::vector<int> ({3, 4}));
+			assert(scc[1].numberOfNodes() == 2);
 			assert(scc[1].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
 		}
 	}
 	
 	{// 5 + 5
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addNode(4);
-		graph.addNode(5);
-		graph.addNode(6);
-		graph.addNode(7);
-		graph.addNode(8);
-		graph.addNode(9);
-		graph.addNode(10);
+		graph.addNodes(10);
 
 		graph.addEdge({0, 1});
 		graph.addEdge({1, 2});
@@ -884,14 +815,14 @@ int main(void)
 		{
 			auto scc = graph.getStronglyConnectedComponents();
 			assert(scc.size() == 2);
-			assert(scc[0].getNodes() == std::vector<int>({6,10,9,8,7}));
+			assert(scc[0].numberOfNodes() == 5);
 			assert(scc[0].getEdges() == Matrix<int>({
 							{0,0,0,0,1},
 							{1,0,0,0,0},
 							{0,1,0,0,0},
 							{0,0,1,0,0},
 							{0,0,0,1,0}}));
-			assert(scc[1].getNodes() == std::vector<int>({1,5,4,3,2}));
+			assert(scc[1].numberOfNodes() == 5);
 			assert(scc[1].getEdges() == Matrix<int>({
 							{0,0,0,0,1},
 							{1,0,0,0,0},
@@ -903,14 +834,14 @@ int main(void)
 			graph.addEdge({4, 5});
 			auto scc = graph.getStronglyConnectedComponents();
 			assert(scc.size() == 2);
-			assert(scc[0].getNodes() == std::vector<int>({1,5,4,3,2}));
+			assert(scc[0].numberOfNodes() == 5);
 			assert(scc[0].getEdges() == Matrix<int>({
 							{0,0,0,0,1},
 							{1,0,0,0,0},
 							{0,1,0,0,0},
 							{0,0,1,0,0},
 							{0,0,0,1,0}}));
-			assert(scc[1].getNodes() == std::vector<int>({6,10,9,8,7}));
+			assert(scc[1].numberOfNodes() == 5);
 			assert(scc[1].getEdges() == Matrix<int>({
 							{0,0,0,0,1},
 							{1,0,0,0,0},
@@ -923,22 +854,15 @@ int main(void)
 	/** test getStronglyConnectedComponents tarjan version*/
 	{
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
+		graph.addNode();
 		
 		auto scc = graph.getStronglyConnectedComponentsTarjan();
-		assert(scc.size() == 1);
-		assert(scc[0].getNodes() == NodeList<int>{1});
+		assert(scc[0].numberOfNodes() == 1);
 	}
 
 	{
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(0);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addNode(4);
-		graph.addNode(5);
-		graph.addNode(6);
+		graph.addNodes(7);
 		
 		graph.addEdge({0, 1});
 		graph.addEdge({1, 2});
@@ -954,19 +878,24 @@ int main(void)
 		graph.addEdge({6, 2});
 		
 		auto scc = graph.getStronglyConnectedComponentsTarjan();
+		//5,4
 		assert(scc.size() == 3);
-		assert(scc[0].getNodes() == NodeList<int>({5, 4}));
-		assert(scc[1].getNodes() == NodeList<int>({3, 2}));
-		assert(scc[2].getNodes() == NodeList<int>({6, 1, 0}));
+		assert(scc[0].numberOfNodes() == 2);
+		assert(scc[0].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
+		//3,2
+		assert(scc[1].numberOfNodes() == 2);
+		assert(scc[1].getEdges() == Matrix<int>({{0, 1}, {1, 0}}));
+		//6,1,0
+		assert(scc[2].numberOfNodes() == 3);
+		assert(scc[2].getEdges() == Matrix<int>({
+						{0, 0, 1},
+						{1, 0, 0},
+						{0, 1, 0}
+						}));
 	}
 	{
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
-		graph.addNode(1);
-		graph.addNode(2);
-		graph.addNode(3);
-		graph.addNode(4);
-		graph.addNode(5);
-		graph.addNode(6);
+		graph.addNodes(6);
 		
 		graph.addEdge({0, 1});
 		graph.addEdge({0, 2});
@@ -979,9 +908,18 @@ int main(void)
 		
 		auto scc = graph.getStronglyConnectedComponentsTarjan();
 		assert(scc.size() == 3);
-		assert(scc[0].getNodes() == NodeList<int>({6}));
-		assert(scc[1].getNodes() == NodeList<int>({5}));
-		assert(scc[2].getNodes() == NodeList<int>({3,4,2,1}));
+		//5
+		assert(scc[0].numberOfNodes() == 1);
+		//4
+		assert(scc[1].numberOfNodes() == 1);
+		//2,3,1,0
+		assert(scc[2].numberOfNodes() == 4);
+		assert(scc[2].getEdges() == Matrix<int>({
+						{0, 1, 0, 0},
+						{0, 0, 0, 1},
+						{0, 1, 0, 0},
+						{1, 0, 1, 0}
+						}));
 	}
 
 	cout << "All test passed\n";
