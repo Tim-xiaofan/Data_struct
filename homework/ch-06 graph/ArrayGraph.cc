@@ -9,6 +9,7 @@
 #include <stack>
 #include <cassert>
 #include <iterator>
+#include <queue>
 
 using std::cout;
 using std::endl;
@@ -21,7 +22,6 @@ using NodeList = std::vector<T>;
 
 using Edge = std::pair<int, int>;
 
-
 template<typename T> class ArrayGraph;
 
 template<typename T>
@@ -29,6 +29,27 @@ using CcList = std::vector<ArrayGraph<T>>;
 
 template<typename T>
 using SccList = std::vector<ArrayGraph<T>>;
+
+using WeightList = std::vector<std::pair<Edge, double>>;
+
+static void displayWeightList(const WeightList& weightList) {
+    for (const auto& pair : weightList) {
+        const Edge& edge = pair.first;
+        double weight = pair.second;
+        std::cout << "Edge: " << edge.first << " -> " << edge.second << ", Weight: " << weight << std::endl;
+    }
+}
+
+template<typename Q>
+void displayQueue(Q q)
+{
+	while(!q.empty())
+	{
+		const auto& min = q.top();
+		std::cout << "{" << min.first.first << "," << min.first.second << "}:" << min.second << std::endl;
+		q.pop();
+	}
+}
 
 template<typename T>
 bool operator==(const Matrix<T>& a, const Matrix<T>& b)
@@ -59,7 +80,7 @@ public:
     void addNodes(int number);
 	void addNode()
 	{ addNodes(1); }
-    void addEdge(const Edge& edge);
+    void addEdge(const Edge& edge, double w = 1.0);
     void addEdges(const Matrix<int>& edges);
 
 	int numberOfNodes(void) const
@@ -94,6 +115,9 @@ public:
 	
 	/** tarjan*/
 	SccList<T> getStronglyConnectedComponentsTarjan(void) const;
+
+	/** Caculate minimum spanning tree by prime algorithm*/
+	WeightList MSTPrim(void) const;
 
 private:
     ArrayGraphType type_;
@@ -163,7 +187,7 @@ void displayNodeList(const NodeList<T>& nodes)
 }
 
 template<typename T>
-void ArrayGraph<T>::addEdge(const Edge& edge)
+void ArrayGraph<T>::addEdge(const Edge& edge, double w)
 {
     int from = edge.first;
     int to = edge.second;
@@ -173,10 +197,10 @@ void ArrayGraph<T>::addEdge(const Edge& edge)
         throw std::out_of_range("Invalid node index");
     }
 
-    edges_[from][to] = 1;
+    edges_[from][to] = w;
 
     if (type_ == GRAPH)
-        edges_[to][from] = 1;
+        edges_[to][from] = w;
 }
 
 template<typename T>
@@ -215,7 +239,7 @@ void ArrayGraph<T>::BFS(const Unary& op) const
 
             for (int neighbor = 0; neighbor < numberOfNodes_; ++neighbor)
             {
-                if (edges_[current][neighbor] == 1 && !visited[neighbor])
+                if (edges_[current][neighbor] && !visited[neighbor])
                 {
                     queue.push(neighbor);
                     visited[neighbor] = true;
@@ -250,7 +274,7 @@ void ArrayGraph<T>::DFSUtil(int node, std::vector<bool>& visited, const Unary& o
 
     for (int neighbor = 0; neighbor < numberOfNodes_; ++neighbor)
     {
-        if (edges_[node][neighbor] == 1 && !visited[neighbor])
+        if (edges_[node][neighbor]  && !visited[neighbor])
             DFSUtil(neighbor, visited, op, post);
     }
 	
@@ -335,7 +359,7 @@ CcList<T> ArrayGraph<T>::getConnectedComponents(void) const
 				{
 					for(size_t s = 0; s < indexList.size(); ++s)
 					{
-						if(edges_[indexList[k]][indexList[s]] == 1)
+						if(edges_[indexList[k]][indexList[s]])
 						{
 							subGraph.addEdge({k, s});
 						}
@@ -362,7 +386,7 @@ ArrayGraph<T> ArrayGraph<T>::transpose(void) const
 	{
 		for(int j = 0; j < numberOfNodes_; ++j)
 		{
-			if(edges_[i][j] == 1)
+			if(edges_[i][j])
 			{
 				tGraph.addEdge({j, i});
 			}
@@ -417,7 +441,7 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponents(void) const
 			{
 				for(size_t s = 0; s < subIndexs.size(); ++s)
 				{
-					if(edges_[subIndexs[k]][subIndexs[s]] == 1)
+					if(edges_[subIndexs[k]][subIndexs[s]])
 					{
 						subGraph.addEdge({k, s});
 					}
@@ -439,7 +463,7 @@ void ArrayGraph<T>::getStronglyConnectedComponentsTarjan(int v, int& index, std:
 	s.push_back(v);
 	for(int w = 0; w < numberOfNodes_; ++w)
 	{
-		if(edges_[v][w] == 1)
+		if(edges_[v][w])
 		{
 			if(dsn[w] == UNDEFINED)
 			{// 后继节点未访问
@@ -471,7 +495,7 @@ void ArrayGraph<T>::getStronglyConnectedComponentsTarjan(int v, int& index, std:
 		{
 			for(size_t j = 0; j < subIndexs.size(); ++j)
 			{
-				if(edges_[subIndexs[i]][subIndexs[j]] == 1)
+				if(edges_[subIndexs[i]][subIndexs[j]])
 				{
 					subGraph.addEdge({i, j});
 				}
@@ -498,6 +522,61 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponentsTarjan(void) const
 		}
 	}
 	return sccs;
+}
+
+/**O(V^2 + E log E) */
+template<typename T>
+WeightList ArrayGraph<T>::MSTPrim(void) const
+{
+	using EW =  std::pair<Edge, double>;
+	assert(type_ == GRAPH);
+
+	WeightList results;
+	if(numberOfNodes_ == 0)
+	{
+		return results;
+	}
+	std::vector<bool> inU(numberOfNodes_, false);
+	inU[0] = true;
+	int inUCount = 1;
+	auto cmp = [](const EW& a, const EW& b) { return a.second > b.second; };
+	/** min cost between  U and V -U*/
+	std::priority_queue<EW, std::vector<EW>, decltype(cmp)> q(cmp);
+
+	while(inUCount < numberOfNodes_)
+	{
+		for(int v = 0; v < numberOfNodes_; ++v)
+		{
+			if(inU[v])
+			{
+				for(int w = 0; w < numberOfNodes_; ++w)
+				{
+					if(!inU[w] && edges_[v][w])// v in U and w in V-U
+					{
+						q.emplace(Edge(v, w), edges_[v][w]);
+					}
+				}
+			}
+		}
+		//displayQueue(q);
+		while(!q.empty())
+		{
+			const EW& min = q.top();
+			if(inU[min.first.second] == true) 
+			{//avoid cycle
+				q.pop();
+				continue;
+			}
+			//std::cout << "min: {" << min.first.first << "," << min.first.second << "}:" << min.second << std::endl;
+			inU[min.first.second] = true;
+			//std::cout << "add: " << min.first.second << std::endl;
+			results.push_back(min);
+			q.pop();
+			++inUCount;
+			break;
+		}
+	}
+	return results;
 }
 
 int main(void)
@@ -920,6 +999,76 @@ int main(void)
 						{0, 1, 0, 0},
 						{1, 0, 1, 0}
 						}));
+	}
+
+	/** test MSTPrim*/
+	{//single node
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(1);
+		WeightList expected;
+		assert(expected == graph.MSTPrim());
+	}
+	{//double nodes
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(2);
+		graph.addEdge({0,1},6);
+		WeightList expected;
+		expected.emplace_back(Edge(0, 1), 6);
+		assert(expected == graph.MSTPrim());
+	}
+	{//normal 1
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0,1},6);
+		graph.addEdge({0,2},1);
+		graph.addEdge({0,3},5);
+		graph.addEdge({1,2},5);
+		graph.addEdge({1,4},3);
+		graph.addEdge({2,3},5);
+		graph.addEdge({2,4},6);
+		graph.addEdge({2,5},4);
+		graph.addEdge({3,5},2);
+		graph.addEdge({4,5},6);
+
+		//displayWeightList(graph.MSTPrim());
+		WeightList expected;
+		expected.emplace_back(Edge(0, 2), 1);
+		expected.emplace_back(Edge(2, 5), 4);
+		expected.emplace_back(Edge(5, 3), 2);
+		expected.emplace_back(Edge(2, 1), 5);
+		expected.emplace_back(Edge(1, 4), 3);
+		assert(expected == graph.MSTPrim());
+	}
+	{//normal 2
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(9);
+		graph.addEdge({0,1},4);
+		graph.addEdge({0,7},8);
+		graph.addEdge({1,2},8);
+		graph.addEdge({1,7},11);
+		graph.addEdge({2,3},7);
+		graph.addEdge({2,5},4);
+		graph.addEdge({2,8},2);
+		graph.addEdge({3,4},9);
+		graph.addEdge({3,5},14);
+		graph.addEdge({4,5},10);
+		graph.addEdge({5,6},2);
+		graph.addEdge({6,7},1);
+		graph.addEdge({6,8},6);
+		graph.addEdge({7,8},7);
+		
+		WeightList expected;
+		expected.emplace_back(Edge(0, 1), 4);
+		expected.emplace_back(Edge(0, 7), 8);
+		expected.emplace_back(Edge(7, 6), 1);
+		expected.emplace_back(Edge(6, 5), 2);
+		expected.emplace_back(Edge(5, 2), 4);
+		expected.emplace_back(Edge(2, 8), 2);
+		expected.emplace_back(Edge(2, 3), 7);
+		expected.emplace_back(Edge(3, 4), 9);
+		WeightList results = graph.MSTPrim();
+		//displayWeightList(results);
+		assert(expected == results);
 	}
 
 	cout << "All test passed\n";
