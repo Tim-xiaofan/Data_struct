@@ -120,6 +120,7 @@ public:
 	WeightList MSTPrim(void) const;
 
 private:
+
     ArrayGraphType type_;
     Matrix<int> edges_;
     int numberOfNodes_;
@@ -528,7 +529,6 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponentsTarjan(void) const
 template<typename T>
 WeightList ArrayGraph<T>::MSTPrim(void) const
 {
-	using EW =  std::pair<Edge, double>;
 	assert(type_ == GRAPH);
 
 	WeightList results;
@@ -539,9 +539,9 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 	std::vector<bool> inU(numberOfNodes_, false);
 	inU[0] = true;
 	int inUCount = 1;
-	auto cmp = [](const EW& a, const EW& b) { return a.second > b.second; };
+	auto cmp = [this](const Edge& a, const Edge& b) { return edges_[a.first][a.second] > edges_[b.first][b.second]; };
 	/** min cost between  U and V -U*/
-	std::priority_queue<EW, std::vector<EW>, decltype(cmp)> q(cmp);
+	std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
 
 	while(inUCount < numberOfNodes_)
 	{
@@ -553,7 +553,7 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 				{
 					if(!inU[w] && edges_[v][w])// v in U and w in V-U
 					{
-						q.emplace(Edge(v, w), edges_[v][w]);
+						q.emplace(Edge(v, w));
 					}
 				}
 			}
@@ -561,16 +561,16 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 		//displayQueue(q);
 		while(!q.empty())
 		{
-			const EW& min = q.top();
-			if(inU[min.first.second] == true) 
+			const Edge& min = q.top();
+			if(inU[min.second] == true) 
 			{//avoid cycle
 				q.pop();
 				continue;
 			}
 			//std::cout << "min: {" << min.first.first << "," << min.first.second << "}:" << min.second << std::endl;
-			inU[min.first.second] = true;
+			inU[min.second] = true;
 			//std::cout << "add: " << min.first.second << std::endl;
-			results.push_back(min);
+			results.emplace_back(min, edges_[min.first][min.second]);
 			q.pop();
 			++inUCount;
 			break;
