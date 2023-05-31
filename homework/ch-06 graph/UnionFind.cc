@@ -15,10 +15,15 @@ int main(void)
 
 	assert(uf.count() == 2);
 	assert(uf.connected(0, 1) == true);
+	assert(uf.connected(2, 0) == true);
 	assert(uf.connected(1, 3) == true);
+	assert(uf.connected(3, 1) == true);
 	assert(uf.connected(0, 3) == true);
+	assert(uf.connected(3, 0) == true);
 	assert(uf.connected(0, 4) == false);
+	assert(uf.connected(4, 0) == false);
 	assert(uf.connected(4, 5) == true);
+	assert(uf.connected(5, 4) == true);
 
 	uf.unite(3, 4);
 	assert(uf.count() == 1);

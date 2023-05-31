@@ -11,6 +11,8 @@
 #include <iterator>
 #include <queue>
 
+#include "UnionFind.h"
+
 using std::cout;
 using std::endl;
 
@@ -46,7 +48,7 @@ void displayQueue(Q q)
 	while(!q.empty())
 	{
 		const auto& min = q.top();
-		std::cout << "{" << min.first.first << "," << min.first.second << "}:" << min.second << std::endl;
+		std::cout << "{" << min.first << "," << min.second << "}"<< std::endl;
 		q.pop();
 	}
 }
@@ -116,8 +118,11 @@ public:
 	/** tarjan*/
 	SccList<T> getStronglyConnectedComponentsTarjan(void) const;
 
-	/** Caculate minimum spanning tree by prime algorithm*/
+	/** Caculate minimum spanning tree by prime algorithm. Only valid for connected graphs*/
 	WeightList MSTPrim(void) const;
+	
+	/** Caculate minimum spanning tree by kruskal algorithm. Only valid for connected graphs*/
+	WeightList MSTKruskal(void) const;
 
 private:
 
@@ -579,6 +584,49 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 	return results;
 }
 
+template<typename T>
+WeightList ArrayGraph<T>::MSTKruskal(void) const
+{
+	assert(type_ == GRAPH);
+
+	WeightList results;
+	if(numberOfNodes_ == 0)
+	{
+		return results;
+	}
+	auto cmp = [this](const Edge& a, const Edge& b) { return edges_[a.first][a.second] > edges_[b.first][b.second]; };
+	std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
+	for(int v = 0; v < numberOfNodes_; ++v)
+	{
+		for(int w = 0; w < numberOfNodes_; ++w)
+		{
+			if(v <= w)
+			{
+				if(edges_[v][w])
+				{
+					q.emplace(v, w);
+				}
+			}
+		}
+	}
+	UnionFind uf(numberOfNodes_);
+
+	while(uf.count() != 1 && !q.empty())
+	{
+		const Edge& min = q.top();
+		//displayQueue(q);
+		if(uf.connected(min.first, min.second)) 
+		{
+			q.pop();
+			continue;
+		}
+		uf.unite(min.first, min.second);
+		results.emplace_back(min, edges_[min.first][min.second]);
+		q.pop();
+	}
+	return results;
+}
+
 int main(void)
 {
 	/** test graph constructor */
@@ -1030,14 +1078,15 @@ int main(void)
 		graph.addEdge({3,5},2);
 		graph.addEdge({4,5},6);
 
-		//displayWeightList(graph.MSTPrim());
 		WeightList expected;
 		expected.emplace_back(Edge(0, 2), 1);
-		expected.emplace_back(Edge(2, 5), 4);
-		expected.emplace_back(Edge(5, 3), 2);
-		expected.emplace_back(Edge(2, 1), 5);
+		expected.emplace_back(Edge(3, 5), 2);
 		expected.emplace_back(Edge(1, 4), 3);
-		assert(expected == graph.MSTPrim());
+		expected.emplace_back(Edge(2, 5), 4);
+		expected.emplace_back(Edge(1, 2), 5);
+		WeightList result = graph.MSTKruskal();
+		//displayWeightList(result);
+		assert(expected == result);
 	}
 	{//normal 2
 		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
@@ -1067,6 +1116,78 @@ int main(void)
 		expected.emplace_back(Edge(2, 3), 7);
 		expected.emplace_back(Edge(3, 4), 9);
 		WeightList results = graph.MSTPrim();
+		//displayWeightList(results);
+		assert(expected == results);
+	}
+
+	/** test MSTKruskal*/
+	{//single node
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(1);
+		WeightList expected;
+		assert(expected == graph.MSTKruskal());
+	}
+	{//double nodes
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(2);
+		graph.addEdge({0,1},6);
+		WeightList expected;
+		expected.emplace_back(Edge(0, 1), 6);
+		WeightList result = graph.MSTKruskal();
+		//displayWeightList(result);
+		assert(expected == result);
+	}
+	{//normal 1
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0,1},6);
+		graph.addEdge({0,2},1);
+		graph.addEdge({0,3},5);
+		graph.addEdge({1,2},5);
+		graph.addEdge({1,4},3);
+		graph.addEdge({2,3},5);
+		graph.addEdge({2,4},6);
+		graph.addEdge({2,5},4);
+		graph.addEdge({3,5},2);
+		graph.addEdge({4,5},6);
+
+		//displayWeightList(graph.MSTPrim());
+		WeightList expected;
+		expected.emplace_back(Edge(0, 2), 1);
+		expected.emplace_back(Edge(2, 5), 4);
+		expected.emplace_back(Edge(5, 3), 2);
+		expected.emplace_back(Edge(2, 1), 5);
+		expected.emplace_back(Edge(1, 4), 3);
+		assert(expected == graph.MSTPrim());
+	}
+	{//normal 2
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(9);
+		graph.addEdge({0,1},4);
+		graph.addEdge({0,7},8);
+		graph.addEdge({1,2},8);
+		graph.addEdge({1,7},11);
+		graph.addEdge({2,3},7);
+		graph.addEdge({2,5},4);
+		graph.addEdge({2,8},2);
+		graph.addEdge({3,4},9);
+		graph.addEdge({3,5},14);
+		graph.addEdge({4,5},10);
+		graph.addEdge({5,6},2);
+		graph.addEdge({6,7},1);
+		graph.addEdge({6,8},6);
+		graph.addEdge({7,8},7);
+		
+		WeightList expected;
+		expected.emplace_back(Edge(6, 7), 1);
+		expected.emplace_back(Edge(2, 8), 2);
+		expected.emplace_back(Edge(5, 6), 2);
+		expected.emplace_back(Edge(2, 5), 4);
+		expected.emplace_back(Edge(0, 1), 4);
+		expected.emplace_back(Edge(2, 3), 7);
+		expected.emplace_back(Edge(0, 7), 8);
+		expected.emplace_back(Edge(3, 4), 9);
+		WeightList results = graph.MSTKruskal();
 		//displayWeightList(results);
 		assert(expected == results);
 	}
