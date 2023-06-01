@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <utility>
-#include <queue>
 #include <cassert>
 #include <algorithm>
 #include <stdexcept>
@@ -10,6 +9,7 @@
 #include <cassert>
 #include <iterator>
 #include <queue>
+#include <deque>
 
 #include "UnionFind.h"
 
@@ -123,6 +123,9 @@ public:
 	
 	/** Caculate minimum spanning tree by kruskal algorithm. Only valid for connected graphs*/
 	WeightList MSTKruskal(void) const;
+
+	/** Caculate topo sort: Only valid for directed graph*/
+	NodeList<T> topoSort(void) const;
 
 private:
 
@@ -298,7 +301,7 @@ int ArrayGraph<T>::getInDegree(int v) const
 		int ID = 0;
 		for(const auto& row: edges_)
 		{
-			ID += row[v];
+			ID += (row[v])?1:0;
 		}
 		return ID;
 	}
@@ -316,7 +319,7 @@ int ArrayGraph<T>::getOutDegree(int v) const
 		int ID = 0;
 		for(const auto& e: edges_[v])
 		{
-			ID += e;
+			ID += e?1:0;
 		}
 		return ID;
 	}
@@ -545,7 +548,7 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 	inU[0] = true;
 	int inUCount = 1;
 	auto cmp = [this](const Edge& a, const Edge& b) { return edges_[a.first][a.second] > edges_[b.first][b.second]; };
-	/** min cost between  U and V -U*/
+	/** min cost between  U and V - U*/
 	std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
 
 	while(inUCount < numberOfNodes_)
@@ -584,6 +587,7 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 	return results;
 }
 
+/**time: O(E log E + E log V), space: O(E + V) */
 template<typename T>
 WeightList ArrayGraph<T>::MSTKruskal(void) const
 {
@@ -597,22 +601,19 @@ WeightList ArrayGraph<T>::MSTKruskal(void) const
 	auto cmp = [this](const Edge& a, const Edge& b) { return edges_[a.first][a.second] > edges_[b.first][b.second]; };
 	std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
 	for(int v = 0; v < numberOfNodes_; ++v)
-	{
+	{//O(E log E)
 		for(int w = 0; w < numberOfNodes_; ++w)
 		{
-			if(v <= w)
+			if(v <= w && edges_[v][w])
 			{
-				if(edges_[v][w])
-				{
-					q.emplace(v, w);
-				}
+				q.emplace(v, w);
 			}
 		}
 	}
-	UnionFind uf(numberOfNodes_);
+	UnionFind uf(numberOfNodes_);//O(V)
 
 	while(uf.count() != 1 && !q.empty())
-	{
+	{//O(E log V)
 		const Edge& min = q.top();
 		//displayQueue(q);
 		if(uf.connected(min.first, min.second)) 
@@ -625,6 +626,39 @@ WeightList ArrayGraph<T>::MSTKruskal(void) const
 		q.pop();
 	}
 	return results;
+}
+
+template<typename T>
+NodeList<T> ArrayGraph<T>::topoSort(void) const
+{
+	std::deque<int> q;
+	std::vector<int> IDs(numberOfNodes_);
+	NodeList<T> nodes;
+	for(int v = 0; v < numberOfNodes_; ++v)
+	{
+		int ID = getInDegree(v);
+		//std::cout << "v=" << v << ": " << ID << std::endl;
+		IDs[v] = ID;
+		if(ID == 0)
+		{
+			q.push_back(v);
+		}
+	}
+
+	while(!q.empty())
+	{
+		int v = q.front();
+		q.pop_front();
+		nodes.push_back(v);
+		for(int w = 0; w < numberOfNodes_; ++ w)
+		{
+			if(edges_[v][w] && (--IDs[w]) == 0)
+			{
+				q.push_back(w);
+			}
+		}
+	}
+	return nodes;
 }
 
 int main(void)
@@ -1190,6 +1224,62 @@ int main(void)
 		WeightList results = graph.MSTKruskal();
 		//displayWeightList(results);
 		assert(expected == results);
+	}
+
+	/** test topoSort*/
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0,1},4);
+		graph.addEdge({0,2},8);
+		graph.addEdge({0,3},8);
+		graph.addEdge({2,4},11);
+		graph.addEdge({3,4},7);
+		graph.addEdge({5,3},2);
+		graph.addEdge({5,4},9);
+		assert(graph.topoSort() == NodeList<int>({0,5,1,2,3,4}));
+	}
+
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(12);
+		graph.addEdge({0,1},4);
+		graph.addEdge({0,2},8);
+		graph.addEdge({0,3},8);
+		graph.addEdge({0,11},8);
+		graph.addEdge({1,2},8);
+		graph.addEdge({2,4},8);
+		graph.addEdge({2,6},8);
+		graph.addEdge({2,7},8);
+		graph.addEdge({3,4},8);
+		graph.addEdge({4,6},8);
+		graph.addEdge({5,7},8);
+		graph.addEdge({8,9},8);
+		graph.addEdge({8,10},8);
+		graph.addEdge({8,11},8);
+		graph.addEdge({9,11},8);
+		graph.addEdge({10,5},8);
+		assert(graph.topoSort() == NodeList<int>({0,8,1,3,9,10,2,11,5,4,7,6}));
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({2,3});
+		graph.addEdge({3,1});
+		graph.addEdge({4,0});
+		graph.addEdge({4,1});
+		graph.addEdge({5,0});
+		graph.addEdge({5,2});
+		assert(graph.topoSort() == NodeList<int>({4,5,0,2,3,1}));
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(4);
+		graph.addEdge({0,1});
+		graph.addEdge({1,2});
+		graph.addEdge({2,3});
+		graph.addEdge({3,1});
+		assert(graph.topoSort() == NodeList<int>({0}));
 	}
 
 	cout << "All test passed\n";
