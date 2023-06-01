@@ -584,6 +584,7 @@ WeightList ArrayGraph<T>::MSTPrim(void) const
 	return results;
 }
 
+/**time: O(E log E + E log V), space: O(E + V) */
 template<typename T>
 WeightList ArrayGraph<T>::MSTKruskal(void) const
 {
@@ -597,22 +598,19 @@ WeightList ArrayGraph<T>::MSTKruskal(void) const
 	auto cmp = [this](const Edge& a, const Edge& b) { return edges_[a.first][a.second] > edges_[b.first][b.second]; };
 	std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> q(cmp);
 	for(int v = 0; v < numberOfNodes_; ++v)
-	{
+	{//O(E log E)
 		for(int w = 0; w < numberOfNodes_; ++w)
 		{
-			if(v <= w)
+			if(v <= w && edges_[v][w])
 			{
-				if(edges_[v][w])
-				{
-					q.emplace(v, w);
-				}
+				q.emplace(v, w);
 			}
 		}
 	}
-	UnionFind uf(numberOfNodes_);
+	UnionFind uf(numberOfNodes_);//O(V)
 
 	while(uf.count() != 1 && !q.empty())
-	{
+	{//O(E log V)
 		const Edge& min = q.top();
 		//displayQueue(q);
 		if(uf.connected(min.first, min.second)) 
