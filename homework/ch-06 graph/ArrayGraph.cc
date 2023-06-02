@@ -10,6 +10,7 @@
 #include <iterator>
 #include <queue>
 #include <deque>
+#include <iomanip>
 
 #include "UnionFind.h"
 
@@ -34,13 +35,13 @@ using SccList = std::vector<ArrayGraph<T>>;
 
 using WeightList = std::vector<std::pair<Edge, double>>;
 
-static void displayWeightList(const WeightList& weightList) {
-    for (const auto& pair : weightList) {
-        const Edge& edge = pair.first;
-        double weight = pair.second;
-        std::cout << "Edge: " << edge.first << " -> " << edge.second << ", Weight: " << weight << std::endl;
-    }
-}
+//static void displayWeightList(const WeightList& weightList) {
+//    for (const auto& pair : weightList) {
+//        const Edge& edge = pair.first;
+//        double weight = pair.second;
+//        std::cout << "Edge: " << edge.first << " -> " << edge.second << ", Weight: " << weight << std::endl;
+//    }
+//}
 
 template<typename Q>
 void displayQueue(Q q)
@@ -127,6 +128,9 @@ public:
 	/** Caculate topo sort: Only valid for directed graph*/
 	NodeList<T> topoSort(void) const;
 
+	/** Find articul node: Only valid for connected graph. time=O(|V| + |E|), space=O(|V|)*/
+	NodeList<bool> findAriculTarjan(void) const;
+
 private:
 
     ArrayGraphType type_;
@@ -139,6 +143,7 @@ private:
     void DFSUtil(int node, std::vector<bool>& visited, const Unary& op, bool post = false) const;
 
 	void getStronglyConnectedComponentsTarjan(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, std::vector<int>& s, SccList<T>& sccs) const;
+	void findAriculTarjanUtil(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, NodeList<bool>& nodes) const;
 };
 
 template<typename T>
@@ -467,7 +472,6 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponents(void) const
 template<typename T>
 void ArrayGraph<T>::getStronglyConnectedComponentsTarjan(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, std::vector<int>& s, SccList<T>& sccs) const
 {
-
 	dsn[v] = low[v] = index++;
 	s.push_back(v);
 	for(int w = 0; w < numberOfNodes_; ++w)
@@ -531,6 +535,56 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponentsTarjan(void) const
 		}
 	}
 	return sccs;
+}
+
+template<typename T>
+void ArrayGraph<T>::findAriculTarjanUtil(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, NodeList<bool>& nodes) const
+{
+	dsn[v] = low[v] = index++;
+	for(int w = 0; w < numberOfNodes_; ++w)
+	{
+		if(edges_[v][w])
+		{
+			if(dsn[w] == UNDEFINED)
+			{// 后继节点w未访问
+				findAriculTarjanUtil(w, index, dsn, low, nodes);
+				low[v] = std::min(low[v], low[w]);
+				if(low[w] >= dsn[v])
+				{//w[w]≥dsn[v]，表明w及其子孙均无指向v的祖先的回边
+					nodes[v] = true;
+				}
+			}
+			else
+			{// 祖先节点w
+				low[v] = std::min(low[v], dsn[w]);
+			}
+		}
+	}
+}
+
+template<typename T>
+NodeList<bool> ArrayGraph<T>::findAriculTarjan(void) const
+{
+	int index = 0;
+	std::vector<int> dsn(numberOfNodes_, UNDEFINED);
+	std::vector<int> low(numberOfNodes_, UNDEFINED);
+	NodeList<bool> nodes(numberOfNodes_, false);
+	findAriculTarjanUtil(0, index, dsn, low, nodes);
+	if(static_cast<int>(nodes.size()) < numberOfNodes_)
+	{
+		nodes.push_back(0);
+	}
+	for(int w = 1; w < numberOfNodes_; ++w)
+	{
+		if(edges_[0][w])
+		{
+			if(dsn[w] == UNDEFINED)
+			{
+				findAriculTarjanUtil(w, index, dsn, low, nodes);
+			}
+		}
+	}
+	return nodes;
 }
 
 /**O(V^2 + E log E) */
@@ -1239,7 +1293,6 @@ int main(void)
 		graph.addEdge({5,4},9);
 		assert(graph.topoSort() == NodeList<int>({0,5,1,2,3,4}));
 	}
-
 	{
 		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
 		graph.addNodes(12);
@@ -1280,6 +1333,61 @@ int main(void)
 		graph.addEdge({2,3});
 		graph.addEdge({3,1});
 		assert(graph.topoSort() == NodeList<int>({0}));
+	}
+
+	/** test findAriculTarjanUtil*/
+	{//single node
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+			graph.addNodes(1);
+			assert(graph.findAriculTarjan() == std::vector<bool>({false}));
+		}
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+			graph.addNodes(1);
+			assert(graph.findAriculTarjan() == std::vector<bool>({false}));
+		}
+	}
+	{//double nodes
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+			graph.addNodes(2);
+			assert(graph.findAriculTarjan() == std::vector<bool>({false, false}));
+		}
+		{
+			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+			graph.addNodes(2);
+			assert(graph.findAriculTarjan() == std::vector<bool>({false, false}));
+		}
+	}
+	{//normal
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(13);
+		graph.addEdge({0,1});
+		graph.addEdge({0,2});
+		graph.addEdge({0,5});
+		graph.addEdge({0,11});
+		graph.addEdge({1,2});
+		graph.addEdge({1,3});
+		graph.addEdge({1,5});
+		graph.addEdge({1,6});
+		graph.addEdge({1,7});
+		graph.addEdge({1,12});
+		graph.addEdge({3,4});
+		graph.addEdge({6,7});
+		graph.addEdge({6,8});
+		graph.addEdge({6,10});
+		graph.addEdge({7,10});
+		graph.addEdge({9,11});
+		graph.addEdge({9,12});
+		graph.addEdge({11,12});
+		//0,1,3,6
+		std::vector<bool> expected(graph.numberOfNodes(), false);
+		expected[0] = true;
+		expected[1] = true;
+		expected[3] = true;
+		expected[6] = true;
+		assert(graph.findAriculTarjan() == expected);
 	}
 
 	cout << "All test passed\n";
