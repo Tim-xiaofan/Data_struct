@@ -129,7 +129,7 @@ public:
 	NodeList<T> topoSort(void) const;
 
 	/** Find articul node: Only valid for connected graph. time=O(|V| + |E|), space=O(|V|)*/
-	NodeList<bool> findAriculTarjan(void) const;
+	NodeList<bool> findArticulTarjan(void) const;
 
 private:
 
@@ -143,7 +143,7 @@ private:
     void DFSUtil(int node, std::vector<bool>& visited, const Unary& op, bool post = false) const;
 
 	void getStronglyConnectedComponentsTarjan(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, std::vector<int>& s, SccList<T>& sccs) const;
-	void findAriculTarjanUtil(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, NodeList<bool>& nodes) const;
+	void findArticulTarjanUtil(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, NodeList<bool>& nodes) const;
 };
 
 template<typename T>
@@ -538,7 +538,7 @@ SccList<T> ArrayGraph<T>::getStronglyConnectedComponentsTarjan(void) const
 }
 
 template<typename T>
-void ArrayGraph<T>::findAriculTarjanUtil(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, NodeList<bool>& nodes) const
+void ArrayGraph<T>::findArticulTarjanUtil(int v, int& index, std::vector<int>& dsn, std::vector<int>& low, NodeList<bool>& nodes) const
 {
 	dsn[v] = low[v] = index++;
 	for(int w = 0; w < numberOfNodes_; ++w)
@@ -547,7 +547,7 @@ void ArrayGraph<T>::findAriculTarjanUtil(int v, int& index, std::vector<int>& ds
 		{
 			if(dsn[w] == UNDEFINED)
 			{// 后继节点w未访问
-				findAriculTarjanUtil(w, index, dsn, low, nodes);
+				findArticulTarjanUtil(w, index, dsn, low, nodes);
 				low[v] = std::min(low[v], low[w]);
 				if(low[w] >= dsn[v])
 				{//w[w]≥dsn[v]，表明w及其子孙均无指向v的祖先的回边
@@ -563,13 +563,13 @@ void ArrayGraph<T>::findAriculTarjanUtil(int v, int& index, std::vector<int>& ds
 }
 
 template<typename T>
-NodeList<bool> ArrayGraph<T>::findAriculTarjan(void) const
+NodeList<bool> ArrayGraph<T>::findArticulTarjan(void) const
 {
 	int index = 0;
 	std::vector<int> dsn(numberOfNodes_, UNDEFINED);
 	std::vector<int> low(numberOfNodes_, UNDEFINED);
 	NodeList<bool> nodes(numberOfNodes_, false);
-	findAriculTarjanUtil(0, index, dsn, low, nodes);
+	findArticulTarjanUtil(0, index, dsn, low, nodes);
 	if(static_cast<int>(nodes.size()) < numberOfNodes_)
 	{
 		nodes.push_back(0);
@@ -580,7 +580,7 @@ NodeList<bool> ArrayGraph<T>::findAriculTarjan(void) const
 		{
 			if(dsn[w] == UNDEFINED)
 			{
-				findAriculTarjanUtil(w, index, dsn, low, nodes);
+				findArticulTarjanUtil(w, index, dsn, low, nodes);
 			}
 		}
 	}
@@ -1335,29 +1335,29 @@ int main(void)
 		assert(graph.topoSort() == NodeList<int>({0}));
 	}
 
-	/** test findAriculTarjanUtil*/
+	/** test findArticulTarjanUtil*/
 	{//single node
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
 			graph.addNodes(1);
-			assert(graph.findAriculTarjan() == std::vector<bool>({false}));
+			assert(graph.findArticulTarjan() == std::vector<bool>({false}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
 			graph.addNodes(1);
-			assert(graph.findAriculTarjan() == std::vector<bool>({false}));
+			assert(graph.findArticulTarjan() == std::vector<bool>({false}));
 		}
 	}
 	{//double nodes
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
 			graph.addNodes(2);
-			assert(graph.findAriculTarjan() == std::vector<bool>({false, false}));
+			assert(graph.findArticulTarjan() == std::vector<bool>({false, false}));
 		}
 		{
 			ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
 			graph.addNodes(2);
-			assert(graph.findAriculTarjan() == std::vector<bool>({false, false}));
+			assert(graph.findArticulTarjan() == std::vector<bool>({false, false}));
 		}
 	}
 	{//normal
@@ -1387,7 +1387,7 @@ int main(void)
 		expected[1] = true;
 		expected[3] = true;
 		expected[6] = true;
-		assert(graph.findAriculTarjan() == expected);
+		assert(graph.findArticulTarjan() == expected);
 	}
 
 	cout << "All test passed\n";
