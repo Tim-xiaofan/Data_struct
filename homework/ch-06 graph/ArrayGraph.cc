@@ -11,6 +11,7 @@
 #include <queue>
 #include <deque>
 #include <iomanip>
+#include <climits>
 
 #include "UnionFind.h"
 
@@ -25,6 +26,8 @@ using NodeList = std::vector<T>;
 
 using Edge = std::pair<int, int>;
 
+using EdgeList = std::vector<Edge>;
+
 template<typename T> class ArrayGraph;
 
 template<typename T>
@@ -34,6 +37,15 @@ template<typename T>
 using SccList = std::vector<ArrayGraph<T>>;
 
 using WeightList = std::vector<std::pair<Edge, double>>;
+
+static void displayEdgeList(const EdgeList& edges)
+{
+	for(const auto& pair: edges)
+	{
+		std::cout << "<" << pair.first << "," << pair.second << ">";
+	}
+	std::cout << std::endl;
+}
 
 //static void displayWeightList(const WeightList& weightList) {
 //    for (const auto& pair : weightList) {
@@ -130,6 +142,9 @@ public:
 
 	/** Find articul node: Only valid for connected graph. time=O(|V| + |E|), space=O(|V|)*/
 	NodeList<bool> findArticulTarjan(void) const;
+
+	/** Fine critical path: Only invalid for directed graph*/
+	EdgeList findCriticalPath(void) const;
 
 private:
 
@@ -713,6 +728,73 @@ NodeList<T> ArrayGraph<T>::topoSort(void) const
 		}
 	}
 	return nodes;
+}
+
+template<typename T>
+EdgeList ArrayGraph<T>::findCriticalPath(void) const
+{
+	assert(type_ == DGRAPH);
+	std::vector<Edge> criticals;
+	std::vector<int> ve(numberOfNodes_, 0);
+	std::vector<int> vl(numberOfNodes_, INT_MAX);
+
+	// get topo sort
+	NodeList<int> topos = topoSort();
+	assert(static_cast<int>(topos.size()) == numberOfNodes_); //不能存在环
+	std::cout << "topos: ";
+	displayNodeList(topos);
+
+	// ve[j] = max{ve[i] + weight<i, j>}, <i, j> in E
+	ve[topos.front()] = 0;
+	for(size_t x = 0; x < topos.size(); ++x)
+	{
+		int i = topos[x];
+		for(int j = 0; j < numberOfNodes_; ++j)
+		{
+			if(edges_[i][j])
+			{
+				ve[j] = std::max(ve[j], ve[i] + edges_[i][j]);
+			}
+		}
+	}
+	std::cout << "ve:";
+	displayNodeList(ve);
+
+	// vl[i] = min{vl[j] - weight<i, j>}, <i, j> in E
+	vl[topos.back()] = ve[topos.back()];
+	for(int x = topos.size() - 1; x >= 0; --x)
+	{
+		int j = topos[x];
+		for(int i = 0; i < numberOfNodes_; ++i)
+		{
+			if(edges_[i][j])
+			{
+				vl[i] = std::min(vl[i], vl[j] - edges_[i][j]);
+			}
+		}
+	}
+	std::cout << "vl:";
+	displayNodeList(vl);
+
+	// e[i] = ve[i]
+	// l[i] = vl[k] - weight<i, k>, <i, k> in E
+	// e[i] == l[i], critical activity
+	for(int i = 0; i < numberOfNodes_; ++i)
+	{
+		int ei = ve[i];
+		for(int k = 0; k < numberOfNodes_; ++k)
+		{
+			if(edges_[i][k])
+			{
+				int li = vl[k] - edges_[i][k];
+				if(ei == li)
+				{
+					criticals.emplace_back(i, k);
+				}
+			}
+		}
+	}
+	return criticals;
 }
 
 int main(void)
@@ -1390,6 +1472,106 @@ int main(void)
 		assert(graph.findArticulTarjan() == expected);
 	}
 
+	/** test findCriticalPath*/
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(9);
+		graph.addEdge({0, 1}, 6);
+		graph.addEdge({0, 2}, 4);
+		graph.addEdge({0, 3}, 5);
+		graph.addEdge({1, 4}, 1);
+		graph.addEdge({2, 4}, 1);
+		graph.addEdge({3, 5}, 2);
+		graph.addEdge({4, 6}, 9);
+		graph.addEdge({4, 7}, 7);
+		graph.addEdge({5, 7}, 4);
+		graph.addEdge({6, 8}, 2);
+		graph.addEdge({7, 8}, 4);
+		EdgeList result = graph.findCriticalPath();
+		displayEdgeList(result);
+		std::cout << endl;
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0, 1}, 3);
+		graph.addEdge({0, 2}, 2);
+		graph.addEdge({1, 3}, 2);
+		graph.addEdge({1, 4}, 3);
+		graph.addEdge({2, 3}, 4);
+		graph.addEdge({2, 5}, 3);
+		graph.addEdge({3, 5}, 2);
+		graph.addEdge({4, 5}, 1);
+		EdgeList result = graph.findCriticalPath();
+		displayEdgeList(result);
+		std::cout << endl;
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0, 1}, 3);
+		graph.addEdge({0, 2}, 2);
+		graph.addEdge({1, 3}, 2);
+		graph.addEdge({1, 4}, 3);
+		graph.addEdge({2, 3}, 3);
+		graph.addEdge({2, 5}, 3);
+		graph.addEdge({3, 5}, 2);
+		graph.addEdge({4, 5}, 1);
+		EdgeList result = graph.findCriticalPath();
+		displayEdgeList(result);
+		std::cout << endl;
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0, 1}, 3);
+		graph.addEdge({0, 2}, 2);
+		graph.addEdge({1, 3}, 2);
+		graph.addEdge({1, 4}, 4);
+		graph.addEdge({2, 3}, 3);
+		graph.addEdge({2, 5}, 3);
+		graph.addEdge({3, 5}, 2);
+		graph.addEdge({4, 5}, 1);
+		EdgeList result = graph.findCriticalPath();
+		displayEdgeList(result);
+		std::cout << endl;
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0, 1}, 3);
+		graph.addEdge({0, 2}, 2);
+		graph.addEdge({1, 3}, 2);
+		graph.addEdge({1, 4}, 4);
+		graph.addEdge({2, 3}, 3);
+		graph.addEdge({2, 5}, 3);
+		graph.addEdge({3, 5}, 2);
+		graph.addEdge({4, 5}, 1);
+		EdgeList result = graph.findCriticalPath();
+		displayEdgeList(result);
+		std::cout << endl;
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(10);
+		graph.addEdge({0, 1}, 3);
+		graph.addEdge({0, 2}, 5);
+		graph.addEdge({0, 3}, 10);
+		graph.addEdge({1, 4}, 10);
+		graph.addEdge({2, 5}, 4);
+		graph.addEdge({3, 5}, 9);
+		graph.addEdge({4, 6}, 2);
+		graph.addEdge({5, 6}, 3);
+		graph.addEdge({5, 7}, 20);
+		graph.addEdge({5, 8}, 4);
+		graph.addEdge({6, 9}, 7);
+		graph.addEdge({7, 8}, 1);
+		graph.addEdge({7, 9}, 10);
+		graph.addEdge({8, 9}, 4);
+		EdgeList result = graph.findCriticalPath();
+		displayEdgeList(result);
+		std::cout << endl;
+	}
 	cout << "All test passed\n";
 	return 0;
 }
