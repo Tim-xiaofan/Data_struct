@@ -38,6 +38,8 @@ using SccList = std::vector<ArrayGraph<T>>;
 
 using WeightList = std::vector<std::pair<Edge, double>>;
 
+const int INF = INT_MAX;
+
 static void displayEdgeList(const EdgeList& edges)
 {
 	for(const auto& pair: edges)
@@ -145,6 +147,9 @@ public:
 
 	/** Fine critical path: Only invalid for directed graph*/
 	EdgeList findCriticalPath(void) const;
+
+	/** Single source node min paths */
+	void singleSourceMinimumPathDijkstra(int start, std::vector<int>& D, Matrix<bool>& path) const;
 
 private:
 
@@ -795,6 +800,74 @@ EdgeList ArrayGraph<T>::findCriticalPath(void) const
 		}
 	}
 	return criticals;
+}
+
+template<typename T>
+void ArrayGraph<T>::singleSourceMinimumPathDijkstra(int start, std::vector<int>& D, Matrix<bool>& path) const
+{
+	std::vector<bool> inS(numberOfNodes_, false);
+	D = std::move(std::vector<int>(numberOfNodes_, INF));
+	path = std::move(Matrix<bool>(numberOfNodes_, std::vector<bool>(numberOfNodes_, false)));
+	int count = 0;
+
+	//start state
+	inS[start] = true;
+	D[start] = 0;
+	path[start][start] = true;
+	++count;
+	for(int v = 0; v < numberOfNodes_; ++v)
+	{
+		if(edges_[start][v])
+		{
+			D[v] = edges_[start][v];
+			path[v][start] = true;
+			path[v][v] = true;
+		}
+	}
+
+	while(count < numberOfNodes_)
+	{
+		//find min
+		int minj = 0;
+		int min = INF;
+		for(int j = 0; j < numberOfNodes_; ++j)
+		{
+			if(!inS[j] && D[j] != INF && D[j] < min)
+			{
+				minj = j;
+				min = D[j];
+			}
+		}
+		inS[minj] = true;
+		++count;
+
+		//update D and path
+		for(int k = 0; k < numberOfNodes_; ++k)
+		{
+			if(!inS[k] && edges_[minj][k])
+			{
+				bool updated = false;
+				if(D[k] != INF)
+				{
+					if(edges_[minj][k] + D[minj] < D[k])
+					{
+						updated = true;
+						D[k] = D[minj] + edges_[minj][k];
+					}
+				}
+				else
+				{
+					updated = true;
+					D[k] = D[minj] + edges_[minj][k];
+				}
+				if(updated)
+				{
+					path[k] = path[minj];
+					path[k][k] = true;
+				}
+			}
+		}
+	}
 }
 
 int main(void)
@@ -1571,6 +1644,61 @@ int main(void)
 		EdgeList result = graph.findCriticalPath();
 		displayEdgeList(result);
 		std::cout << endl;
+	}
+
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(6);
+		graph.addEdge({0, 2}, 10);
+		graph.addEdge({0, 4}, 30);
+		graph.addEdge({0, 5}, 100);
+		graph.addEdge({1, 2}, 5);
+		graph.addEdge({2, 3}, 50);
+		graph.addEdge({3, 5}, 10);
+		graph.addEdge({4, 3}, 20);
+		graph.addEdge({4, 5}, 60);
+
+		std::vector<int> D;
+		Matrix<bool> path;
+		graph.singleSourceMinimumPathDijkstra(0, D, path);
+		assert(D == std::vector<int>({0, INF, 10, 50, 30, 60}));
+		assert(path == Matrix<bool>({
+						{true, false, false, false, false, false},
+						{false, false, false, false, false, false},
+						{true, false, true, false, false, false},
+						{true, false, false, true, true, false},
+						{true, false, false, false, true, false},
+						{true, false, false, true, true, true}
+						}));
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::GRAPH);
+		graph.addNodes(7);
+		graph.addEdge({0, 1}, 12);
+		graph.addEdge({0, 5}, 16);
+		graph.addEdge({0, 6}, 14);
+		graph.addEdge({1, 2}, 10);
+		graph.addEdge({1, 5}, 7);
+		graph.addEdge({2, 3}, 3);
+		graph.addEdge({2, 4}, 5);
+		graph.addEdge({2, 5}, 6);
+		graph.addEdge({3, 4}, 4);
+		graph.addEdge({4, 5}, 2);
+		graph.addEdge({4, 6}, 8);
+		graph.addEdge({5, 6}, 9);
+		std::vector<int> D;
+		Matrix<bool> path;
+		graph.singleSourceMinimumPathDijkstra(0, D, path);
+		assert(D == std::vector<int>({0, 12, 22, 22, 18, 16, 14}));
+		assert(path == Matrix<bool>({
+						{true, false, false, false, false, false, false},
+						{true, true, false, false, false, false, false},
+						{true, true, true, false, false, false, false},
+						{true, false, false, true, true, true, false},
+						{true, false, false, false, true, true, false},
+						{true, false, false, false, false, true, false},
+						{true, false, false, false, false, false, true}
+						}));
 	}
 	cout << "All test passed\n";
 	return 0;
