@@ -93,4 +93,95 @@ private:
     std::vector<T> data_;
 };
 
+#include <iostream>
+#include <vector>
+#include <initializer_list>
+
+template<typename T>
+class Array2D {
+public:
+    Array2D(size_t rows, size_t cols) : rows_(rows), cols_(cols), data_(rows * cols) {}
+
+    Array2D(std::initializer_list<std::initializer_list<T>> init) : rows_(init.size()), cols_(init.begin()->size()), data_(rows_ * cols_) {
+        size_t i = 0;
+        for (const auto& row : init) {
+            size_t j = 0;
+            for (const auto& element : row) {
+                data_[getIndex(i, j)] = element;
+                ++j;
+            }
+            ++i;
+        }
+    }
+
+    class Array2DRow {
+    public:
+        Array2DRow(Array2D<T>& array, size_t row) : array_(array), row_(row) {}
+
+        T& operator[](size_t col) {
+            return array_(row_, col);
+        }
+
+
+        const T& operator[](size_t col) const {
+            return array_(row_, col);
+        }
+
+
+		 Array2DRow& operator=(const Array2DRow& other) {
+            if (this != &other) {
+                for (size_t col = 0; col < array_.getCols(); ++col) {
+                    (*this)[col] = other[col];
+                }
+            }
+            return *this;
+        }
+
+    private:
+        Array2D<T>& array_;
+        size_t row_;
+    };
+
+    Array2DRow operator[](size_t row) {
+        return Array2DRow(*this, row);
+    }
+    
+    T& operator()(size_t row, size_t col) {
+        return data_[getIndex(row, col)];
+    }
+
+    const T& operator()(size_t row, size_t col) const {
+        return data_[getIndex(row, col)];
+    }
+
+    std::vector<size_t> getDims() const {
+        return {rows_, cols_};
+    }
+
+    void display() const {
+        for (size_t i = 0; i < rows_; ++i) {
+            for (size_t j = 0; j < cols_; ++j) {
+                std::cout << data_[getIndex(i, j)] << " ";
+            }
+            std::cout << std::endl;
+        }
+    }
+
+	size_t getCols() const
+	{ return cols_; }
+
+	size_t getRows() const
+	{ return rows_; }
+
+private:
+    size_t getIndex(size_t row, size_t col) const {
+        return row * cols_ + col;
+    }
+
+    size_t rows_;
+    size_t cols_;
+    std::vector<T> data_;
+};
+
+
 #endif
