@@ -22,6 +22,15 @@ template<typename T>
 using Matrix = std::vector<std::vector<T>>;
 
 template<typename T>
+using Array = std::vector<T>;
+
+template<typename T>
+using Array2D = Matrix<T>;
+
+template<typename T>
+using Array3D = Array<Matrix<T>>;
+
+template<typename T>
 using NodeList = std::vector<T>;
 
 using Edge = std::pair<int, int>;
@@ -150,6 +159,9 @@ public:
 
 	/** Single source node min paths */
 	void singleSourceMinimumPathDijkstra(int start, std::vector<int>& D, Matrix<bool>& path) const;
+
+	/** Multiple source min path*/
+	void multipleSourceMinmunPathFloyd(Array2D<int>& D, Array3D<bool>& path);
 
 private:
 
@@ -867,6 +879,56 @@ void ArrayGraph<T>::singleSourceMinimumPathDijkstra(int start, std::vector<int>&
 				}
 			}
 		}
+	}
+}
+
+template<typename T>
+void ArrayGraph<T>::multipleSourceMinmunPathFloyd(Array2D<int>& D, Array3D<bool>& path)
+{
+	D = std::move(Array2D<int>(numberOfNodes_, Array<int>(numberOfNodes_, INF)));
+	path = std::move(Array3D<bool>(numberOfNodes_, Array2D<bool>(numberOfNodes_, Array<bool>(numberOfNodes_, false))));
+
+	//start state
+	for(int v = 0; v < numberOfNodes_; ++v)
+	{
+		for(int w = 0; w < numberOfNodes_; ++w)
+		{
+			if(edges_[v][w])
+			{
+				D[v][w] = edges_[v][w];
+				path[v][w][v] = true;
+				path[v][w][w] = true;
+			}
+			else if(v == w)
+			{
+				D[v][w] = 0;
+				path[v][w][w] = true;
+			}
+		}
+	}
+	//std::cout << "start state: \n";
+	//displayMatrix(D);
+
+	//scan n times
+	for(int x = 0; x < numberOfNodes_; ++x)
+	{
+		for(int v = 0; v < numberOfNodes_; ++v)
+		{
+			for(int w = 0; w < numberOfNodes_; ++w)
+			{
+				//there is a shorter path(v,...,x,...,w) 
+				if(D[v][x] != INF &&  D[x][w] != INF && D[v][x] + D[x][w] < D[v][w]) 
+				{
+					D[v][w] = D[v][x] + D[x][w];
+					for(int k = 0; k < numberOfNodes_; ++k)
+					{
+						path[v][w][k] = path[v][x][k] | path[x][w][k];
+					}
+				}
+			}
+		}
+		//std::cout << "x = " << x << std::endl;
+		//displayMatrix(D);
 	}
 }
 
@@ -1699,6 +1761,54 @@ int main(void)
 						{true, false, false, false, false, true, false},
 						{true, false, false, false, false, false, true}
 						}));
+	}
+
+	/** test multipleSourceMinmunPathFloyd*/
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(3);
+		graph.addEdge({0, 1}, 4);
+		graph.addEdge({0, 2}, 11);
+		graph.addEdge({1, 0}, 6);
+		graph.addEdge({1, 2}, 2);
+		graph.addEdge({2, 0}, 3);
+
+		Array2D<int> D;
+		Array3D<bool> path;
+		graph.multipleSourceMinmunPathFloyd(D, path);
+		assert(D == decltype(D)({
+						{0, 4, 6},
+						{5, 0, 2},
+						{3, 7, 0}}));
+		assert(path == decltype(path)({
+					{{true, false, false}, {true , true, false}, {true, true, true}},
+					{{true, true,  true }, {false, true, false}, {false, true, true}},
+					{{true, false, true}, {true, true, true}, {false, false, true}}}));
+	}
+	{
+		ArrayGraph<int> graph(ArrayGraph<int>::DGRAPH);
+		graph.addNodes(4);
+		graph.addEdge({0, 1}, 5);
+		graph.addEdge({0, 2}, 3);
+		graph.addEdge({1, 2}, 2);
+		graph.addEdge({1, 3}, 6);
+		graph.addEdge({2, 3}, 7);
+
+		Array2D<int> D;
+		Array3D<bool> path;
+		graph.multipleSourceMinmunPathFloyd(D, path);
+		assert(D == decltype(D)({
+						{0, 5, 3, 10},
+						{INF, 0, 2, 6},
+						{INF, INF, 0, 7},
+						{INF, INF, INF, 0}}));
+		assert(path == decltype(path)({
+						{{true, false, false, false}, {true, true, false, false}, {true, false, true, false}, {true, false, true, true}},
+						{{false, false, false, false}, {false, true, false, false}, {false, true, true, false}, {false, true, false, true}},
+						{{false, false, false, false}, {false, false, false, false}, {false, false, true, false}, {false, false, true, true}},
+						{{false, false, false, false}, {false, false, false, false}, {false, false, false, false}, {false, false, false, true}}
+						}));
+
 	}
 	cout << "All test passed\n";
 	return 0;
