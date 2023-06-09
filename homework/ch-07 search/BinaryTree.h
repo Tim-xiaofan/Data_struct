@@ -1,14 +1,14 @@
 #ifndef _BINARYTREE_H_
 #define _BINARYTREE_H_
 
+#include <utility>
+
 template<typename T>
 struct BinaryTreeNode;
 
-template<typename T>
-using BinaryTree = std::shared_ptr<BinaryTreeNode<T>>;
 
 template<typename T>
-struct BinaryTreeNode
+struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
 {
 	T data;
 	std::shared_ptr<struct BinaryTreeNode> lchild;
@@ -76,6 +76,24 @@ struct BinaryTreeNode
 		return false;
 	}
 
+	//search in Binary Sort Tree
+	std::pair<bool, std::shared_ptr<BinaryTreeNode<T>>> search(const T& value, const std::shared_ptr<BinaryTreeNode<T>>& f)
+	{
+		if(value == data)
+		{
+			return std::make_pair(true, this->shared_from_this());
+		}
+		else if(value < data && lchild)
+		{
+			return lchild->search(value, this->shared_from_this());
+		}
+		else if(value > data && rchild)
+		{
+			return rchild->search(value, this->shared_from_this());
+		}
+		return std::make_pair(false, f);
+	}
+
 	void display(int level = 0) const
 	{
 		for (int i = 0; i < level; ++i) {
@@ -92,5 +110,7 @@ struct BinaryTreeNode
 };
 
 
+template<typename T>
+using BinaryTree = std::shared_ptr<BinaryTreeNode<T>>;
 
 #endif
