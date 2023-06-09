@@ -92,7 +92,7 @@ void second_optimal(bitree & t, array<char> & tab, array<float> w)
 }
 void second_optimal(bitree & t, array<char> & tab, array<float> sw, int low, int high)
 {
-    float min = adb(sw[high] - sw[low]), dw;
+    float min = abs(sw[high] - sw[low]), dw;
     int min_i = low;
     if(low == 0) dw = sw[high] + 0;
     else dw = sw[low - 1] + sw[high];
@@ -106,7 +106,7 @@ void second_optimal(bitree & t, array<char> & tab, array<float> sw, int low, int
     /** create left sub tree*/
     if(min_i != low) second_optimal(t, tab, sw, low, min_i - 1)
     /** create right sub tree*/
-    if(min_i != high) second_optimal(t, tab, sw, i + 1, high)
+    if(min_i != high) second_optimal(t, tab, sw, min_i + 1, high)
 }
 ```
 <a><b>次优查找树性能: </b></a>次优查找树的平均查找长度和logn成正比
