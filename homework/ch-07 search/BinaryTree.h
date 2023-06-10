@@ -6,6 +6,8 @@
 template<typename T>
 struct BinaryTreeNode;
 
+template<typename T>
+using BinaryTree = std::shared_ptr<BinaryTreeNode<T>>;
 
 template<typename T>
 struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
@@ -94,6 +96,30 @@ struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
 		return std::make_pair(false, this->shared_from_this());
 	}
 
+	//insert into Binary Sort Tree if it doese not exits
+	std::pair<bool, BinaryTree<T>> insert(const T& value)
+	{
+		auto ret = search(value, nullptr);
+		if(!ret.first)
+		{
+			if(value > ret.second->data)
+			{
+				ret.second->addRchild(value);
+				return {true, ret.second->rchild};
+			}
+			else
+			{
+				ret.second->addLchild(value);
+				return {true, ret.second->lchild};
+			}
+		}
+		else
+		{
+			ret.first = false;
+			return ret;
+		}
+	}
+
 	void display(int level = 0) const
 	{
 		for (int i = 0; i < level; ++i) {
@@ -110,7 +136,5 @@ struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
 };
 
 
-template<typename T>
-using BinaryTree = std::shared_ptr<BinaryTreeNode<T>>;
 
 #endif

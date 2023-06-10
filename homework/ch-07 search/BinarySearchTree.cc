@@ -51,6 +51,18 @@ int main(void)
 			assert(!ret.first);
 			assert(ret.second->data == 'A');
 		}
+
+		// test insert
+		{//exist
+			auto ret = root->insert('A');
+			assert(!ret.first);
+			assert(ret.second->data == 'A');
+		}
+		{//not exist
+			auto ret = root->insert('A'-1);
+			assert(ret.first);
+			assert(ret.second->data == 'A'-1);
+		}
 	}
 	{
 		std::vector<char> table= {'A', 'B', 'C', 'D', 'E'};
@@ -73,6 +85,18 @@ int main(void)
 			auto ret = root->search('A' - 1, nullptr);
 			assert(!ret.first);
 			assert(ret.second->data == 'A');
+		}
+
+		// test insert
+		{//exist
+			auto ret = root->insert('A');
+			assert(!ret.first);
+			assert(ret.second->data == 'A');
+		}
+		{//not exist
+			auto ret = root->insert('A'-1);
+			assert(ret.first);
+			assert(ret.second->data == 'A'-1);
 		}
 	}
 	{
@@ -115,6 +139,23 @@ int main(void)
 			assert(!ret.first);
 			assert(ret.second->data == 'S');
 		}
+	}
+
+	//test insert
+	{//create a new BST by performing insertion operation
+		std::vector<int> table= {45,24,53,45,12,24,90};
+		BinaryTree<int> root(new BinaryTreeNode<int>(45));
+		for(size_t i = 1; i < table.size(); ++i)
+		{
+			auto ret = root->insert(table[i]);
+			assert(ret.second->data == table[i]);
+		}
+		BinaryTree<int> expected(new BinaryTreeNode<int>(45));
+		expected->addLchild(24);
+		expected->lchild->addLchild(12);
+		expected->addRchild(53);
+		expected->rchild->addRchild(90);
+		assert(root->same(*expected));
 	}
 	std::cout << "All test passed\n";
 	return 0;
