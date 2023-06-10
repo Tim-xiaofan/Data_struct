@@ -42,7 +42,7 @@ int main(void)
 			assert(ret.first);
 		}
 		{
-			auto ret = root->search('I' + 1, nullptr);
+			auto ret = root->search('J', nullptr);
 			assert(!ret.first);
 			assert(ret.second->data == 'I');
 		}
@@ -100,6 +100,20 @@ int main(void)
 			auto ret = root->search('A' - 1, nullptr);
 			assert(!ret.first);
 			assert(ret.second->data == 'A');
+		}
+	}
+	{//one node
+		std::vector<char> table= {'S'};
+		BinaryTree<char> root(new BinaryTreeNode<char>('S'));
+		for(char ch: table)
+		{
+			auto ret = root->search(ch, nullptr);
+			assert(ret.first);
+		}
+		{
+			auto ret = root->search('A', nullptr);
+			assert(!ret.first);
+			assert(ret.second->data == 'S');
 		}
 	}
 	std::cout << "All test passed\n";

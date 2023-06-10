@@ -91,7 +91,7 @@ struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
 		{
 			return rchild->search(value, this->shared_from_this());
 		}
-		return std::make_pair(false, f);
+		return std::make_pair(false, this->shared_from_this());
 	}
 
 	void display(int level = 0) const
