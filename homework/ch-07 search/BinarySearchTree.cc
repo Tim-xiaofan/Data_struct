@@ -157,6 +157,140 @@ int main(void)
 		expected->rchild->addRchild(90);
 		assert(root->same(*expected));
 	}
+
+	//test delete
+	{//case1: p has lchild and rchild and q == p and s does't have rchild
+		BinaryTree<int> root(new BinaryTreeNode<int>(3));
+		root->addLchild(1);
+		root->lchild->addLchild(0);
+		root->lchild->addRchild(2);
+		root->addRchild(5);
+		root->rchild->addLchild(4);
+		root->rchild->addRchild(6);
+
+		root->delete_(1);
+
+		BinaryTree<int> expected(new BinaryTreeNode<int>(3));
+		expected->addLchild(0);
+		expected->lchild->addRchild(2);
+		expected->addRchild(5);
+		expected->rchild->addLchild(4);
+		expected->rchild->addRchild(6);
+
+		assert(root->same(*expected));
+	}
+	{//case2: p has lchild and rchild and q == p and s does have rchild
+		BinaryTree<int> root(new BinaryTreeNode<int>(3));
+		root->addLchild(1);
+		root->lchild->addLchild(0);
+		root->lchild->lchild->addLchild(-1);
+		root->lchild->addRchild(2);
+		root->addRchild(5);
+		root->rchild->addLchild(4);
+		root->rchild->addRchild(6);
+
+		root->delete_(1);
+
+		BinaryTree<int> expected(new BinaryTreeNode<int>(3));
+		expected->addLchild(0);
+		expected->lchild->addLchild(-1);
+		expected->lchild->addRchild(2);
+		expected->addRchild(5);
+		expected->rchild->addLchild(4);
+		expected->rchild->addRchild(6);
+
+		assert(root->same(*expected));
+	}
+	{//case3: p has lchild and rchild and q != p and s does not have rchild
+		BinaryTree<int> root(new BinaryTreeNode<int>(4));
+		root->addLchild(2);
+		root->lchild->addLchild(0);
+		root->lchild->addRchild(3);
+		root->lchild->lchild->addRchild(1);
+		root->addRchild(6);
+		root->rchild->addLchild(5);
+		root->rchild->addRchild(7);
+		root->delete_(2);
+		BinaryTree<int> expected(new BinaryTreeNode<int>(4));
+		expected->addLchild(1);
+		expected->lchild->addLchild(0);
+		expected->lchild->addRchild(3);
+		expected->addRchild(6);
+		expected->rchild->addLchild(5);
+		expected->rchild->addRchild(7);
+		assert(root->same(*expected));
+	}
+	{//case4: p has lchild and rchild and q != p and s does have rchild
+		BinaryTree<int> root(new BinaryTreeNode<int>(5));
+		root->addLchild(3);
+		root->lchild->addLchild(0);
+		root->lchild->addRchild(4);
+		root->lchild->lchild->addRchild(2);
+		root->lchild->lchild->rchild->addLchild(1);
+		root->addRchild(6);
+		root->rchild->addLchild(5);
+		root->rchild->addRchild(7);
+
+		root->delete_(3);
+
+		BinaryTree<int> expected(new BinaryTreeNode<int>(5));
+		expected->addLchild(2);
+		expected->lchild->addLchild(0);
+		expected->lchild->addRchild(4);
+		expected->lchild->lchild->addRchild(1);
+		expected->addRchild(7);
+		expected->rchild->addLchild(6);
+		expected->rchild->addRchild(8);
+
+		assert(root->same(*expected));
+	}
+	{//case 5: leaf node
+		BinaryTree<int> root(new BinaryTreeNode<int>(1));
+		root->addLchild(0);
+		root->addRchild(1);
+
+		root->delete_(1);
+
+		BinaryTree<int> expected(new BinaryTreeNode<int>(5));
+		expected->addRchild(1);
+		
+		assert(root->same(*expected));
+	}
+	{//case 6: only lchild
+		BinaryTree<int> root(new BinaryTreeNode<int>(2));
+		root->addLchild(1);
+		root->addRchild(3);
+		root->lchild->addLchild(0);
+
+		assert(root->delete_(1));
+
+		BinaryTree<int> expected(new BinaryTreeNode<int>(2));
+		expected->addLchild(0);
+		expected->addRchild(3);
+		
+		assert(root->same(*expected));
+	}
+
+	{//case 7: only rchild
+		BinaryTree<int> root(new BinaryTreeNode<int>(2));
+		root->addLchild(1);
+		root->addRchild(3);
+		root->lchild->addLchild(0);
+		root->rchild->addRchild(5);
+		root->rchild->rchild->addLchild(4);
+		root->rchild->rchild->addRchild(6);
+
+		assert(root->delete_(3));
+
+		BinaryTree<int> expected(new BinaryTreeNode<int>(2));
+		expected->addLchild(1);
+		expected->lchild->addLchild(0);
+		expected->addRchild(5);
+		expected->rchild->addLchild(4);
+		expected->rchild->addRchild(6);
+		
+		assert(root->same(*expected));
+	}
 	std::cout << "All test passed\n";
 	return 0;
 }

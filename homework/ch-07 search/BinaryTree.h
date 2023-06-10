@@ -96,7 +96,7 @@ struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
 		return std::make_pair(false, this->shared_from_this());
 	}
 
-	//insert into Binary Sort Tree if it doese not exits
+	//insert into Binary Sort Tree if it doese not exist
 	std::pair<bool, BinaryTree<T>> insert(const T& value)
 	{
 		auto ret = search(value, nullptr);
@@ -119,6 +119,64 @@ struct BinaryTreeNode : public std::enable_shared_from_this<BinaryTreeNode<T>>
 			return ret;
 		}
 	}
+	
+	void delete_(BinaryTree<T>& p)
+	{
+		if(!p->lchild && !p->rchild) //leaf node
+		{
+			p.reset();
+		}
+		else if(!p->rchild) // only left child
+		{
+			BinaryTree<T> q = p->lchild;
+			p->data = q->data;
+			p->lchild = q->lchild;
+			p->rchild = q->rchild;
+			q.reset();
+		}
+		else if(!p->lchild) // only right child
+		{
+			BinaryTree<T> q = p->rchild;
+			p->data = q->data;
+			p->lchild = q->lchild;
+			p->rchild = q->rchild;
+			q.reset();
+		}
+		else
+		{
+			//find predecessor of p
+			BinaryTree<T> q = p;
+			BinaryTree<T> s = p->lchild;
+			while(s->rchild)
+			{
+				q = s;
+				s = s->rchild;
+			}
+			//replace p with s
+			p->data = s->data;
+			if(q != p)
+			{
+				q->rchild = s->lchild;
+			}
+			else
+			{
+				q->lchild = s->lchild;
+			}
+			//delete s;
+			s.reset();
+		}
+	}
+
+	// delete if it exists
+	bool delete_(const T& value)
+	{
+		auto ret = search(value, nullptr);
+		if(!ret.first) return false;// not found
+
+		delete_(ret.second);
+		return true;
+	}
+
 
 	void display(int level = 0) const
 	{
