@@ -147,6 +147,43 @@ int main(void)
 		assert(root->same(expected));
 	}
 
+	//test erase
+	{
+		AVLTree<int> root = new AVLTreeNode<int>(2, -1);
+		root->addRchild(4, -1)->addRchild(5, -1)->addRchild(6, 0);
+		root->rchild->addLchild(3, 0);
+		root->addLchild(1, 1)->addLchild(0, 0);
+
+		bool shorter;
+		assert(erase(root, 0, shorter));
+
+		AVLTree<int> expected = new AVLTreeNode<int>(4, 0);
+		expected->addRchild(5, -1)->addRchild(6, 0);
+		expected->addLchild(2, 0)->addLchild(1, 0);
+		expected->lchild->addRchild(3, 0);
+
+		assert(root->same(expected));
+	}
+	{
+		AVLTree<int> root = nullptr;
+		std::vector<int> table = {13, 24, 37, 90, 53};
+		for(int i: table)
+		{
+			bool taller;
+			assert(insert(root, i, taller));
+		}
+
+		bool shorter;
+		erase(root, 53, shorter);
+		
+		AVLTree<int> expected = new AVLTreeNode<int>(24, -1);
+		expected->addRchild(37, -1)->addRchild(90, 0);
+		expected->addLchild(13, 0);
+
+		root->same(expected);
+	}
+
+
 	std::cout << "All tests passed\n";
 	return 0;
 }

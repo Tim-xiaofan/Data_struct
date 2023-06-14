@@ -262,4 +262,117 @@ bool insert(AVLTree<T>& A, const T& value, bool& taller)
 	return false;
 }
 
+template<typename T>
+void erase(AVLTree<T>& p)
+{
+	assert(p);
+	if(!p->lchild && !p->rchild) //leaf node
+	{
+		delete p;
+		p =  nullptr;
+	}
+	else if(!p->rchild) // only left child
+	{
+		AVLTree<T> q = p->lchild;
+		p->data = q->data;
+		p->lchild = q->lchild;
+		p->rchild = q->rchild;
+		delete q;
+	}
+	else if(!p->lchild) // only right child
+	{
+		AVLTree<T> q = p->rchild;
+		p->data = q->data;
+		p->lchild = q->lchild;
+		p->rchild = q->rchild;
+		delete q;
+	}
+	else
+	{
+		//find predecessor of p
+		AVLTree<T> q = p;
+		AVLTree<T> s = p->lchild;
+		while(s->rchild)
+		{
+			q = s;
+			s = s->rchild;
+		}
+		//replace p with s
+		p->data = s->data;
+		if(q != p)
+		{
+			q->rchild = s->lchild;
+		}
+		else
+		{
+			q->lchild = s->lchild;
+		}
+		delete s;
+	}
+}
+
+template<typename T>
+bool erase(AVLTree<T>& A, const T& value, bool& shorter)
+{
+	shorter = false;
+	if(!A)
+	{
+		return false;
+	}
+	
+	if(value < A->data)
+	{
+		if(!erase(A->lchild, value, shorter)) return false;
+		if(shorter)
+		{
+			switch(A->factor)
+			{
+				case LH:
+					A->factor = EH;
+					shorter = true;
+					break;
+				case EH:
+					A->factor = RH;
+					shorter = false;
+					break;
+				case RH:
+					rightBalance(A);
+					shorter = false;
+					break;
+			}
+		}
+		return true;
+	}
+	else if(value > A->data)
+	{
+		if(!erase(A->rchild, value, shorter)) return false;
+		if(shorter)
+		{
+			switch(A->factor)
+			{
+				case RH:
+					A->factor = EH;
+					shorter = true;
+					break;
+				case EH:
+					A->factor = LH;
+					shorter = false;
+					break;
+				case LH:
+					leftBalance(A);
+					shorter = false;
+					break;
+			}
+		}
+		return true;
+	}
+	else
+	{
+		erase(A);
+		shorter = true;
+		return true;
+	}
+	return false;
+}
+
 #endif
