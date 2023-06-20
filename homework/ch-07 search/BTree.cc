@@ -145,7 +145,6 @@ static void testBTreeNode()
 		assert(r->children == std::vector<BTreeNode<int>*>({p3, p4, p5}));
 	}
 
-	
 	std::cout << "All BTreeNode tests passed\n";
 }
 
@@ -171,6 +170,11 @@ testBTree(void)
 			auto ret = t.search(46);
 			assert(ret == expected);
 		}
+		t.display();
+		BTree<int, 3> t1;
+		t.copy(t1);
+		t1.display();
+		assert(t.same(t1));
 	}
 	{// three
 		BTreeNode<int>* p0 = new BTreeNode<int>();
@@ -191,6 +195,10 @@ testBTree(void)
 		root->insertKey(0, 45);
 		root->insertChild(0, p0);
 		root->insertChild(1, p1);
+
+		p0->parent = root;
+		p1->parent = root;
+
 		{//in root
 			BTree<int, 3>::Result expected(true, root, 0);
 			auto ret = t.search(45);
@@ -236,7 +244,14 @@ testBTree(void)
 			auto ret = t.search(24);
 			assert(ret == expected);
 		}
+		t.display();
+		BTree<int, 3> t1;
+		t.copy(t1);
+		t1.display();
+		assert(t.same(t1));
 	}
+	
+	BTree<int, 3> t1;
 	{//eight
 		BTreeNode<int>* p0 = new BTreeNode<int>();
 		p0->insertKey(0, 3);
@@ -273,6 +288,8 @@ testBTree(void)
 		p5->insertKey(0, 24);
 		p5->insertChild(0, p0);
 		p5->insertChild(1, p1);
+		p0->parent = p5;
+		p1->parent = p5;
 
 
 		BTreeNode<int>* p6 = new BTreeNode<int>();
@@ -281,12 +298,17 @@ testBTree(void)
 		p6->insertChild(0, p2);
 		p6->insertChild(1, p3);
 		p6->insertChild(2, p4);
+		p2->parent = p6;
+		p3->parent = p6;
+		p4->parent = p6;
 
 		BTree<int, 3> t;
 		t.root() = new BTreeNode<int>();
 		t.root()->insertKey(0, 45);
 		t.root()->insertChild(0, p5);
 		t.root()->insertChild(1, p6);
+		p5->parent = t.root();
+		p6->parent = t.root();
 
 		{
 			BTree<int, 3>::Result expected(false, p1, 0);
@@ -298,6 +320,29 @@ testBTree(void)
 			auto ret = t.search(61);
 			assert(ret == expected);
 		}
+		t.display();
+		t.copy(t1);
+		t1.display();
+		assert(t.same(t1));
+	}
+
+	//test insert
+	{
+		t1.insert(30);
+		std::cout << "after insert 30\n";
+		t1.display();
+		
+		t1.insert(26);
+		std::cout << "after insert 26\n";
+		t1.display();
+
+		t1.insert(85);
+		std::cout << "after insert 85\n";
+		t1.display();
+
+		t1.insert(7);
+		std::cout << "after insert 7\n";
+		t1.display();
 	}
 	std::cout << "All BTree tests passed\n";
 }
