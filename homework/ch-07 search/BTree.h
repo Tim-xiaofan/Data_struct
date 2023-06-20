@@ -122,6 +122,7 @@ struct BTreeNode
 		assert(mid < keysSize());
 		
 		BTreeNode* rchild = new BTreeNode();
+		rchild->parent = parent;
 		{
 			auto it = keys.begin();
 			std::advance(it, mid + 1);
@@ -137,6 +138,30 @@ struct BTreeNode
 		}
 
 		return rchild;
+	}
+
+	bool same(const BTreeNode* rhs) const
+	{
+		if(keys != rhs->keys) return false;
+		if(children.size() != rhs->children.size()) return false;
+		for(size_t i = 0; i < children.size(); ++i)
+		{
+			if((children[i] == nullptr) != (rhs.children[i] == nullptr))
+			{
+				return false;
+			}
+		}
+		for(size_t i = 0; i < children.size(); ++i)
+		{
+			if(children[i])
+			{
+				if(!children[i]->same(rhs->children[i]))
+				{
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 };
 
@@ -172,6 +197,24 @@ class BTree
 		Result search(const T& value);
 		Result insert(const T& value);
 
+		void display() const
+		{ display(root_, 0); std::cout << std::endl; }
+
+		BTree& copy(BTree &rhs) const
+		{
+			if(root_)
+			{
+				rhs.root_ = new NodeType();
+				copy(rhs.root_, root_);
+			}
+			return rhs;
+		}
+
+		bool same(const BTree& rhs)
+		{
+			return same(root_, rhs.root_);
+		}
+
 		//only for testing
 		NodePtr& root()
 		{ return root_; }
@@ -187,6 +230,10 @@ class BTree
 				:data(d), lchild(l), rchild(r) {}
 		};
 		Result insertUtil(T value, NodePtr n, int i);
+
+		static void display(const NodePtr node, int level = 0);
+		static void copy(NodePtr dst, const NodePtr src);
+		static bool same(const NodePtr a, const NodePtr b);
 };
 
 
@@ -226,6 +273,7 @@ insert(const T& value)
 	}
 	else
 	{
+		//std::cout << value << " does not exist, should insert into("<< ret.i << "): " << ret.n->keys << std::endl;
 		return insertUtil(value, ret.n, ret.i);
 	}
 }
@@ -236,8 +284,9 @@ insertUtil(T value, NodePtr n, int i)
 	bool finished = false;
 	NodePtr rchild = nullptr;
 	NodePtr lchild = nullptr;
-	while(n && finished)
+	while(n && !finished)
 	{
+		std::cout << value << " should insert at("<< i << ") into: " << n->keys << std::endl;
 		n->insertKey(i, value);
 		n->insertChild(i + 1, rchild);
 		if(n->keysSize() <= m -1)
@@ -271,6 +320,60 @@ insertUtil(T value, NodePtr n, int i)
 	}
 
 	return Result(true, n, i);
+}
+
+
+template<typename T, int m>
+void BTree<T, m>::display(const BTree<T, m>::NodePtr node, int level)
+{
+	if (node == nullptr)
+	  return;
+
+	for (int i = 0; i < level; ++i)
+	  std::cout << "  ";
+	std::cout << "|_";
+	for (const auto& key : node->keys)
+	  std::cout << key << " ";
+	std::cout << std::endl;
+
+	for (const auto& child : node->children)
+	  display(child, level + 1);
+}
+		
+template<typename T, int m>
+void BTree<T, m>::copy(BTree<T, m>::NodePtr dst, const BTree<T, m>::NodePtr src)
+{
+	std::copy(src->keys.begin(), src->keys.end(), std::back_inserter(dst->keys));
+	for (const auto& child : src->children)
+	{
+		if(!child)
+		{
+			dst->children.push_back(nullptr);
+		}
+		else
+		{
+			NodePtr p = new NodeType();
+			dst->children.push_back(p);
+			copy(p, child);
+			p->parent = dst;
+		}
+	}
+}
+
+template<typename T, int m>
+bool BTree<T, m>::same(const BTree<T, m>::NodePtr a, const BTree<T, m>::NodePtr b)
+{
+	if((a == nullptr) != (b == nullptr)) return false;
+	if(a)
+	{
+		if(a->keys != b->keys) return false;
+		if(a->children.size() != b->children.size()) return false;
+		for (size_t i = 0; i < a->children.size(); ++i)
+		{
+			if(!same(a->children[i], b->children[i])) return false;
+		}
+	}
+	return true;
 }
 
 #endif
