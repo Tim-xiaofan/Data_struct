@@ -302,28 +302,29 @@ testBTree(void)
 		p3->parent = p6;
 		p4->parent = p6;
 
-		BTree<int, 3> t;
-		t.root() = new BTreeNode<int>();
-		t.root()->insertKey(0, 45);
-		t.root()->insertChild(0, p5);
-		t.root()->insertChild(1, p6);
-		p5->parent = t.root();
-		p6->parent = t.root();
+		BTree<int, 3> t2;
+		t2.root() = new BTreeNode<int>();
+		t2.root()->insertKey(0, 45);
+		t2.root()->insertChild(0, p5);
+		t2.root()->insertChild(1, p6);
+		p5->parent = t2.root();
+		p6->parent = t2.root();
 
 		{
 			BTree<int, 3>::Result expected(false, p1, 0);
-			auto ret = t.search(30);
+			auto ret = t2.search(30);
 			assert(ret == expected);
 		}
 		{
 			BTree<int, 3>::Result expected(true, p3, 0);
-			auto ret = t.search(61);
+			auto ret = t2.search(61);
 			assert(ret == expected);
 		}
-		t.display();
-		t.copy(t1);
+		t2.display();
+		t2.copy(t1);
 		t1.display();
-		assert(t.same(t1));
+		assert(t2.same(t1));
+		t2.copy(t2);
 	}
 
 	//test insert
@@ -343,6 +344,92 @@ testBTree(void)
 		t1.insert(7);
 		std::cout << "after insert 7\n";
 		t1.display();
+	}
+
+	//test erase
+	BTreeNode<int>* p0 = new BTreeNode<int>();
+	p0->insertKey(0, 3);
+	p0->insertChild(0, nullptr);
+	p0->insertChild(1, nullptr);
+
+	BTreeNode<int>* p1 = new BTreeNode<int>();
+	p1->insertKey(0, 37);
+	p1->insertChild(0, nullptr);
+	p1->insertChild(1, nullptr);
+
+	BTreeNode<int>* p2 = new BTreeNode<int>();
+	p2->insertKey(0, 50);
+	p2->insertChild(0, nullptr);
+	p2->insertChild(1, nullptr);
+
+	BTreeNode<int>* p3 = new BTreeNode<int>();
+	p3->insertKey(0, 61);
+	p3->insertKey(1, 70);
+	p3->insertChild(0, nullptr);
+	p3->insertChild(1, nullptr);
+	p3->insertChild(2, nullptr);
+
+	BTreeNode<int>* p4 = new BTreeNode<int>();
+	p4->insertKey(0, 100);
+	p4->insertChild(0, nullptr);
+	p4->insertChild(1, nullptr);
+
+
+	BTreeNode<int>* p5 = new BTreeNode<int>();
+	p5->insertKey(0, 24);
+	p5->insertChild(0, p0);
+	p5->insertChild(1, p1);
+	p0->parent = p5;
+	p1->parent = p5;
+
+
+	BTreeNode<int>* p6 = new BTreeNode<int>();
+	p6->insertKey(0, 53);
+	p6->insertKey(1, 90);
+	p6->insertChild(0, p2);
+	p6->insertChild(1, p3);
+	p6->insertChild(2, p4);
+	p2->parent = p6;
+	p3->parent = p6;
+	p4->parent = p6;
+
+	BTree<int, 3> t2;
+	t2.root() = new BTreeNode<int>();
+	t2.root()->insertKey(0, 45);
+	t2.root()->insertChild(0, p5);
+	t2.root()->insertChild(1, p6);
+	p5->parent = t2.root();
+	p6->parent = t2.root();
+
+	{//borrow from left sibling
+		std::cout << "*********\n";
+		BTree<int, 3> t;
+		t2.copy(t);
+		t.display();
+		t.erase(100);
+		std::cout << "after erase 100\n";
+		t.display();
+	}
+	{//borrow from right sibling
+		std::cout << "*********\n";
+		t2.display();
+		t2.erase(50);
+		std::cout << "after erase 50\n";
+		t2.display();
+	}
+	{//
+		std::cout << "*********\n";
+		t2.display();
+		t2.erase(53);
+		std::cout << "after erase 53\n";
+		t2.display();
+	}
+	{
+		std::cout << "*********\n";
+		t2.display();
+		t2.erase(37);
+		std::cout << "after erase 37\n";
+		t2.display();
 	}
 	std::cout << "All BTree tests passed\n";
 }

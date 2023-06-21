@@ -24,6 +24,15 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec) {
 	return os;
 }
 
+template<typename C>
+void borderCheck(const C& c, int pos)
+{
+	if(!(pos >= 0 && pos < static_cast<int>(c.size())))
+	{
+		throw std::out_of_range(std::string("pos=") + std::to_string(pos) + ", c.size()=" + std::to_string(c.size()));
+	}
+}
+
 template<typename T>
 struct BTreeNode
 {
@@ -50,7 +59,7 @@ struct BTreeNode
 	{
 		if(pos < 0 || pos > static_cast<int>(children.size()))
 		{
-			throw std::out_of_range(std::string("pos=") + std::to_string(pos) + ", keys.size()=" + std::to_string(keys.size()));
+			throw std::out_of_range(std::string("pos=") + std::to_string(pos) + ", children.size()=" + std::to_string(children.size()));
 		}
 		auto it = children.begin();
 		std::advance(it, pos);
@@ -111,6 +120,11 @@ struct BTreeNode
 		return keys.at(index);
 	}
 
+	T& atKeys(int index)
+	{
+		return keys.at(index);
+	}
+
 	int keysSize() const
 	{
 		return static_cast<int>(keys.size());
@@ -163,6 +177,47 @@ struct BTreeNode
 		}
 		return true;
 	}
+
+	BTreeNode* getLSibling(int& i)
+	{
+		if(!parent) return nullptr;	
+		auto it = std::find(parent->children.begin(), parent->children.end(), this);
+		assert(it != parent->children.end());
+		if(it != parent->children.begin())
+		{
+			--it;
+			i = std::distance(parent->children.begin(), it);
+			return *it;
+		}
+		return nullptr;
+	}
+
+	BTreeNode* getRSibling(int& i)
+	{
+		if(!parent) return nullptr;	
+		auto it = std::find(parent->children.begin(), parent->children.end(), this);
+		assert(it != parent->children.end());
+		if(it + 1 != parent->children.end())
+		{
+			++it;
+			i = std::distance(parent->children.begin(), it);
+			return *it;
+		}
+		return nullptr;
+	}
+	
+	void eraseChild(int pos)
+	{
+		borderCheck(children, pos);
+		children.erase(children.begin() + pos);
+	}
+
+	void eraseKey(int pos)
+	{
+		borderCheck(keys, pos);
+		keys.erase(keys.begin() + pos);
+	}
+
 };
 
 
@@ -196,6 +251,7 @@ class BTree
 
 		Result search(const T& value);
 		Result insert(const T& value);
+		Result erase(const T& value);
 
 		void display() const
 		{ display(root_, 0); std::cout << std::endl; }
@@ -230,10 +286,12 @@ class BTree
 				:data(d), lchild(l), rchild(r) {}
 		};
 		Result insertUtil(T value, NodePtr n, int i);
+		Result eraseUtil(NodePtr n, int i);
 
 		static void display(const NodePtr node, int level = 0);
 		static void copy(NodePtr dst, const NodePtr src);
 		static bool same(const NodePtr a, const NodePtr b);
+		static bool isNonTerminalNode(const NodePtr n);
 };
 
 
@@ -322,6 +380,143 @@ insertUtil(T value, NodePtr n, int i)
 	return Result(true, n, i);
 }
 
+template<typename T, int m> typename BTree<T, m>::Result BTree<T, m>::
+erase(const T& value)
+{
+	auto ret = search(value);
+	if(!ret.tag)
+	{
+		return ret;
+	}
+	else
+	{
+		assert(value == ret.n->atKeys(ret.i));
+		return eraseUtil(ret.n, ret.i);
+	}
+}
+
+template<typename T, int m> typename BTree<T, m>::Result BTree<T, m>::
+eraseUtil(NodePtr n, int i)
+{
+	if(isNonTerminalNode(n))
+	{// non terminal node
+		std::cout << "non-terminal node\n";
+		// find minimum key in lchild
+		NodePtr lchild = n->children[i];
+		if(lchild)
+		{
+			while(lchild->atChildren(0))
+			{
+				lchild = lchild->atChildren(0);
+			}
+			//relace with min
+			n->atKeys(i) = lchild->atKeys(0);
+			//erase min
+			n = lchild;
+			i = 0;
+		}
+	}
+	while(n)
+	{
+		std::cout << "\n\n";
+		std::cout << n->atKeys(i) << " should erase at("<< i << ") in: " << n->keys << std::endl;
+		n->eraseKey(i);
+		assert(std::ceil(m*1.0/2) - 1 == 1);
+		if(n->keysSize() >= std::ceil(1.0*m/2) - 1)
+		{
+			n->eraseChild(i);
+			std::cout << "finished\n";
+			return {true, n, i};//finished
+		}
+		NodePtr lSibling, rSibling;
+		int lIndex = -1, rIndex = -1;
+		if((lSibling = n->getLSibling(lIndex)) && lSibling->keysSize() >= std::ceil(m*1.0/2))
+		{//case 1: borrow from left sibling
+			std::cout << "borrow from left sibling:" << lSibling->keys <<std::endl;
+			assert(lSibling == n->parent->atChildren(lIndex));
+			T max = lSibling->keys.back();;
+			lSibling->eraseChild(lSibling->keysSize());
+			lSibling->keys.pop_back();
+			n->insertKey(0, n->parent->keys[lIndex]);
+			n->parent->keys[lIndex] = max;
+			return {true, n, i};
+		}
+		else if((rSibling = n->getRSibling(rIndex)) && rSibling->keysSize() >= std::ceil(m*1.0/2))
+		{//case 2: borrow from right sibling
+			std::cout << "borrow from right sibling" << rSibling->keys << std::endl;
+			assert(rSibling == n->parent->atChildren(rIndex));
+			T min = rSibling->keys.front();;
+			rSibling->eraseChild(0);
+			rSibling->eraseKey(0);
+			n->keys.push_back(n->parent->keys[rIndex-1]);
+			n->parent->keys[rIndex-1] = min;
+			return {true, n, i};
+		}
+		else if(lSibling)
+		{//case 3: join in left sibling
+			std::cout << "join in left sibling: " << lSibling->keys << std::endl;
+			std::cout << "k: " << n->parent->keys[lIndex] << std::endl;;
+			std::cout << "remaining: " << n->keys << std::endl;
+			lSibling->keys.push_back(n->parent->keys[lIndex]);
+			lSibling->children.push_back(nullptr);
+			for(const T& k: n->keys)
+			{
+				lSibling->keys.push_back(k);
+			}
+			for(NodePtr c: n->children)
+			{
+				if(c)
+					std::cout << "join: " << c->keys << std::endl;
+				lSibling->children.push_back(c);
+			}
+			NodePtr tmp = n;
+			n = n->parent;
+			i = lIndex;
+			assert(n->atChildren(lIndex+1) == tmp);
+			n->atChildren(lIndex+1) = nullptr;
+			delete tmp;
+		}
+		else if(rSibling)
+		{//case 4: join in right sibling
+			std::cout << "join in right sibling: " << rSibling->keys << std::endl;
+			std::cout << "k: " << n->parent->keys[rIndex-1] << std::endl;;
+			std::cout << "remaining: " << n->keys << std::endl;
+			rSibling->insertKey(0, n->parent->keys[rIndex-1]);
+			rSibling->insertChild(0, nullptr);
+			for(const T& k: n->keys)
+			{
+				rSibling->insertKey(0, k);
+			}
+			for(size_t j = 0; j < n->children.size(); ++j)
+			{
+				if(n->children[j])
+					std::cout << "join: " << n->children[j]->keys << std::endl;
+				rSibling->insertChild(i, n->children[j]);
+			}
+			NodePtr tmp = n;
+			n = n->parent;
+			i = rIndex-1;
+			assert(n->atChildren(rIndex-1) == tmp);
+			n->atChildren(rIndex-1) = nullptr;
+			delete tmp;
+		}
+		else
+		{//root
+			if(!n->keys.size())
+			{
+				for(auto c: n->children)
+				  root_ = c;
+				delete n;
+			}
+			else
+			{
+				n->eraseChild(i);
+			}
+			break;
+		}
+	}//while
+	return {false, nullptr, -1};
+}
 
 template<typename T, int m>
 void BTree<T, m>::display(const BTree<T, m>::NodePtr node, int level)
@@ -376,4 +571,17 @@ bool BTree<T, m>::same(const BTree<T, m>::NodePtr a, const BTree<T, m>::NodePtr 
 	return true;
 }
 
+template<typename T, int m>
+bool BTree<T, m>::isNonTerminalNode(const NodePtr n)
+{
+	if(!n) return false;
+	for(const NodePtr child: n->children)
+	{
+		if(child) return true;
+	}
+	return false;
+}
+
+
+	
 #endif
